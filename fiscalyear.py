@@ -15,6 +15,93 @@ START_MONTH = 10
 MONTHS_PER_QUARTER = 12 // 4
 
 
+class FiscalYear:
+    def __init__(self, fiscal_year):
+        self.__fiscal_year = fiscal_year
+
+    @property
+    def fiscal_year(self):
+        return self.__fiscal_year
+
+    @property
+    def start(self):
+        return self.q1.start
+
+    @property
+    def end(self):
+        return self.q4.end
+
+    @property
+    def q1(self):
+        return FiscalQuarter(self.fiscal_year, 1)
+
+    @property
+    def q2(self):
+        return FiscalQuarter(self.fiscal_year, 2)
+
+    @property
+    def q3(self):
+        return FiscalQuarter(self.fiscal_year, 3)
+
+    @property
+    def q4(self):
+        return FiscalQuarter(self.fiscal_year, 4)
+
+
+class FiscalQuarter:
+    def __init__(self, fiscal_year, quarter):
+        assert isinstance(fiscal_year, int)
+        assert isinstance(quarter, int)
+        assert datetime.MINYEAR <= fiscal_year <= datetime.MAXYEAR
+        assert 1 <= quarter <= 4
+
+        self.__fiscal_year = fiscal_year
+        self.__quarter = quarter
+
+    @property
+    def fiscal_year(self):
+        return self.__fiscal_year
+
+    @property
+    def quarter(self):
+        return self.__quarter
+
+    @property
+    def start(self):
+        # Find the first month of the fiscal quarter
+        month = START_MONTH
+        month += (self.quarter - 1) * MONTHS_PER_QUARTER
+        month %= 12
+        if month == 0:
+            month = 12
+
+        # Find the calendar year of the start of the fiscal quarter
+        year = self.fiscal_year
+        if month >= START_MONTH:
+            year -= 1
+
+        return datetime.datetime(year, month, 1, 0, 0, 0)
+
+    @property
+    def end(self):
+        # Find the last month of the fiscal quarter
+        month = START_MONTH
+        month += self.quarter * MONTHS_PER_QUARTER - 1
+        month %= 12
+        if month == 0:
+            month = 12
+
+        # Find the calendar year of the end of the fiscal quarter
+        year = self.fiscal_year
+        if month >= START_MONTH:
+            year -= 1
+
+        # Find the last day of the last month of the fiscal quarter
+        day = calendar.monthrange(year, month)[1]
+
+        return datetime.datetime(year, month, day, 23, 59, 59)
+
+
 class FiscalDate(datetime.date):
     """Wrapper around datetime.date that provides the following
     additional features:
@@ -137,90 +224,3 @@ class FiscalDate(datetime.date):
 
     def is_q4_end(self):
         return self.is_quarter_end(4)
-
-
-class FiscalQuarter:
-    def __init__(self, fiscal_year, quarter):
-        assert isinstance(fiscal_year, int)
-        assert isinstance(quarter, int)
-        assert datetime.MINYEAR <= fiscal_year <= datetime.MAXYEAR
-        assert 1 <= quarter <= 4
-
-        self.__fiscal_year = fiscal_year
-        self.__quarter = quarter
-
-    @property
-    def fiscal_year(self):
-        return self.__fiscal_year
-
-    @property
-    def quarter(self):
-        return self.__quarter
-
-    @property
-    def start(self):
-        # Find the first month of the fiscal quarter
-        month = START_MONTH
-        month += (self.quarter - 1) * MONTHS_PER_QUARTER
-        month %= 12
-        if month == 0:
-            month = 12
-
-        # Find the calendar year of the start of the fiscal quarter
-        year = self.fiscal_year
-        if month >= START_MONTH:
-            year -= 1
-
-        return datetime.datetime(year, month, 1, 0, 0, 0)
-
-    @property
-    def end(self):
-        # Find the last month of the fiscal quarter
-        month = START_MONTH
-        month += self.quarter * MONTHS_PER_QUARTER - 1
-        month %= 12
-        if month == 0:
-            month = 12
-
-        # Find the calendar year of the end of the fiscal quarter
-        year = self.fiscal_year
-        if month >= START_MONTH:
-            year -= 1
-
-        # Find the last day of the last month of the fiscal quarter
-        day = calendar.monthrange(year, month)[1]
-
-        return datetime.datetime(year, month, day, 23, 59, 59)
-
-
-class FiscalYear:
-    def __init__(self, fiscal_year):
-        self.__fiscal_year = fiscal_year
-
-    @property
-    def fiscal_year(self):
-        return self.__fiscal_year
-
-    @property
-    def start(self):
-        return self.q1.start
-
-    @property
-    def end(self):
-        return self.q4.end
-
-    @property
-    def q1(self):
-        return FiscalQuarter(self.fiscal_year, 1)
-
-    @property
-    def q2(self):
-        return FiscalQuarter(self.fiscal_year, 2)
-
-    @property
-    def q3(self):
-        return FiscalQuarter(self.fiscal_year, 3)
-
-    @property
-    def q4(self):
-        return FiscalQuarter(self.fiscal_year, 4)
