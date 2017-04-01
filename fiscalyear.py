@@ -9,43 +9,200 @@ import datetime
 # The first month at the start of a new fiscal year.
 # By default, use the U.S. federal government's fiscal year,
 # which starts on October 1st and ends on September 30th.
+START_DAY = 1
 START_MONTH = 10
 
 # Number of months in each quarter
 MONTHS_PER_QUARTER = 12 // 4
 
+MIN_QUARTER = 1
+MAX_QUARTER = 4
 
-class FiscalYear:
-    def __init__(self, fiscal_year):
-        self.__fiscal_year = fiscal_year
 
+def _check_int(value):
+    """Check if value is an int or int-like string.
+
+    :param value: The value to test
+    :return: The value
+    :rtype: int
+    :raises TypeError: If value is not an int or int-like string
+    """
+    if isinstance(value, int):
+        return value
+    elif isinstance(value, str) and value.is_digit():
+        return int(value)
+    else:
+        raise TypeError('an int or int-like string is required (got %s)' % (
+            type(value).__name__))
+
+
+def _check_year(year):
+    """Check if year is a valid year.
+
+    :param year: The year to test
+    :return: The year
+    :rtype: int
+    :raises ValueError: If the year is out of range
+    """
+    year = _check_int(year)
+
+    if datetime.MINYEAR <= year <= datetime.MAXYEAR:
+        return year
+    else:
+        raise ValueError('year must be in %d..%d' % (
+            datetime.MINYEAR, datetime.MAXYEAR), year)
+
+
+def _check_quarter(quarter):
+    """Check if quarter is a valid quarter.
+
+    :param quarter: The quarter to test
+    :return: The quarter
+    :rtype: int
+    :raises ValueError: If the quarter is out of range
+    """
+    quarter = _check_int(quarter)
+
+    if MIN_QUARTER <= quarter <= MAX_QUARTER:
+        return quarter
+    else:
+        raise ValueError('quarter must be in %d..%d' % (
+            MIN_QUARTER, MAX_QUARTER), quarter)
+
+
+class FiscalYear(object):
+    """A class representing a single fiscal year."""
+
+    __slots__ = '_fiscal_year'
+
+    def __new__(cls, fiscal_year):
+        """Constructor.
+
+        :param fiscal_year: The fiscal year
+        :type fiscal_year: int or str
+        :returns: A newly constructed FiscalYear object
+        :rtype: FiscalYear
+        :raises TypeError: If value is not an int or int-like string
+        :raises ValueError: If the year is out of range
+        """
+        fiscal_year = _check_year(fiscal_year)
+
+        self = super(FiscalYear, cls).__new__(cls)
+        self._fiscal_year = fiscal_year
+        return self
+
+    def __repr__(self):
+        """Convert to formal string, for repr().
+
+        >>> fy = FiscalYear(2017)
+        >>> repr(fy)
+        'fiscalyear.FiscalYear(2017)'
+        """
+        return "%s.%s(%d)" % (self.__class__.__module__,
+                              self.__class__.__name__,
+                              self._fiscal_year)
+
+    def isoformat(self):
+        """Return the date range formatted according to ISO.
+
+        This is 'YYYY-MM-DD'.
+
+        References:
+        - http://www.w3.org/TR/NOTE-datetime
+        - http://www.cl.cam.ac.uk/~mgk25/iso-time.html
+        """
+        pass
+
+    __str__ = isoformat
+
+    # TODO: Implement __format__ so that you can print
+    # fiscal year as 17 or 2017 (%y or %Y)
+
+    # Read-only field accessors
     @property
     def fiscal_year(self):
-        return self.__fiscal_year
+        """Fiscal year."""
+        return self._fiscal_year
 
     @property
     def start(self):
+        """Start of the fiscal year.
+
+        :rtype: datetime.datetime
+        """
         return self.q1.start
 
     @property
     def end(self):
+        """End of the fiscal year.
+
+        :rtype: datetime.datetime
+        """
         return self.q4.end
 
     @property
     def q1(self):
+        """The first quarter of the fiscal year.
+
+        :rtype: FiscalQuarter
+        """
         return FiscalQuarter(self.fiscal_year, 1)
 
     @property
     def q2(self):
+        """The second quarter of the fiscal year.
+
+        :rtype: FiscalQuarter
+        """
         return FiscalQuarter(self.fiscal_year, 2)
 
     @property
     def q3(self):
+        """The third quarter of the fiscal year.
+
+        :rtype: FiscalQuarter
+        """
         return FiscalQuarter(self.fiscal_year, 3)
 
     @property
     def q4(self):
+        """The fourth quarter of the fiscal year.
+
+        :rtype: FiscalQuarter
+        """
         return FiscalQuarter(self.fiscal_year, 4)
+
+    # Comparisons of FiscalYear objects with other
+
+    def __lt__(self, other):
+        if isinstance(other, FiscalYear):
+            return self._fiscal_year < other._fiscal_year
+        return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, FiscalYear):
+            return self._fiscal_year <= other._fiscal_year
+        return NotImplemented
+
+    def __eq__(self, other):
+        if isinstance(other, FiscalYear):
+            return self._fiscal_year == other._fiscal_year
+        return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, FiscalYear):
+            return self._fiscal_year != other._fiscal_year
+        return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, FiscalYear):
+            return self._fiscal_year > other._fiscal_year
+        return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, FiscalYear):
+            return self._fiscal_year >= other._fiscal_year
+        return NotImplemented
 
 
 class FiscalQuarter:
@@ -80,7 +237,7 @@ class FiscalQuarter:
         if month >= START_MONTH:
             year -= 1
 
-        return datetime.datetime(year, month, 1, 0, 0, 0)
+        return datetime.datetime(year, month, START_DAY, 0, 0, 0)
 
     @property
     def end(self):
