@@ -9,8 +9,8 @@ import datetime
 # The first month at the start of a new fiscal year.
 # By default, use the U.S. federal government's fiscal year,
 # which starts on October 1st and ends on September 30th.
-START_DAY = 1
 START_MONTH = 10
+START_DAY = 1
 
 # Number of months in each quarter
 MONTHS_PER_QUARTER = 12 // 4
@@ -29,7 +29,7 @@ def _check_int(value):
     """
     if isinstance(value, int):
         return value
-    elif isinstance(value, str) and value.is_digit():
+    elif isinstance(value, str) and value.isdigit():
         return int(value)
     else:
         raise TypeError('an int or int-like string is required (got %s)' % (
@@ -82,8 +82,8 @@ class FiscalYear(object):
         :type fiscal_year: int or str
         :returns: A newly constructed FiscalYear object
         :rtype: FiscalYear
-        :raises TypeError: If value is not an int or int-like string
-        :raises ValueError: If the year is out of range
+        :raises TypeError: If the fiscal_year is not an int or int-like string
+        :raises ValueError: If the fiscal_year is out of range
         """
         fiscal_year = _check_year(fiscal_year)
 
@@ -98,27 +98,24 @@ class FiscalYear(object):
         >>> repr(fy)
         'fiscalyear.FiscalYear(2017)'
         """
-        return "%s.%s(%d)" % (self.__class__.__module__,
+        return '%s.%s(%d)' % (self.__class__.__module__,
                               self.__class__.__name__,
                               self._fiscal_year)
 
-    def isoformat(self):
-        """Return the date range formatted according to ISO.
+    def __str__(self):
+        """Convert to informal string, for str().
 
-        This is 'YYYY-MM-DD'.
-
-        References:
-        - http://www.w3.org/TR/NOTE-datetime
-        - http://www.cl.cam.ac.uk/~mgk25/iso-time.html
+        >>> fy = FiscalYear(2017)
+        >>> str(fy)
+        'FY2017'
         """
-        pass
-
-    __str__ = isoformat
+        return 'FY%d' % (self._fiscal_year)
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
 
     # Read-only field accessors
+
     @property
     def fiscal_year(self):
         """Fiscal year."""
@@ -205,26 +202,75 @@ class FiscalYear(object):
         return NotImplemented
 
 
-class FiscalQuarter:
-    def __init__(self, fiscal_year, quarter):
-        assert isinstance(fiscal_year, int)
-        assert isinstance(quarter, int)
-        assert datetime.MINYEAR <= fiscal_year <= datetime.MAXYEAR
-        assert 1 <= quarter <= 4
+class FiscalQuarter(object):
+    """A class representing a single fiscal quarter."""
 
-        self.__fiscal_year = fiscal_year
-        self.__quarter = quarter
+    __slots__ = ['_fiscal_year', '_quarter']
+
+    def __new__(cls, fiscal_year, quarter):
+        """Constructor.
+
+        :param fiscal_year: The fiscal year
+        :type fiscal_year: int or str
+        :param quarter: The fiscal quarter [1 - 4]
+        :type quarter: int or str
+        :returns: A newly constructed FiscalQuarter object
+        :rtype: FiscalQuarter
+        :raises TypeError: If the fiscal_year or quarter is not
+            an int or int-like string
+        :raises ValueError: If the fiscal_year or quarter is out of range
+        """
+        fiscal_year = _check_year(fiscal_year)
+        quarter = _check_quarter(quarter)
+
+        self = super(FiscalQuarter, cls).__new__(cls)
+        self._fiscal_year = fiscal_year
+        self._quarter = quarter
+        return self
+
+    def __repr__(self):
+        """Convert to formal string, for repr().
+
+        >>> q3 = FiscalQuarter(2017, 3)
+        >>> repr(q3)
+        'fiscalyear.FiscalQuarter(2017, 3)'
+        """
+        return '%s.%s(%d, %d)' % (self.__class__.__module__,
+                                  self.__class__.__name__,
+                                  self._fiscal_year,
+                                  self._quarter)
+
+    def __str__(self):
+        """Convert to informal string, for str().
+
+        >>> q3 = FiscalQuarter(2017, 3)
+        >>> str(q3)
+        'FY2017 Q3'
+        """
+        return 'FY%d Q%d' % (self._fiscal_year,
+                             self._quarter)
+
+    # TODO: Implement __format__ so that you can print
+    # fiscal year as 17 or 2017 (%y or %Y)
+
+    # Read-only field accessors
 
     @property
     def fiscal_year(self):
-        return self.__fiscal_year
+        """Fiscal year."""
+        return self._fiscal_year
 
     @property
     def quarter(self):
-        return self.__quarter
+        """Fiscal quarter."""
+        return self._quarter
 
     @property
     def start(self):
+        """Start of the fiscal quarter.
+
+        :rtype: datetime.datetime
+        """
         # Find the first month of the fiscal quarter
         month = START_MONTH
         month += (self.quarter - 1) * MONTHS_PER_QUARTER
@@ -241,6 +287,10 @@ class FiscalQuarter:
 
     @property
     def end(self):
+        """End of the fiscal quarter.
+
+        :rtype: datetime.datetime
+        """
         # Find the last month of the fiscal quarter
         month = START_MONTH
         month += self.quarter * MONTHS_PER_QUARTER - 1
@@ -257,6 +307,44 @@ class FiscalQuarter:
         day = calendar.monthrange(year, month)[1]
 
         return datetime.datetime(year, month, day, 23, 59, 59)
+
+    # Comparisons of FiscalQuarter objects with other
+
+    def __lt__(self, other):
+        if isinstance(other, FiscalYear):
+            return ((self._fiscal_year,  self._quarter) <
+                    (other._fiscal_year, other._quarter))
+        return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, FiscalYear):
+            return ((self._fiscal_year,  self._quarter) <=
+                    (other._fiscal_year, other._quarter))
+        return NotImplemented
+
+    def __eq__(self, other):
+        if isinstance(other, FiscalYear):
+            return ((self._fiscal_year,  self._quarter) ==
+                    (other._fiscal_year, other._quarter))
+        return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, FiscalYear):
+            return ((self._fiscal_year,  self._quarter) !=
+                    (other._fiscal_year, other._quarter))
+        return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, FiscalYear):
+            return ((self._fiscal_year,  self._quarter) >
+                    (other._fiscal_year, other._quarter))
+        return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, FiscalYear):
+            return ((self._fiscal_year,  self._quarter) >=
+                    (other._fiscal_year, other._quarter))
+        return NotImplemented
 
 
 class FiscalDate(datetime.date):
