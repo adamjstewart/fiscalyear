@@ -138,7 +138,7 @@ def _check_day(month, day):
 
     # Find the last day of the month
     # Use a non-leap year
-    max_day = calendar.monthrange(2000, month)[1]
+    max_day = calendar.monthrange(2001, month)[1]
 
     if 1 <= day <= max_day:
         return day
@@ -360,6 +360,28 @@ class FiscalQuarter(object):
         return self._quarter
 
     @property
+    def prev_quarter(self):
+        """The previous fiscal quarter."""
+        fiscal_year = self._fiscal_year
+        quarter = self._quarter - 1
+        if quarter == 0:
+            fiscal_year -= 1
+            quarter = 4
+
+        return FiscalQuarter(fiscal_year, quarter)
+
+    @property
+    def next_quarter(self):
+        """The next fiscal quarter."""
+        fiscal_year = self._fiscal_year
+        quarter = self._quarter + 1
+        if quarter == 5:
+            fiscal_year += 1
+            quarter = 1
+
+        return FiscalQuarter(fiscal_year, quarter)
+
+    @property
     def start(self):
         """Start of the fiscal quarter.
 
@@ -373,9 +395,16 @@ class FiscalQuarter(object):
             month = 12
 
         # Find the calendar year of the start of the fiscal quarter
-        year = self.fiscal_year
-        if month >= START_MONTH:
-            year -= 1
+        if START_YEAR == 'previous':
+            year = self._fiscal_year - 1
+        elif START_YEAR == 'same':
+            year = self._fiscal_year
+        else:
+            raise ValueError("START_YEAR must be either 'previous' or 'same'",
+                             START_YEAR)
+
+        if month < START_MONTH:
+            year += 1
 
         return datetime.datetime(year, month, START_DAY, 0, 0, 0)
 
@@ -385,22 +414,11 @@ class FiscalQuarter(object):
 
         :rtype: datetime.datetime
         """
-        # Find the last month of the fiscal quarter
-        month = START_MONTH
-        month += self.quarter * MONTHS_PER_QUARTER - 1
-        month %= 12
-        if month == 0:
-            month = 12
+        # Find the start of the next fiscal quarter
+        next_start = self.next_quarter.start
 
-        # Find the calendar year of the end of the fiscal quarter
-        year = self.fiscal_year
-        if month >= START_MONTH:
-            year -= 1
-
-        # Find the last day of the last month of the fiscal quarter
-        day = calendar.monthrange(year, month)[1]
-
-        return datetime.datetime(year, month, day, 23, 59, 59)
+        # Substract 1 second
+        return next_start - datetime.timedelta(seconds=1)
 
     # Comparisons of FiscalQuarter objects with other
 

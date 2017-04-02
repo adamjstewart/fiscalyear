@@ -1,5 +1,14 @@
+import datetime
 import fiscalyear
 import pytest
+
+
+# Fiscal calendars to test
+UNITED_STATES = ('previous', 10, 1)
+UNITED_KINGDOM = ('same', 4, 6)
+
+# Default to U.S.
+fiscalyear.START_YEAR, fiscalyear.START_MONTH, fiscalyear.START_DAY = UNITED_STATES
 
 
 class TestFiscalCalendar:
@@ -74,6 +83,24 @@ class TestFiscalCalendar:
         assert fiscalyear.START_MONTH == 10
         assert fiscalyear.START_DAY == 1
 
+    def test_wrong_type(self):
+        with pytest.raises(TypeError):
+            with fiscalyear.fiscal_calendar(start_month=6.5):
+                pass
+
+        with pytest.raises(TypeError):
+            with fiscalyear.fiscal_calendar(start_day='hello world'):
+                pass
+
+    def test_out_of_range(self):
+        with pytest.raises(ValueError):
+            with fiscalyear.fiscal_calendar(start_month=0):
+                pass
+
+        with pytest.raises(ValueError):
+            with fiscalyear.fiscal_calendar(start_month=2, start_day=29):
+                pass
+
 
 class TestFiscalYear:
 
@@ -132,6 +159,32 @@ class TestFiscalYear:
 
         with pytest.raises(ValueError):
             fiscalyear.FiscalYear(-2017)
+
+    def test_start(self, a):
+        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+            assert a.start == datetime.datetime(2015, 10, 1, 0, 0, 0)
+
+        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+            assert a.start == datetime.datetime(2016, 4, 6, 0, 0, 0)
+
+    def test_end(self, a):
+        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+            assert a.end == datetime.datetime(2016, 9, 30, 23, 59, 59)
+
+        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+            assert a.end == datetime.datetime(2017, 4, 5, 23, 59, 59)
+
+    def test_q1(self, a):
+        assert a.q1 == fiscalyear.FiscalQuarter(2016, 1)
+
+    def test_q2(self, a):
+        assert a.q2 == fiscalyear.FiscalQuarter(2016, 2)
+
+    def test_q3(self, a):
+        assert a.q3 == fiscalyear.FiscalQuarter(2016, 3)
+
+    def test_q4(self, a):
+        assert a.q4 == fiscalyear.FiscalQuarter(2016, 4)
 
 
 class TestFiscalQuarter:
