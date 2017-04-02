@@ -311,37 +311,37 @@ class FiscalQuarter(object):
     # Comparisons of FiscalQuarter objects with other
 
     def __lt__(self, other):
-        if isinstance(other, FiscalYear):
+        if isinstance(other, FiscalQuarter):
             return ((self._fiscal_year,  self._quarter) <
                     (other._fiscal_year, other._quarter))
         return NotImplemented
 
     def __le__(self, other):
-        if isinstance(other, FiscalYear):
+        if isinstance(other, FiscalQuarter):
             return ((self._fiscal_year,  self._quarter) <=
                     (other._fiscal_year, other._quarter))
         return NotImplemented
 
     def __eq__(self, other):
-        if isinstance(other, FiscalYear):
+        if isinstance(other, FiscalQuarter):
             return ((self._fiscal_year,  self._quarter) ==
                     (other._fiscal_year, other._quarter))
         return NotImplemented
 
     def __ne__(self, other):
-        if isinstance(other, FiscalYear):
+        if isinstance(other, FiscalQuarter):
             return ((self._fiscal_year,  self._quarter) !=
                     (other._fiscal_year, other._quarter))
         return NotImplemented
 
     def __gt__(self, other):
-        if isinstance(other, FiscalYear):
+        if isinstance(other, FiscalQuarter):
             return ((self._fiscal_year,  self._quarter) >
                     (other._fiscal_year, other._quarter))
         return NotImplemented
 
     def __ge__(self, other):
-        if isinstance(other, FiscalYear):
+        if isinstance(other, FiscalQuarter):
             return ((self._fiscal_year,  self._quarter) >=
                     (other._fiscal_year, other._quarter))
         return NotImplemented
