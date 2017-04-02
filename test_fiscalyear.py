@@ -2,6 +2,79 @@ import fiscalyear
 import pytest
 
 
+class TestFiscalCalendar:
+
+    def test_start_year(self):
+        assert fiscalyear.START_YEAR == 'previous'
+
+        with fiscalyear.fiscal_calendar(start_year='same'):
+            assert fiscalyear.START_YEAR == 'same'
+
+        assert fiscalyear.START_YEAR == 'previous'
+
+    def test_start_month(self):
+        assert fiscalyear.START_MONTH == 10
+
+        with fiscalyear.fiscal_calendar(start_month=4):
+            assert fiscalyear.START_MONTH == 4
+
+        assert fiscalyear.START_MONTH == 10
+
+    def test_start_day(self):
+        assert fiscalyear.START_DAY == 1
+
+        with fiscalyear.fiscal_calendar(start_day=6):
+            assert fiscalyear.START_DAY == 6
+
+        assert fiscalyear.START_DAY == 1
+
+    def test_complex(self):
+        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_MONTH == 10
+        assert fiscalyear.START_DAY == 1
+
+        with fiscalyear.fiscal_calendar('same', 4, 6):
+            assert fiscalyear.START_YEAR == 'same'
+            assert fiscalyear.START_MONTH == 4
+            assert fiscalyear.START_DAY == 6
+
+        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_MONTH == 10
+        assert fiscalyear.START_DAY == 1
+
+    def test_nested(self):
+        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_MONTH == 10
+        assert fiscalyear.START_DAY == 1
+
+        with fiscalyear.fiscal_calendar(start_year='same'):
+            assert fiscalyear.START_YEAR == 'same'
+            assert fiscalyear.START_MONTH == 10
+            assert fiscalyear.START_DAY == 1
+
+            with fiscalyear.fiscal_calendar(start_month=4):
+                assert fiscalyear.START_YEAR == 'same'
+                assert fiscalyear.START_MONTH == 4
+                assert fiscalyear.START_DAY == 1
+
+                with fiscalyear.fiscal_calendar(start_day=6):
+                    assert fiscalyear.START_YEAR == 'same'
+                    assert fiscalyear.START_MONTH == 4
+                    assert fiscalyear.START_DAY == 6
+
+                assert fiscalyear.START_YEAR == 'same'
+                assert fiscalyear.START_MONTH == 4
+                assert fiscalyear.START_DAY == 1
+
+            assert fiscalyear.START_YEAR == 'same'
+            assert fiscalyear.START_MONTH == 10
+            assert fiscalyear.START_DAY == 1
+
+        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_MONTH == 10
+        assert fiscalyear.START_DAY == 1
+
+
 class TestFiscalYear:
 
     @pytest.fixture(scope='class')
@@ -48,17 +121,17 @@ class TestFiscalYear:
 
     def test_wrong_type(self):
         with pytest.raises(TypeError):
-            x = fiscalyear.FiscalYear(2017.5)
+            fiscalyear.FiscalYear(2017.5)
 
         with pytest.raises(TypeError):
-            y = fiscalyear.FiscalYear('hello world')
+            fiscalyear.FiscalYear('hello world')
 
     def test_out_of_range(self):
         with pytest.raises(ValueError):
-            x = fiscalyear.FiscalYear(0)
+            fiscalyear.FiscalYear(0)
 
         with pytest.raises(ValueError):
-            y = fiscalyear.FiscalYear(-2017)
+            fiscalyear.FiscalYear(-2017)
 
 
 class TestFiscalQuarter:
@@ -129,17 +202,17 @@ class TestFiscalQuarter:
 
     def test_wrong_type(self):
         with pytest.raises(TypeError):
-            x = fiscalyear.FiscalQuarter(2017.5, 1.2)
+            fiscalyear.FiscalQuarter(2017.5, 1.2)
 
         with pytest.raises(TypeError):
-            y = fiscalyear.FiscalQuarter('hello', 'world')
+            fiscalyear.FiscalQuarter('hello', 'world')
 
     def test_out_of_range(self):
         with pytest.raises(ValueError):
-            x = fiscalyear.FiscalQuarter(2017, 0)
+            fiscalyear.FiscalQuarter(2017, 0)
 
         with pytest.raises(ValueError):
-            y = fiscalyear.FiscalQuarter(2017, 5)
+            fiscalyear.FiscalQuarter(2017, 5)
 
         with pytest.raises(ValueError):
-            z = fiscalyear.FiscalQuarter(0, 2)
+            fiscalyear.FiscalQuarter(0, 2)

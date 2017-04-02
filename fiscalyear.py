@@ -1,22 +1,74 @@
 """Utilities for managing the fiscal calendar."""
 
-from __future__ import division
+from __future__ import division, with_statement
 
 import calendar
+import contextlib
 import datetime
 
-
-# The first month at the start of a new fiscal year.
-# By default, use the U.S. federal government's fiscal year,
-# which starts on October 1st and ends on September 30th.
-START_MONTH = 10
-START_DAY = 1
 
 # Number of months in each quarter
 MONTHS_PER_QUARTER = 12 // 4
 
 MIN_QUARTER = 1
 MAX_QUARTER = 4
+
+# These global variables control the start of the fiscal year.
+# The default is to use the U.S. federal government's fiscal year,
+# but they can be changed to use any other fiscal year.
+START_YEAR = 'previous'
+START_MONTH = 10
+START_DAY = 1
+
+
+@contextlib.contextmanager
+def fiscal_calendar(start_year=None,
+                    start_month=None,
+                    start_day=None):
+    """A context manager that lets you modify the start of the fiscal calendar
+    inside the scope of a with-statement only.
+
+    :param start_year: Relationship between the start of the fiscal year and
+        the calendar year. Possible values: 'previous' or 'same'.
+    :type start_year: str
+    :param start_month: The first month of the fiscal year
+    :type start_month: int or str
+    :param start_day: The first day of the first month of the fiscal year
+    :type start_day: int or str
+    """
+    global START_YEAR
+    global START_MONTH
+    global START_DAY
+
+    # Use default values if not changed
+    if start_year is None:
+        start_year = START_YEAR
+    if start_month is None:
+        start_month = START_MONTH
+    if start_day is None:
+        start_day = START_DAY
+
+    assert isinstance(start_year, str)
+    assert start_year == 'previous' or start_year == 'same'
+    start_month = _check_month(start_month)
+    start_day = _check_day(start_month, start_day)
+
+    # Backup previous values
+    old_start_year = START_YEAR
+    old_start_month = START_MONTH
+    old_start_day = START_DAY
+
+    # Temporarily change global variables
+    START_YEAR = start_year
+    START_MONTH = start_month
+    START_DAY = start_day
+
+    yield
+
+    # Restore previous values
+    START_YEAR = old_start_year
+    START_MONTH = old_start_month
+    START_DAY = old_start_day
 
 
 def _check_int(value):
@@ -42,7 +94,8 @@ def _check_year(year):
     :param year: The year to test
     :return: The year
     :rtype: int
-    :raises ValueError: If the year is out of range
+    :raises TypeError: If year is not an int or int-like string
+    :raises ValueError: If year is out of range
     """
     year = _check_int(year)
 
@@ -53,13 +106,54 @@ def _check_year(year):
             datetime.MINYEAR, datetime.MAXYEAR), year)
 
 
+def _check_month(month):
+    """Check if month is a valid month.
+
+    :param month: The month to test
+    :return: The month
+    :rtype: int
+    :raises TypeError: If month is not an int or int-like string
+    :raises ValueError: If month is out of range
+    """
+    month = _check_int(month)
+
+    if 1 <= month <= 12:
+        return month
+    else:
+        raise ValueError('month must be in %d..%d' % (1, 12), month)
+
+
+def _check_day(month, day):
+    """Check if day is a valid day of month.
+
+    :param month: The month to test
+    :param day: The day to test
+    :return: The day
+    :rtype: int
+    :raises TypeError: If month or day is not an int or int-like string
+    :raises ValueError: If month or day is out of range
+    """
+    month = _check_month(month)
+    day = _check_int(day)
+
+    # Find the last day of the month
+    # Use a non-leap year
+    max_day = calendar.monthrange(2000, month)[1]
+
+    if 1 <= day <= max_day:
+        return day
+    else:
+        raise ValueError('day must be in %d..%d' % (1, max_day), day)
+
+
 def _check_quarter(quarter):
     """Check if quarter is a valid quarter.
 
     :param quarter: The quarter to test
     :return: The quarter
     :rtype: int
-    :raises ValueError: If the quarter is out of range
+    :raises TypeError: If quarter is not an int or int-like string
+    :raises ValueError: If quarter is out of range
     """
     quarter = _check_int(quarter)
 
@@ -82,8 +176,8 @@ class FiscalYear(object):
         :type fiscal_year: int or str
         :returns: A newly constructed FiscalYear object
         :rtype: FiscalYear
-        :raises TypeError: If the fiscal_year is not an int or int-like string
-        :raises ValueError: If the fiscal_year is out of range
+        :raises TypeError: If fiscal_year is not an int or int-like string
+        :raises ValueError: If fiscal_year is out of range
         """
         fiscal_year = _check_year(fiscal_year)
 
@@ -216,9 +310,9 @@ class FiscalQuarter(object):
         :type quarter: int or str
         :returns: A newly constructed FiscalQuarter object
         :rtype: FiscalQuarter
-        :raises TypeError: If the fiscal_year or quarter is not
+        :raises TypeError: If fiscal_year or quarter is not
             an int or int-like string
-        :raises ValueError: If the fiscal_year or quarter is out of range
+        :raises ValueError: If fiscal_year or quarter is out of range
         """
         fiscal_year = _check_year(fiscal_year)
         quarter = _check_quarter(quarter)
