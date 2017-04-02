@@ -125,24 +125,6 @@ class TestFiscalYear:
     def test_str(self, a):
         assert str(a) == 'FY2016'
 
-    def test_less_than(self, a, b):
-        assert a < b
-
-    def test_less_than_equals(self, a, b, c):
-        assert a <= b <= c
-
-    def test_equals(self, b, c):
-        assert b == c
-
-    def test_not_equals(self, a, b):
-        assert a != b
-
-    def test_greater_than(self, a, b):
-        assert b > a
-
-    def test_greater_than_equals(self, a, b, c):
-        assert c >= b >= a
-
     def test_from_string(self, c):
         assert c.fiscal_year == 2017
 
@@ -160,7 +142,15 @@ class TestFiscalYear:
         with pytest.raises(ValueError):
             fiscalyear.FiscalYear(-2017)
 
+    def test_prev_fiscal_year(self, a, b):
+        assert a == b.prev_fiscal_year
+
+    def test_next_fiscal_year(self, a, b):
+        assert a.next_fiscal_year == b
+
     def test_start(self, a):
+        assert a.start == a.q1.start
+
         with fiscalyear.fiscal_calendar(*UNITED_STATES):
             assert a.start == datetime.datetime(2015, 10, 1, 0, 0, 0)
 
@@ -168,6 +158,8 @@ class TestFiscalYear:
             assert a.start == datetime.datetime(2016, 4, 6, 0, 0, 0)
 
     def test_end(self, a):
+        assert a.end == a.q4.end
+
         with fiscalyear.fiscal_calendar(*UNITED_STATES):
             assert a.end == datetime.datetime(2016, 9, 30, 23, 59, 59)
 
@@ -185,6 +177,42 @@ class TestFiscalYear:
 
     def test_q4(self, a):
         assert a.q4 == fiscalyear.FiscalQuarter(2016, 4)
+
+    def test_less_than(self, a, b):
+        assert a < b
+
+        with pytest.raises(TypeError):
+            a < 1
+
+    def test_less_than_equals(self, a, b, c):
+        assert a <= b <= c
+
+        with pytest.raises(TypeError):
+            a <= 1
+
+    def test_equals(self, b, c):
+        assert b == c
+
+        with pytest.raises(TypeError):
+            b == 1
+
+    def test_not_equals(self, a, b):
+        assert a != b
+
+        with pytest.raises(TypeError):
+            a != 1
+
+    def test_greater_than(self, a, b):
+        assert b > a
+
+        with pytest.raises(TypeError):
+            a > 1
+
+    def test_greater_than_equals(self, a, b, c):
+        assert c >= b >= a
+
+        with pytest.raises(TypeError):
+            a >= 1
 
 
 class TestFiscalQuarter:
@@ -227,28 +255,6 @@ class TestFiscalQuarter:
     def test_str(self, a):
         assert str(a) == 'FY2016 Q4'
 
-    def test_less_than(self, a, b, c, d, e, f):
-        assert a < b < c < d < e < f
-
-    def test_less_than_equals(self, a, b, c, d, e, f, g):
-        assert a <= b <= c <= d <= e <= f <= g
-
-    def test_equals(self, f, g):
-        assert f == g
-
-    def test_not_equals(self, b, c, g):
-        # Same year, different quarter
-        assert b != c
-
-        # Same quarter, different year
-        assert b != g
-
-    def test_greater_than(self, a, b, c, d, e, f):
-        assert f > e > d > c > b > a
-
-    def test_greater_than_equals(self, a, b, c, d, e, f, g):
-            assert g >= f >= e >= d >= c >= b >= a
-
     def test_from_string(self, g):
         assert g.fiscal_year == 2018
         assert g.quarter == 1
@@ -269,3 +275,126 @@ class TestFiscalQuarter:
 
         with pytest.raises(ValueError):
             fiscalyear.FiscalQuarter(0, 2)
+
+    def test_prev_quarter(self, a, b, c, d, e, f):
+        assert a == b.prev_quarter
+        assert b == c.prev_quarter
+        assert c == d.prev_quarter
+        assert d == e.prev_quarter
+        assert e == f.prev_quarter
+
+    def test_next_quarter(self, a, b, c, d, e, f):
+        assert a.next_quarter == b
+        assert b.next_quarter == c
+        assert c.next_quarter == d
+        assert d.next_quarter == e
+        assert e.next_quarter == f
+
+    def test_start(self, a):
+        with fiscalyear.fiscal_calendar(start_month=3):
+            assert a.start == datetime.datetime(2015, 12, 1, 0, 0)
+
+    def test_end(self, a):
+        with fiscalyear.fiscal_calendar(start_month=1, start_year='same'):
+            assert a.end == datetime.datetime(2016, 12, 31, 23, 59, 59)
+
+    def test_bad_start_year(self, a):
+        fiscalyear.START_YEAR = 'hello world'
+        with pytest.raises(ValueError):
+            a.start
+
+    def test_q1_start(self, b):
+        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+            assert b.start == datetime.datetime(2016, 10, 1, 0, 0, 0)
+
+        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+            assert b.start == datetime.datetime(2017, 4, 6, 0, 0, 0)
+
+    def test_q1_end(self, b):
+        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+            assert b.end == datetime.datetime(2016, 12, 31, 23, 59, 59)
+
+        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+            assert b.end == datetime.datetime(2017, 7, 5, 23, 59, 59)
+
+    def test_q2_start(self, c):
+        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+            assert c.start == datetime.datetime(2017, 1, 1, 0, 0, 0)
+
+        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+            assert c.start == datetime.datetime(2017, 7, 6, 0, 0, 0)
+
+    def test_q2_end(self, c):
+        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+            assert c.end == datetime.datetime(2017, 3, 31, 23, 59, 59)
+
+        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+            assert c.end == datetime.datetime(2017, 10, 5, 23, 59, 59)
+
+    def test_q3_start(self, d):
+        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+            assert d.start == datetime.datetime(2017, 4, 1, 0, 0, 0)
+
+        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+            assert d.start == datetime.datetime(2017, 10, 6, 0, 0, 0)
+
+    def test_q3_end(self, d):
+        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+            assert d.end == datetime.datetime(2017, 6, 30, 23, 59, 59)
+
+        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+            assert d.end == datetime.datetime(2018, 1, 5, 23, 59, 59)
+
+    def test_q4_start(self, e):
+        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+            assert e.start == datetime.datetime(2017, 7, 1, 0, 0, 0)
+
+        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+            assert e.start == datetime.datetime(2018, 1, 6, 0, 0, 0)
+
+    def test_q4_end(self, e):
+        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+            assert e.end == datetime.datetime(2017, 9, 30, 23, 59, 59)
+
+        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+            assert e.end == datetime.datetime(2018, 4, 5, 23, 59, 59)
+
+    def test_less_than(self, a, b, c, d, e, f):
+        assert a < b < c < d < e < f
+
+        with pytest.raises(TypeError):
+            a < 1
+
+    def test_less_than_equals(self, a, b, c, d, e, f, g):
+        assert a <= b <= c <= d <= e <= f <= g
+
+        with pytest.raises(TypeError):
+            a <= 1
+
+    def test_equals(self, f, g):
+        assert f == g
+
+        with pytest.raises(TypeError):
+            f == 1
+
+    def test_not_equals(self, b, c, g):
+        # Same year, different quarter
+        assert b != c
+
+        # Same quarter, different year
+        assert b != g
+
+        with pytest.raises(TypeError):
+            b != 1
+
+    def test_greater_than(self, a, b, c, d, e, f):
+        assert f > e > d > c > b > a
+
+        with pytest.raises(TypeError):
+            a > 1
+
+    def test_greater_than_equals(self, a, b, c, d, e, f, g):
+        assert g >= f >= e >= d >= c >= b >= a
+
+        with pytest.raises(TypeError):
+            a >= 1
