@@ -208,8 +208,24 @@ class FiscalYear(object):
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
 
-    # TODO: Implement __contains__ so that you can run "a in b"
-    # for FiscalQuarter, FiscalDate, FiscalDateTime, date, and datetime
+    def __contains__(self, item):
+        """Returns True if item in self, else False.
+
+        :param item: The item to check
+        :type item: FiscalQuarter, FiscalDate, FiscalDateTime,
+            date, or datetime
+        :rtype: bool
+        """
+        if isinstance(item, FiscalQuarter):
+            return self._fiscal_year == item.fiscal_year
+        elif (isinstance(item, FiscalDate) or
+              isinstance(item, FiscalDateTime) or
+              isinstance(item, datetime.date) or
+              isinstance(item, datetime.datetime)):
+            return self.start <= item <= self.end
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
 
     # Read-only field accessors
 
@@ -381,8 +397,21 @@ class FiscalQuarter(object):
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
 
-    # TODO: Implement __contains__ so that you can run "a in b"
-    # for FiscalDate, FiscalDateTime, date, and datetime
+    def __contains__(self, item):
+        """Returns True if item in self, else False.
+
+        :param item: The item to check
+        :type item: FiscalDate, FiscalDateTime, date, or datetime
+        :rtype: bool
+        """
+        if (isinstance(item, FiscalDate) or
+            isinstance(item, FiscalDateTime) or
+            isinstance(item, datetime.date) or
+            isinstance(item, datetime.datetime)):
+            return self.start <= item <= self.end
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
 
     # Read-only field accessors
 
@@ -515,35 +544,35 @@ class FiscalDate(datetime.date):
     Attributes:
         fiscal_year: the fiscal year    [int]
         quarter:     the fiscal quarter [int: 1-4]
-
-    Methods:
-        is_q1_start: True if date is the first day of the 1st quarter
-                     of the fiscal year, else False
-        ...
-        is_q4_start: True if date is the first day of the 4th quarter
-                     of the fiscal year, else False
-
-        is_q1_end:   True if date is the last day of the 1st quarter
-                     of the fiscal year, else False
-        ...
-        is_q4_end:   True if date is the last day of the 4th quarter
-                     of the fiscal year, else False
-
-    The fiscal year starts on the first day of October
-    and ends on the last day of September. For example, the 2018
-    fiscal year starts on 10/1/2017 and ends on 9/30/2018.
     """
+
+    def __repr__(self):
+        """Convert to formal string, for repr().
+
+        >>> a = FiscalDate(2017, 4, 2)
+        >>> repr(a)
+        'fiscalyear.FiscalDate(2017, 4, 2)'
+        """
+        string = super(FiscalDate, self).__repr__()
+
+        module = self.__class__.__module__
+        name = self.__class__.__name__
+
+        return string.replace(name, module + '.' + name)
 
     @property
     def fiscal_year(self):
         """Returns the fiscal year."""
 
-        fiscal_year = self.year
-        if self.month >= START_MONTH:
-            fiscal_year += 1
+        # The fiscal year can be at most 1 year away from the calendar year
+        same_fiscal_year = FiscalYear(self.year)
 
-        return fiscal_year
-
+        if self < same_fiscal_year.start:
+            return self.year - 1
+        elif self > same_fiscal_year.end:
+            return self.year + 1
+        else:
+            return self.year
 
     @property
     def prev_quarter_fiscal_year(self):
@@ -596,37 +625,3 @@ class FiscalDate(datetime.date):
             quarter = 1
 
         return quarter
-
-    def is_quarter_start(self, quarter):
-        start = FiscalQuarter(self.fiscal_year, quarter).start.date()
-
-        return self == start
-
-    def is_q1_start(self):
-        return self.is_quarter_start(1)
-
-    def is_q2_start(self):
-        return self.is_quarter_start(2)
-
-    def is_q3_start(self):
-        return self.is_quarter_start(3)
-
-    def is_q4_start(self):
-        return self.is_quarter_start(4)
-
-    def is_quarter_end(self, quarter):
-        end = FiscalQuarter(self.fiscal_year, quarter).end.date()
-
-        return self == end
-
-    def is_q1_end(self):
-        return self.is_quarter_end(1)
-
-    def is_q2_end(self):
-        return self.is_quarter_end(2)
-
-    def is_q3_end(self):
-        return self.is_quarter_end(3)
-
-    def is_q4_end(self):
-        return self.is_quarter_end(4)

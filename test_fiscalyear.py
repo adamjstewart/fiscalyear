@@ -116,6 +116,10 @@ class TestFiscalYear:
     def c(self):
         return fiscalyear.FiscalYear('2017')
 
+    @pytest.fixture(scope='class')
+    def d(self):
+        return fiscalyear.FiscalQuarter(2017, 2)
+
     def test_basic(self, a):
         assert a.fiscal_year == 2016
 
@@ -177,6 +181,10 @@ class TestFiscalYear:
 
     def test_q4(self, a):
         assert a.q4 == fiscalyear.FiscalQuarter(2016, 4)
+
+    def test_contains(self, a, b, d):
+        assert d not in a
+        assert d in b
 
     def test_less_than(self, a, b):
         assert a < b
@@ -299,9 +307,13 @@ class TestFiscalQuarter:
             assert a.end == datetime.datetime(2016, 12, 31, 23, 59, 59)
 
     def test_bad_start_year(self, a):
+        backup_start_year = fiscalyear.START_YEAR
         fiscalyear.START_YEAR = 'hello world'
+
         with pytest.raises(ValueError):
             a.start
+
+        fiscalyear.START_YEAR = backup_start_year
 
     def test_q1_start(self, b):
         with fiscalyear.fiscal_calendar(*UNITED_STATES):
@@ -398,3 +410,28 @@ class TestFiscalQuarter:
 
         with pytest.raises(TypeError):
             a >= 1
+
+class TestFiscalDate:
+
+    @pytest.fixture(scope='class')
+    def a(self):
+        return fiscalyear.FiscalDate(2017, 1, 1)
+
+    @pytest.fixture(scope='class')
+    def b(self):
+        return fiscalyear.FiscalDate(2017, 8, 31)
+
+    @pytest.fixture(scope='class')
+    def c(self):
+        return fiscalyear.FiscalDate(2017, 11, 15)
+
+    def test_basic(self, a):
+        assert a.year == 2017
+        assert a.month == 1
+        assert a.day == 1
+
+        assert a.fiscal_year == 2017
+        assert a.quarter == 2
+
+    def test_repr(self, a):
+        assert repr(a) == 'fiscalyear.FiscalDate(2017, 1, 1)'
