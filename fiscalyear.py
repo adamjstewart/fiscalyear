@@ -218,11 +218,12 @@ class FiscalYear(object):
         """
         if isinstance(item, FiscalQuarter):
             return self._fiscal_year == item.fiscal_year
-        elif (isinstance(item, FiscalDate) or
-              isinstance(item, FiscalDateTime) or
-              isinstance(item, datetime.date) or
+        elif (isinstance(item, FiscalDateTime) or
               isinstance(item, datetime.datetime)):
             return self.start <= item <= self.end
+        elif (isinstance(item, FiscalDate) or
+              isinstance(item, datetime.date)):
+            return self.start.date() <= item <= self.end.date()
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
                 type(self).__name__, type(other).__name__))
@@ -404,11 +405,12 @@ class FiscalQuarter(object):
         :type item: FiscalDate, FiscalDateTime, date, or datetime
         :rtype: bool
         """
-        if (isinstance(item, FiscalDate) or
-            isinstance(item, FiscalDateTime) or
-            isinstance(item, datetime.date) or
+        if (isinstance(item, FiscalDateTime) or
             isinstance(item, datetime.datetime)):
             return self.start <= item <= self.end
+        elif (isinstance(item, FiscalDate) or
+              isinstance(item, datetime.date)):
+            return self.start.date() <= item <= self.end.date()
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
                 type(self).__name__, type(other).__name__))
@@ -546,65 +548,38 @@ class FiscalDate(datetime.date):
         quarter:     the fiscal quarter [int: 1-4]
     """
 
-    def __repr__(self):
-        """Convert to formal string, for repr().
-
-        >>> a = FiscalDate(2017, 4, 2)
-        >>> repr(a)
-        'fiscalyear.FiscalDate(2017, 4, 2)'
-        """
-        string = super(FiscalDate, self).__repr__()
-
-        module = self.__class__.__module__
-        name = self.__class__.__name__
-
-        return string.replace(name, module + '.' + name)
-
     @property
     def fiscal_year(self):
         """Returns the fiscal year."""
 
         # The fiscal year can be at most 1 year away from the calendar year
-        same_fiscal_year = FiscalYear(self.year)
-
-        if self < same_fiscal_year.start:
-            return self.year - 1
-        elif self > same_fiscal_year.end:
-            return self.year + 1
-        else:
+        if self in FiscalYear(self.year):
             return self.year
+        elif self in FiscalYear(self.year + 1):
+            return self.year + 1
+        elif self in FiscalYear(self.year - 1):
+            return self.year - 1
 
     @property
-    def prev_quarter_fiscal_year(self):
-        """Returns the fiscal year of the previous quarter."""
+    def prev_fiscal_year(self):
+        """Returns the previous fiscal year."""
 
-        fiscal_year = self.fiscal_year
-        if self.quarter == 1:
-            fiscal_year -= 1
-
-        return fiscal_year
+        return FiscalYear(self.fiscal_year - 1)
 
     @property
-    def next_quarter_fiscal_year(self):
-        """Returns the fiscal year of the next quarter."""
+    def next_fiscal_year(self):
+        """Returns the next fiscal year."""
 
-        fiscal_year = self.fiscal_year
-        if self.quarter == 4:
-            fiscal_year += 1
-
-        return fiscal_year
+        return FiscalYear(self.fiscal_year + 1)
 
     @property
     def quarter(self):
         """Returns the quarter of the fiscal year."""
 
-        month = self.month
-        month -= START_MONTH
-        if month < 0:
-            month += 12
-        quarter = month // MONTHS_PER_QUARTER + 1
-
-        return quarter
+        for quarter in range(1, 5):
+            q = FiscalQuarter(self.fiscal_year, quarter)
+            if self in q:
+                return quarter
 
     @property
     def prev_quarter(self):
@@ -614,7 +589,7 @@ class FiscalDate(datetime.date):
         if quarter == 0:
             quarter = 4
 
-        return quarter
+        return FiscalQuarter(quarter)
 
     @property
     def next_quarter(self):
@@ -624,4 +599,4 @@ class FiscalDate(datetime.date):
         if quarter == 5:
             quarter = 1
 
-        return quarter
+        return FiscalQuarter(quarter)

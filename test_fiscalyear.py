@@ -432,6 +432,3 @@ class TestFiscalDate:
 
         assert a.fiscal_year == 2017
         assert a.quarter == 2
-
-    def test_repr(self, a):
-        assert repr(a) == 'fiscalyear.FiscalDate(2017, 1, 1)'
