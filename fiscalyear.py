@@ -539,9 +539,10 @@ class FiscalQuarter(object):
                 type(self).__name__, type(other).__name__))
 
 
-class FiscalDate(datetime.date):
-    """Wrapper around datetime.date that provides the following
-    additional features:
+class FiscalBase:
+    """The base class for FiscalDate and FiscalDateTime that
+    provides the following common attributes in addition to
+    those provided by datetime.date and datetime.datetime:
 
     Attributes:
         fiscal_year: the fiscal year    [int]
@@ -600,3 +601,11 @@ class FiscalDate(datetime.date):
             quarter = 1
 
         return FiscalQuarter(quarter)
+
+
+class FiscalDate(datetime.date, FiscalBase):
+    pass
+
+
+class FiscalDateTime(datetime.datetime, FiscalBase):
+    pass
