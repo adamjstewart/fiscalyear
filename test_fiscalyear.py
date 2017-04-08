@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 import datetime
 import fiscalyear
 import pytest
@@ -182,9 +184,18 @@ class TestFiscalYear:
     def test_q4(self, a):
         assert a.q4 == fiscalyear.FiscalQuarter(2016, 4)
 
-    def test_contains(self, a, b, d):
+    def test_contains(self, a, b, c, d):
+        assert b in c
         assert d not in a
         assert d in b
+
+        assert fiscalyear.FiscalDateTime(2016, 1, 1, 0, 0, 0) in a
+        assert datetime.datetime(2016, 1, 1, 0, 0, 0) in a
+        assert fiscalyear.FiscalDate(2016, 1, 1) in a
+        assert datetime.date(2016, 1, 1) in a
+
+        with pytest.raises(TypeError):
+            'hello world' in a
 
     def test_less_than(self, a, b):
         assert a < b
@@ -370,6 +381,18 @@ class TestFiscalQuarter:
 
         with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert e.end == datetime.datetime(2018, 4, 5, 23, 59, 59)
+
+    def test_contains(self, a, f, g):
+        assert a not in f
+        assert f in g
+
+        assert fiscalyear.FiscalDateTime(2016, 8, 1, 0, 0, 0) in a
+        assert datetime.datetime(2016, 8, 1, 0, 0, 0) in a
+        assert fiscalyear.FiscalDate(2016, 8, 1) in a
+        assert datetime.date(2016, 8, 1) in a
+
+        with pytest.raises(TypeError):
+            fiscalyear.FiscalYear(2016) in a
 
     def test_less_than(self, a, b, c, d, e, f):
         assert a < b < c < d < e < f

@@ -211,11 +211,13 @@ class FiscalYear(object):
         """Returns True if item in self, else False.
 
         :param item: The item to check
-        :type item: FiscalQuarter, FiscalDate, FiscalDateTime,
-            date, or datetime
+        :type item: FiscalYear, FiscalQuarter, FiscalDateTime,
+            datetime, FiscalDate, or date
         :rtype: bool
         """
-        if isinstance(item, FiscalQuarter):
+        if isinstance(item, FiscalYear):
+            return self == item
+        elif isinstance(item, FiscalQuarter):
             return self._fiscal_year == item.fiscal_year
         elif (isinstance(item, FiscalDateTime) or
               isinstance(item, datetime.datetime)):
@@ -225,7 +227,7 @@ class FiscalYear(object):
             return self.start.date() <= item <= self.end.date()
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+                type(self).__name__, type(item).__name__))
 
     # Read-only field accessors
 
@@ -400,18 +402,21 @@ class FiscalQuarter(object):
         """Returns True if item in self, else False.
 
         :param item: The item to check
-        :type item: FiscalDate, FiscalDateTime, date, or datetime
+        :type item: FiscalQuarter, FiscalDateTime, datetime,
+            FiscalDate, or date
         :rtype: bool
         """
-        if (isinstance(item, FiscalDateTime) or
-            isinstance(item, datetime.datetime)):
+        if isinstance(item, FiscalQuarter):
+            return self == item
+        elif (isinstance(item, FiscalDateTime) or
+              isinstance(item, datetime.datetime)):
             return self.start <= item <= self.end
         elif (isinstance(item, FiscalDate) or
               isinstance(item, datetime.date)):
             return self.start.date() <= item <= self.end.date()
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+                type(self).__name__, type(item).__name__))
 
     # Read-only field accessors
 
