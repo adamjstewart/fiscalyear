@@ -9,4 +9,4 @@ python:
   - 3.5
   - 3.6
 
-script: pytest
+script: py.test
