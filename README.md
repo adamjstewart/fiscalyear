@@ -1,6 +1,8 @@
 # fiscalyear
 :calendar: Utilities for managing the fiscal calendar
 
+[![Build Status](https://travis-ci.org/adamjstewart/fiscalyear.svg?branch=master)](https://travis-ci.org/adamjstewart/fiscalyear)
+
 ## Overview
 
 [fiscalyear](https://github.com/adamjstewart/fiscalyear) is a small, lightweight Python module providing helpful utilities for managing the fiscal calendar. It is designed as an extension of the built-in [datetime](https://docs.python.org/3/library/datetime.html) and [calendar](https://docs.python.org/3/library/calendar.html) modules, adding the ability to query the fiscal year and fiscal quarter of a date or datetime object.
