@@ -42,5 +42,7 @@ setuptools.setup(
         'Topic :: Office/Business :: Scheduling',
     ],
     keywords=['fiscal year', 'fiscal quarter', 'calendar', 'datetime'],
-    py_modules='fiscalyear'
+    py_modules=['fiscalyear'],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
 )
