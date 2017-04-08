@@ -190,11 +190,10 @@ class FiscalYear(object):
 
         >>> fy = FiscalYear(2017)
         >>> repr(fy)
-        'fiscalyear.FiscalYear(2017)'
+        'FiscalYear(2017)'
         """
-        return '%s.%s(%d)' % (self.__class__.__module__,
-                              self.__class__.__name__,
-                              self._fiscal_year)
+        return '%s(%d)' % (self.__class__.__name__,
+                           self._fiscal_year)
 
     def __str__(self):
         """Convert to informal string, for str().
@@ -378,12 +377,11 @@ class FiscalQuarter(object):
 
         >>> q3 = FiscalQuarter(2017, 3)
         >>> repr(q3)
-        'fiscalyear.FiscalQuarter(2017, 3)'
+        'FiscalQuarter(2017, 3)'
         """
-        return '%s.%s(%d, %d)' % (self.__class__.__module__,
-                                  self.__class__.__name__,
-                                  self._fiscal_year,
-                                  self._quarter)
+        return '%s(%d, %d)' % (self.__class__.__name__,
+                               self._fiscal_year,
+                               self._quarter)
 
     def __str__(self):
         """Convert to informal string, for str().
@@ -453,7 +451,7 @@ class FiscalQuarter(object):
     def start(self):
         """Start of the fiscal quarter.
 
-        :rtype: datetime.datetime
+        :rtype: fiscalyear.FiscalDateTime
         """
         # Find the first month of the fiscal quarter
         month = START_MONTH
@@ -474,19 +472,23 @@ class FiscalQuarter(object):
         if month < START_MONTH:
             year += 1
 
-        return datetime.datetime(year, month, START_DAY, 0, 0, 0)
+        return FiscalDateTime(year, month, START_DAY, 0, 0, 0)
 
     @property
     def end(self):
         """End of the fiscal quarter.
 
-        :rtype: datetime.datetime
+        :rtype: fiscalyear.FiscalDateTime
         """
         # Find the start of the next fiscal quarter
         next_start = self.next_quarter.start
 
         # Substract 1 second
-        return next_start - datetime.timedelta(seconds=1)
+        end = next_start - datetime.timedelta(seconds=1)
+
+        return FiscalDateTime(end.year, end.month, end.day,
+                              end.hour, end.minute, end.second,
+                              end.microsecond, end.tzinfo)
 
     # Comparisons of FiscalQuarter objects with other
 

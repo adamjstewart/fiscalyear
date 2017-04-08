@@ -124,7 +124,7 @@ class TestFiscalYear:
         assert a.fiscal_year == 2016
 
     def test_repr(self, a):
-        assert repr(a) == 'fiscalyear.FiscalYear(2016)'
+        assert repr(a) == 'FiscalYear(2016)'
 
     def test_str(self, a):
         assert str(a) == 'FY2016'
@@ -258,7 +258,7 @@ class TestFiscalQuarter:
         assert a.quarter == 4
 
     def test_repr(self, a):
-        assert repr(a) == 'fiscalyear.FiscalQuarter(2016, 4)'
+        assert repr(a) == 'FiscalQuarter(2016, 4)'
 
     def test_str(self, a):
         assert str(a) == 'FY2016 Q4'
