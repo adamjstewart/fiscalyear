@@ -455,3 +455,75 @@ class TestFiscalDate:
 
         assert a.fiscal_year == 2017
         assert a.quarter == 2
+
+    def test_fiscal_year(self, a, c):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
+            assert a.fiscal_year == 2017
+            assert c.fiscal_year == 2018
+
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
+            assert a.fiscal_year == 2016
+            assert c.fiscal_year == 2017
+
+    def test_prev_fiscal_year(self, a):
+        assert a.prev_fiscal_year == fiscalyear.FiscalYear(2016)
+
+    def test_next_fiscal_year(self, a):
+        assert a.next_fiscal_year == fiscalyear.FiscalYear(2018)
+
+    def test_prev_quarter(self, a, c):
+        assert a.prev_quarter == fiscalyear.FiscalQuarter(2017, 1)
+        assert c.prev_quarter == fiscalyear.FiscalQuarter(2017, 4)
+
+    def test_next_quarter(self, a, c):
+        assert a.next_quarter == fiscalyear.FiscalQuarter(2017, 3)
+        assert c.next_quarter == fiscalyear.FiscalQuarter(2018, 2)
+
+
+class TestFiscalDateTime:
+
+    @pytest.fixture(scope='class')
+    def a(self):
+        return fiscalyear.FiscalDateTime(2017, 1, 1, 0, 0, 0)
+
+    @pytest.fixture(scope='class')
+    def b(self):
+        return fiscalyear.FiscalDateTime(2017, 8, 31, 23, 59, 59)
+
+    @pytest.fixture(scope='class')
+    def c(self):
+        return fiscalyear.FiscalDateTime(2017, 11, 15, 12, 4, 30)
+
+    def test_basic(self, a):
+        assert a.year == 2017
+        assert a.month == 1
+        assert a.day == 1
+        assert a.hour == 0
+        assert a.minute == 0
+        assert a.second == 0
+
+        assert a.fiscal_year == 2017
+        assert a.quarter == 2
+
+    def test_fiscal_year(self, a, c):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
+            assert a.fiscal_year == 2017
+            assert c.fiscal_year == 2018
+
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
+            assert a.fiscal_year == 2016
+            assert c.fiscal_year == 2017
+
+    def test_prev_fiscal_year(self, a):
+        assert a.prev_fiscal_year == fiscalyear.FiscalYear(2016)
+
+    def test_next_fiscal_year(self, a):
+        assert a.next_fiscal_year == fiscalyear.FiscalYear(2018)
+
+    def test_prev_quarter(self, a, c):
+        assert a.prev_quarter == fiscalyear.FiscalQuarter(2017, 1)
+        assert c.prev_quarter == fiscalyear.FiscalQuarter(2017, 4)
+
+    def test_next_quarter(self, a, c):
+        assert a.next_quarter == fiscalyear.FiscalQuarter(2017, 3)
+        assert c.next_quarter == fiscalyear.FiscalQuarter(2018, 2)

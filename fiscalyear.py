@@ -593,21 +593,17 @@ class FiscalBase:
     def prev_quarter(self):
         """Returns the previous quarter."""
 
-        quarter = self.quarter - 1
-        if quarter == 0:
-            quarter = 4
+        quarter = FiscalQuarter(self.fiscal_year, self.quarter)
 
-        return FiscalQuarter(quarter)
+        return quarter.prev_quarter
 
     @property
     def next_quarter(self):
         """Returns the next quarter."""
 
-        quarter = self.quarter + 1
-        if quarter == 5:
-            quarter = 1
+        quarter = FiscalQuarter(self.fiscal_year, self.quarter)
 
-        return FiscalQuarter(quarter)
+        return quarter.next_quarter
 
 
 class FiscalDate(datetime.date, FiscalBase):
