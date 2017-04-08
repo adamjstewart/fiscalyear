@@ -4,11 +4,11 @@ import pytest
 
 
 # Fiscal calendars to test
-UNITED_STATES = ('previous', 10, 1)
-UNITED_KINGDOM = ('same', 4, 6)
+US_FEDERAL = ('previous', 10, 1)
+UK_PERSONAL = ('same', 4, 6)
 
 # Default to U.S.
-fiscalyear.START_YEAR, fiscalyear.START_MONTH, fiscalyear.START_DAY = UNITED_STATES
+fiscalyear.START_YEAR, fiscalyear.START_MONTH, fiscalyear.START_DAY = US_FEDERAL
 
 
 class TestFiscalCalendar:
@@ -155,19 +155,19 @@ class TestFiscalYear:
     def test_start(self, a):
         assert a.start == a.q1.start
 
-        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert a.start == datetime.datetime(2015, 10, 1, 0, 0, 0)
 
-        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert a.start == datetime.datetime(2016, 4, 6, 0, 0, 0)
 
     def test_end(self, a):
         assert a.end == a.q4.end
 
-        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert a.end == datetime.datetime(2016, 9, 30, 23, 59, 59)
 
-        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert a.end == datetime.datetime(2017, 4, 5, 23, 59, 59)
 
     def test_q1(self, a):
@@ -316,59 +316,59 @@ class TestFiscalQuarter:
         fiscalyear.START_YEAR = backup_start_year
 
     def test_q1_start(self, b):
-        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert b.start == datetime.datetime(2016, 10, 1, 0, 0, 0)
 
-        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert b.start == datetime.datetime(2017, 4, 6, 0, 0, 0)
 
     def test_q1_end(self, b):
-        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert b.end == datetime.datetime(2016, 12, 31, 23, 59, 59)
 
-        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert b.end == datetime.datetime(2017, 7, 5, 23, 59, 59)
 
     def test_q2_start(self, c):
-        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert c.start == datetime.datetime(2017, 1, 1, 0, 0, 0)
 
-        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert c.start == datetime.datetime(2017, 7, 6, 0, 0, 0)
 
     def test_q2_end(self, c):
-        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert c.end == datetime.datetime(2017, 3, 31, 23, 59, 59)
 
-        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert c.end == datetime.datetime(2017, 10, 5, 23, 59, 59)
 
     def test_q3_start(self, d):
-        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert d.start == datetime.datetime(2017, 4, 1, 0, 0, 0)
 
-        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert d.start == datetime.datetime(2017, 10, 6, 0, 0, 0)
 
     def test_q3_end(self, d):
-        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert d.end == datetime.datetime(2017, 6, 30, 23, 59, 59)
 
-        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert d.end == datetime.datetime(2018, 1, 5, 23, 59, 59)
 
     def test_q4_start(self, e):
-        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert e.start == datetime.datetime(2017, 7, 1, 0, 0, 0)
 
-        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert e.start == datetime.datetime(2018, 1, 6, 0, 0, 0)
 
     def test_q4_end(self, e):
-        with fiscalyear.fiscal_calendar(*UNITED_STATES):
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert e.end == datetime.datetime(2017, 9, 30, 23, 59, 59)
 
-        with fiscalyear.fiscal_calendar(*UNITED_KINGDOM):
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert e.end == datetime.datetime(2018, 4, 5, 23, 59, 59)
 
     def test_less_than(self, a, b, c, d, e, f):
