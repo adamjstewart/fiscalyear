@@ -2,6 +2,7 @@
 :calendar: Utilities for managing the fiscal calendar
 
 [![Build Status](https://travis-ci.org/adamjstewart/fiscalyear.svg?branch=master)](https://travis-ci.org/adamjstewart/fiscalyear)
+[![codecov](https://codecov.io/gh/adamjstewart/fiscalyear/branch/master/graph/badge.svg)](https://codecov.io/gh/adamjstewart/fiscalyear)
 
 ## Overview
 
