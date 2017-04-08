@@ -9,3 +9,5 @@ python:
   - 3.6
 
 script: py.test --cov=fiscalyear
+
+after_success: codecov
