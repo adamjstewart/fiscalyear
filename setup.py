@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
+import fiscalyear
 import setuptools
 
 
 setuptools.setup(
-    name='fiscalyear',
-    version='0.1.0',
+    name=fiscalyear.__name__,
+    version=fiscalyear.__version__,
     description='Utilities for managing the fiscal calendar',
     long_description='',
     url='https://github.com/adamjstewart/fiscalyear',
-    author='Adam J. Stewart',
+    author=fiscalyear.__author__,
     author_email='ajstewart426@gmail.com',
     license='MIT',
     classifiers=[
@@ -42,7 +43,7 @@ setuptools.setup(
         'Topic :: Office/Business :: Scheduling',
     ],
     keywords=['fiscal year', 'fiscal quarter', 'calendar', 'datetime'],
-    py_modules=['fiscalyear'],
+    py_modules=[fiscalyear.__name__],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
 )

@@ -2,6 +2,9 @@
 
 from __future__ import division, with_statement
 
+__author__ = 'Adam J. Stewart'
+__version__ = '0.1.0'
+
 import calendar
 import contextlib
 import datetime
@@ -546,7 +549,7 @@ class FiscalQuarter(object):
                 type(self).__name__, type(other).__name__))
 
 
-class FiscalBase:
+class _FiscalBase:
     """The base class for FiscalDate and FiscalDateTime that
     provides the following common attributes in addition to
     those provided by datetime.date and datetime.datetime:
@@ -606,9 +609,9 @@ class FiscalBase:
         return quarter.next_quarter
 
 
-class FiscalDate(datetime.date, FiscalBase):
+class FiscalDate(datetime.date, _FiscalBase):
     pass
 
 
-class FiscalDateTime(datetime.datetime, FiscalBase):
+class FiscalDateTime(datetime.datetime, _FiscalBase):
     pass
