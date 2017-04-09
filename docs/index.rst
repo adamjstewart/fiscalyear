@@ -10,9 +10,13 @@ fiscalyear
 
    basic_usage
    advanced_usage
+   installation
 
 .. toctree::
    :maxdepth: 2
    :caption: Developer Documentation
 
+   testing
+   coverage
+   documentation
    fiscalyear

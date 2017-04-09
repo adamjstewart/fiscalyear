@@ -82,55 +82,13 @@ FiscalYear(2016)
 
 ## Installation
 
-`fiscalyear` has no dependencies, making it simple and easy to install. There are multiple ways you can install the `fiscalyear` module.
-
-### pip
-
-The recommended way to install `fiscalyear` is through `pip`.
+`fiscalyear` has no dependencies, making it simple and easy to install. The recommended way to install `fiscalyear` is with `pip`.
 
 ```bash
 $ pip install fiscalyear
 ```
 
-The `fiscalyear` module will now appear with your base Python installation.
-
-### Spack
-
-If you work in an HPC environment, the [Spack](https://spack.io/) package manager can be used to install `fiscalyear` as well.
-
-```bash
-$ spack install py-fiscalyear
-$ spack activate py-fiscalyear
-$ module load python
-```
-
-The resulting module file will automatically add `fiscalyear` to your `PYTHONPATH`. See the [Spack documentation](https://spack.readthedocs.io/en/latest/) to get started.
-
-### source
-
-If you're up for it, you can also install `fiscalyear` from source. Simply clone the repository.
-
-```bash
-$ git clone https://github.com/adamjstewart/fiscalyear.git
-```
-
-Now build the module.
-
-```bash
-$ python setup.py build
-```
-
-At this point, you can optionally run the unit tests to make sure everything is working properly. This requires [pytest](https://docs.pytest.org/en/latest/) for unit testing.
-
-```bash
-$ python setup.py test
-```
-
-Finally, install the package to somewhere in your `PYTHONPATH`.
-
-```bash
-$ python setup.py install --prefix=/path/to/install/to
-```
+For alternate installation methods, see the [Installation Documentation](http://fiscalyear.readthedocs.io/en/latest/installation.html).
 
 ## Documentation
 
