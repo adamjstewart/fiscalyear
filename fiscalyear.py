@@ -29,15 +29,18 @@ def fiscal_calendar(start_year=None,
                     start_month=None,
                     start_day=None):
     """A context manager that lets you modify the start of the fiscal calendar
-    inside the scope of a with-statement only.
+    inside the scope of a with-statement.
 
     :param start_year: Relationship between the start of the fiscal year and
-        the calendar year. Possible values: 'previous' or 'same'.
+        the calendar year. Possible values: ``'previous'`` or ``'same'``.
     :type start_year: str
     :param start_month: The first month of the fiscal year
     :type start_month: int or str
     :param start_day: The first day of the first month of the fiscal year
     :type start_day: int or str
+    :raises AssertionError: If ``start_year`` is not ``'previous'`` or ``'same'``
+    :raises TypeError: If ``start_month`` or ``start_day`` is not an int or int-like string
+    :raises ValueError: If ``start_month`` or ``start_day`` is out of range
     """
     global START_YEAR
     global START_MONTH
@@ -236,72 +239,63 @@ class FiscalYear(object):
 
     @property
     def fiscal_year(self):
-        """The fiscal year.
-
+        """:returns: The fiscal year
         :rtype: int
         """
         return self._fiscal_year
 
     @property
     def prev_fiscal_year(self):
-        """The previous fiscal year.
-
+        """:returns: The previous fiscal year
         :rtype: FiscalYear
         """
         return FiscalYear(self._fiscal_year - 1)
 
     @property
     def next_fiscal_year(self):
-        """The next fiscal year.
-
+        """:returns: The next fiscal year
         :rtype: FiscalYear
         """
         return FiscalYear(self._fiscal_year + 1)
 
     @property
     def start(self):
-        """Start of the fiscal year.
-
-        :rtype: datetime.datetime
+        """:returns: Start of the fiscal year
+        :rtype: FiscalDateTime
         """
         return self.q1.start
 
     @property
     def end(self):
-        """End of the fiscal year.
-
-        :rtype: datetime.datetime
+        """:returns: End of the fiscal year
+        :rtype: FiscalDateTime
         """
         return self.q4.end
 
     @property
     def q1(self):
-        """The first quarter of the fiscal year.
-
+        """:returns: The first quarter of the fiscal year
         :rtype: FiscalQuarter
         """
         return FiscalQuarter(self._fiscal_year, 1)
 
     @property
     def q2(self):
-        """The second quarter of the fiscal year.
-
+        """:returns: The second quarter of the fiscal year
         :rtype: FiscalQuarter
         """
         return FiscalQuarter(self._fiscal_year, 2)
 
     @property
     def q3(self):
-        """The third quarter of the fiscal year.
-
+        """:returns: The third quarter of the fiscal year
         :rtype: FiscalQuarter
         """
         return FiscalQuarter(self._fiscal_year, 3)
 
     @property
     def q4(self):
-        """The fourth quarter of the fiscal year.
-
+        """:returns: The fourth quarter of the fiscal year
         :rtype: FiscalQuarter
         """
         return FiscalQuarter(self._fiscal_year, 4)
@@ -425,17 +419,23 @@ class FiscalQuarter(object):
 
     @property
     def fiscal_year(self):
-        """Fiscal year."""
+        """:returns: The fiscal year
+        :rtype: int
+        """
         return self._fiscal_year
 
     @property
     def quarter(self):
-        """Fiscal quarter."""
+        """:returns: The fiscal quarter
+        :rtype: int
+        """
         return self._quarter
 
     @property
     def prev_quarter(self):
-        """The previous fiscal quarter."""
+        """:returns: The previous fiscal quarter
+        :rtype: FiscalQuarter
+        """
         fiscal_year = self._fiscal_year
         quarter = self._quarter - 1
         if quarter == 0:
@@ -446,7 +446,9 @@ class FiscalQuarter(object):
 
     @property
     def next_quarter(self):
-        """The next fiscal quarter."""
+        """:returns: The next fiscal quarter
+        :rtype: int
+        """
         fiscal_year = self._fiscal_year
         quarter = self._quarter + 1
         if quarter == 5:
@@ -457,10 +459,10 @@ class FiscalQuarter(object):
 
     @property
     def start(self):
-        """Start of the fiscal quarter.
-
-        :rtype: fiscalyear.FiscalDateTime
+        """:returns: The start of the fiscal quarter
+        :rtype: FiscalDateTime
         """
+
         # Find the first month of the fiscal quarter
         month = START_MONTH
         month += (self._quarter - 1) * MONTHS_PER_QUARTER
@@ -484,9 +486,8 @@ class FiscalQuarter(object):
 
     @property
     def end(self):
-        """End of the fiscal quarter.
-
-        :rtype: fiscalyear.FiscalDateTime
+        """:returns: The end of the fiscal quarter
+        :rtype: FiscalDateTime
         """
         # Find the start of the next fiscal quarter
         next_start = self.next_quarter.start
@@ -553,15 +554,13 @@ class _FiscalBase:
     """The base class for FiscalDate and FiscalDateTime that
     provides the following common attributes in addition to
     those provided by datetime.date and datetime.datetime:
-
-    Attributes:
-        fiscal_year: the fiscal year    [int]
-        quarter:     the fiscal quarter [int: 1-4]
     """
 
     @property
     def fiscal_year(self):
-        """Returns the fiscal year."""
+        """:returns: The fiscal year
+        :rtype: int
+        """
 
         # The fiscal year can be at most 1 year away from the calendar year
         if self in FiscalYear(self.year):
@@ -573,20 +572,23 @@ class _FiscalBase:
 
     @property
     def prev_fiscal_year(self):
-        """Returns the previous fiscal year."""
-
+        """:returns: The previous fiscal year
+        :rtype: FiscalYear
+        """
         return FiscalYear(self.fiscal_year - 1)
 
     @property
     def next_fiscal_year(self):
-        """Returns the next fiscal year."""
-
+        """:returns: The next fiscal year
+        :rtype: FiscalYear
+        """
         return FiscalYear(self.fiscal_year + 1)
 
     @property
     def quarter(self):
-        """Returns the quarter of the fiscal year."""
-
+        """:returns: The quarter of the fiscal year
+        :rtype: int
+        """
         for quarter in range(1, 5):
             q = FiscalQuarter(self.fiscal_year, quarter)
             if self in q:
@@ -594,24 +596,30 @@ class _FiscalBase:
 
     @property
     def prev_quarter(self):
-        """Returns the previous quarter."""
-
+        """:returns: The previous quarter
+        :rtype: FiscalQuarter
+        """
         quarter = FiscalQuarter(self.fiscal_year, self.quarter)
 
         return quarter.prev_quarter
 
     @property
     def next_quarter(self):
-        """Returns the next quarter."""
-
+        """:returns: The next quarter
+        :rtype: FiscalQuarter
+        """
         quarter = FiscalQuarter(self.fiscal_year, self.quarter)
 
         return quarter.next_quarter
 
 
 class FiscalDate(datetime.date, _FiscalBase):
+    """A wrapper around the builtin datetime.date class
+    that provides the following attributes."""
     pass
 
 
 class FiscalDateTime(datetime.datetime, _FiscalBase):
+    """A wrapper around the builtin datetime.datetime class
+    that provides the following attributes."""
     pass
