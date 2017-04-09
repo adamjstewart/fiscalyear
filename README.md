@@ -134,4 +134,4 @@ $ python setup.py install --prefix=/path/to/install/to
 
 ## Documentation
 
-:construction: Coming Soon! :construction:
+Documentation is hosted on [Read the Docs](http://fiscalyear.readthedocs.io/en/latest/index.html).
