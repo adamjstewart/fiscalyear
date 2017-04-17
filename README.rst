@@ -9,6 +9,9 @@ Utilities for managing the fiscal calendar
 .. image:: https://codecov.io/gh/adamjstewart/fiscalyear/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/adamjstewart/fiscalyear
 
+.. image:: https://readthedocs.org/projects/fiscalyear/badge/?version=latest
+   :target: https://fiscalyear.readthedocs.io
+
 
 Overview
 ========
