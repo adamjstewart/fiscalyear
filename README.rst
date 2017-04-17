@@ -1,8 +1,3 @@
-fiscalyear
-**********
-
-Utilities for managing the fiscal calendar
-
 .. image:: https://travis-ci.org/adamjstewart/fiscalyear.svg?branch=master
    :target: https://travis-ci.org/adamjstewart/fiscalyear
 
