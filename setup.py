@@ -4,11 +4,15 @@ import fiscalyear
 import setuptools
 
 
+with open('README.rst') as readme:
+    long_description = readme.read()
+
+
 setuptools.setup(
     name=fiscalyear.__name__,
     version=fiscalyear.__version__,
     description='Utilities for managing the fiscal calendar',
-    long_description='',
+    long_description=long_description,
     url='https://github.com/adamjstewart/fiscalyear',
     author=fiscalyear.__author__,
     author_email='ajstewart426@gmail.com',
