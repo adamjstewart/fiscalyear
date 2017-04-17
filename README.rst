@@ -99,7 +99,7 @@ If you don't care about the time component of the ``FiscalDateTime`` class, the 
 Installation
 ============
 
-`fiscalyear` has no dependencies, making it simple and easy to install. The recommended way to install `fiscalyear` is with `pip`.
+``fiscalyear`` has no dependencies, making it simple and easy to install. The recommended way to install ``fiscalyear`` is with ``pip``.
 
 .. code-block:: console
 
