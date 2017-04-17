@@ -19,7 +19,7 @@ setuptools.setup(
     license='MIT',
     classifiers=[
         # Project maturity
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
 
         # Intended audience
         'Intended Audience :: Financial and Insurance Industry',
