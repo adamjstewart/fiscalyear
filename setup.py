@@ -14,6 +14,7 @@ setuptools.setup(
     description='Utilities for managing the fiscal calendar',
     long_description=long_description,
     url='https://github.com/adamjstewart/fiscalyear',
+    download_url='https://github.com/adamjstewart/fiscalyear/archive/v0.1.0.tar.gz',
     author=fiscalyear.__author__,
     author_email='ajstewart426@gmail.com',
     license='MIT',
