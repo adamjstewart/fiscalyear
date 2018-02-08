@@ -114,6 +114,16 @@ class TestCalendarSettingsValidator(object):
         with pytest.raises(exception):
             fiscalyear.validate_fiscal_calendar_params(**arguments)
 
+    @pytest.mark.parametrize("arguments", [
+        dict(start_year='same', start_month=1, start_day=1),
+        dict(start_year='same', start_month=1, start_day=31),
+        dict(start_year='same', start_month=12, start_day=1),
+        dict(start_year='previous', start_month=1, start_day=1),
+        dict(start_year='previous', start_month=1, start_day=31),
+        dict(start_year='previous', start_month=12, start_day=1),
+    ])
+    def test_valid_input(self, arguments):
+        fiscalyear.validate_fiscal_calendar_params(**arguments)
 
 def test_setup_fiscal_calendar():
     # test defaults
