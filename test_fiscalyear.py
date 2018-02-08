@@ -9,8 +9,6 @@ import pytest
 US_FEDERAL = ('previous', 10, 1)
 UK_PERSONAL = ('same', 4, 6)
 
-# Default to U.S.
-fiscalyear.START_YEAR, fiscalyear.START_MONTH, fiscalyear.START_DAY = US_FEDERAL
 
 
 class TestCheckInt(object):
