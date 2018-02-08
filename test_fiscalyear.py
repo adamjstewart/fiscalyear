@@ -10,7 +10,6 @@ US_FEDERAL = ('previous', 10, 1)
 UK_PERSONAL = ('same', 4, 6)
 
 
-
 class TestCheckInt(object):
     @pytest.mark.parametrize("value, exception", [
         ('asdf', TypeError),
@@ -89,6 +88,51 @@ class TestCheckQuarter(object):
     @pytest.mark.parametrize("value", [1, 2, "1", "4"])
     def test_valid_input(self, value):
         assert int(value) == fiscalyear._check_quarter(value)
+
+
+class TestCalendarSettingsValidator(object):
+    @pytest.mark.parametrize("arguments, exception", [
+        (dict(start_year='asdf', start_month=12, start_day=1), ValueError),
+        (dict(start_year=float(1999), start_month=12, start_day=1), TypeError),
+        (dict(start_year=object(), start_month=12, start_day=1), TypeError),
+        #
+        (dict(start_year='same', start_month='asdf', start_day=1), TypeError),
+        (dict(start_year='same', start_month=float(12), start_day=1), TypeError),
+        (dict(start_year='same', start_month=object(), start_day=1), TypeError),
+        (dict(start_year='same', start_month=-1, start_day=1), ValueError),
+        (dict(start_year='same', start_month=0, start_day=1), ValueError),
+        (dict(start_year='same', start_month=13, start_day=1), ValueError),
+        #
+        (dict(start_year='same', start_month=12, start_day='asdf'), TypeError),
+        (dict(start_year='same', start_month=12, start_day=float(1)), TypeError),
+        (dict(start_year='same', start_month=12, start_day=object()), TypeError),
+        (dict(start_year='same', start_month=12, start_day=0), ValueError),
+        (dict(start_year='same', start_month=12, start_day=-1), ValueError),
+        (dict(start_year='same', start_month=12, start_day=32), ValueError),
+    ])
+    def test_invalid_input(self, arguments, exception):
+        with pytest.raises(exception):
+            fiscalyear.validate_fiscal_calendar_params(**arguments)
+
+
+def test_setup_fiscal_calendar():
+    # test defaults
+    day =  fiscalyear.FiscalDate(2017, 12, 1)
+    assert day.fiscal_year == 2018
+    assert day.quarter == 1
+
+    # change fiscal year settings
+    fiscalyear.setup_fiscal_calendar("same", 1, 1)
+    assert day.fiscal_year == 2017
+    assert day.quarter == 4
+
+    # restore defaults and re-test
+    fiscalyear.setup_fiscal_calendar("previous", 10, 1)
+    assert day.fiscal_year == 2018
+    assert day.quarter == 1
+
+
+
 class TestFiscalCalendar:
 
     def test_start_year(self):
@@ -162,6 +206,10 @@ class TestFiscalCalendar:
         assert fiscalyear.START_DAY == 1
 
     def test_wrong_type(self):
+        with pytest.raises(TypeError):
+            with fiscalyear.fiscal_calendar(start_year=6.5):
+                pass
+
         with pytest.raises(TypeError):
             with fiscalyear.fiscal_calendar(start_month=6.5):
                 pass
