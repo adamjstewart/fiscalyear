@@ -13,6 +13,22 @@ UK_PERSONAL = ('same', 4, 6)
 fiscalyear.START_YEAR, fiscalyear.START_MONTH, fiscalyear.START_DAY = US_FEDERAL
 
 
+class TestCheckInt(object):
+    @pytest.mark.parametrize("value, exception", [
+        ('asdf', TypeError),
+        ("-999", TypeError),                # Shouldn't this be valid?
+        (float(), TypeError),
+        (object(), TypeError),
+    ])
+    def test_invalid_input(self, value, exception):
+        with pytest.raises(exception):
+            fiscalyear._check_int(value)
+
+    @pytest.mark.parametrize("value", [1, 2, 0, -1, -2, "1", "0", "999"])
+    def test_valid_input(self, value):
+        assert int(value) == fiscalyear._check_int(value)
+
+
 class TestFiscalCalendar:
 
     def test_start_year(self):
