@@ -230,11 +230,9 @@ class FiscalYear(object):
             return self == item
         elif isinstance(item, FiscalQuarter):
             return self._fiscal_year == item.fiscal_year
-        elif (isinstance(item, FiscalDateTime) or
-              isinstance(item, datetime.datetime)):
+        elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
-        elif (isinstance(item, FiscalDate) or
-              isinstance(item, datetime.date)):
+        elif isinstance(item, datetime.date):
             return self.start.date() <= item <= self.end.date()
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
@@ -410,11 +408,9 @@ class FiscalQuarter(object):
         """
         if isinstance(item, FiscalQuarter):
             return self == item
-        elif (isinstance(item, FiscalDateTime) or
-              isinstance(item, datetime.datetime)):
+        elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
-        elif (isinstance(item, FiscalDate) or
-              isinstance(item, datetime.date)):
+        elif isinstance(item, datetime.date):
             return self.start.date() <= item <= self.end.date()
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
