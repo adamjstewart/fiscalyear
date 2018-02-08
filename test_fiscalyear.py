@@ -50,6 +50,26 @@ class TestCheckYear(object):
         assert int(value) == fiscalyear._check_year(value)
 
 
+class TestCheckDay(object):
+    @pytest.mark.parametrize("month, day, exception", [
+        (1, 'asdf', TypeError),
+        (1, "-999", TypeError),                # Shouldn't this be valid?
+        (1, float(), TypeError),
+        (1, object(), TypeError),
+        (1, -1, ValueError),
+        (1, "-1", TypeError),
+        (1, 0, ValueError),
+        (1, "0", ValueError),
+        (1, 32, ValueError),
+        (1, 32, ValueError),
+    ])
+    def test_invalid_input(self, month, day, exception):
+        with pytest.raises(exception):
+            fiscalyear._check_day(month, day)
+
+    @pytest.mark.parametrize("month, day", [(1, 1), (1, 2), (1, "1"), (1, 31), (1, "31")])
+    def test_valid_input(self, month, day):
+        assert int(day) == fiscalyear._check_day(month, day)
 class TestFiscalCalendar:
 
     def test_start_year(self):
