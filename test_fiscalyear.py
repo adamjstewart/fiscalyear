@@ -125,6 +125,12 @@ class TestFiscalYear:
     def test_basic(self, a):
         assert a.fiscal_year == 2016
 
+    def test_current(self, mocker):
+        mock_today = mocker.patch.object(fiscalyear.FiscalDate, 'today')
+        mock_today.return_value =  fiscalyear.FiscalDate(2016, 10, 1)
+        current = fiscalyear.FiscalYear.current()
+        assert current == fiscalyear.FiscalYear(2017)
+
     def test_repr(self, a):
         assert repr(a) == 'FiscalYear(2016)'
 
@@ -267,6 +273,12 @@ class TestFiscalQuarter:
     def test_basic(self, a):
         assert a.fiscal_year == 2016
         assert a.quarter == 4
+
+    def test_current(self, mocker):
+        mock_today = mocker.patch.object(fiscalyear.FiscalDate, 'today')
+        mock_today.return_value =  fiscalyear.FiscalDate(2016, 10, 1)
+        current = fiscalyear.FiscalQuarter.current()
+        assert current == fiscalyear.FiscalQuarter(2017, 1)
 
     def test_repr(self, a):
         assert repr(a) == 'FiscalQuarter(2016, 4)'

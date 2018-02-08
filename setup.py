@@ -50,5 +50,5 @@ setuptools.setup(
     keywords=['fiscal year', 'fiscal quarter', 'calendar', 'datetime'],
     py_modules=[fiscalyear.__name__],
     setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    tests_require=['pytest', 'pytest-mock'],
 )

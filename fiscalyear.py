@@ -191,6 +191,16 @@ class FiscalYear(object):
         self._fiscal_year = fiscal_year
         return self
 
+    @classmethod
+    def current(cls):
+        """ Alternartive constructor. Returns the current FiscalYear.
+
+        :returns: A newly constructed FiscalYear object
+        :rtype: FiscalYear
+        """
+        today = FiscalDate.today()
+        return cls(today.fiscal_year)
+
     def __repr__(self):
         """Convert to formal string, for repr().
 
@@ -370,6 +380,16 @@ class FiscalQuarter(object):
         self._fiscal_year = fiscal_year
         self._quarter = quarter
         return self
+
+    @classmethod
+    def current(cls):
+        """ Alternartive constructor. Returns the current FiscalQuarter.
+
+        :returns: A newly constructed FiscalQuarter object
+        :rtype: FiscalQuarter
+        """
+        today = FiscalDate.today()
+        return cls(today.fiscal_year, today.quarter)
 
     def __repr__(self):
         """Convert to formal string, for repr().
