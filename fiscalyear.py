@@ -24,8 +24,8 @@ START_MONTH = 10
 START_DAY = 1
 
 
-def validate_fiscal_calendar_params(start_year, start_month, start_day):
-    """ Raise an Exception if the calendar parameters are invalid.
+def _validate_fiscal_calendar_params(start_year, start_month, start_day):
+    """Raise an Exception if the calendar parameters are invalid.
 
     :param start_year: Relationship between the start of the fiscal year and
         the calendar year. Possible values: ``'previous'`` or ``'same'``.
@@ -47,7 +47,7 @@ def validate_fiscal_calendar_params(start_year, start_month, start_day):
 
 
 def setup_fiscal_calendar(start_year, start_month, start_day):
-    validate_fiscal_calendar_params(start_year, start_month, start_day)
+    _validate_fiscal_calendar_params(start_year, start_month, start_day)
     global START_YEAR, START_MONTH, START_DAY
     START_YEAR = start_year
     START_MONTH = start_month
