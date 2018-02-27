@@ -13,7 +13,10 @@ UK_PERSONAL = ('same', 4, 6)
 class TestCheckInt(object):
     @pytest.mark.parametrize("value, exception", [
         ('asdf', TypeError),
-        ("-999", TypeError),                # Shouldn't this be valid?
+        ("-999", TypeError),
+        # Technically speaking, _check_int should accept negative integers
+        # but this isn't a public function + datetime doesn't handle them
+        # anyeway.
         (float(), TypeError),
         (object(), TypeError),
     ])
@@ -50,7 +53,7 @@ class TestCheckYear(object):
 class TestCheckDay(object):
     @pytest.mark.parametrize("month, day, exception", [
         (1, 'asdf', TypeError),
-        (1, "-999", TypeError),                # Shouldn't this be valid?
+        (1, "-999", TypeError),
         (1, float(), TypeError),
         (1, object(), TypeError),
         (1, -1, ValueError),
@@ -95,14 +98,14 @@ class TestCalendarSettingsValidator(object):
         (dict(start_year='asdf', start_month=12, start_day=1), ValueError),
         (dict(start_year=float(1999), start_month=12, start_day=1), TypeError),
         (dict(start_year=object(), start_month=12, start_day=1), TypeError),
-        #
+
         (dict(start_year='same', start_month='asdf', start_day=1), TypeError),
         (dict(start_year='same', start_month=float(12), start_day=1), TypeError),
         (dict(start_year='same', start_month=object(), start_day=1), TypeError),
         (dict(start_year='same', start_month=-1, start_day=1), ValueError),
         (dict(start_year='same', start_month=0, start_day=1), ValueError),
         (dict(start_year='same', start_month=13, start_day=1), ValueError),
-        #
+
         (dict(start_year='same', start_month=12, start_day='asdf'), TypeError),
         (dict(start_year='same', start_month=12, start_day=float(1)), TypeError),
         (dict(start_year='same', start_month=12, start_day=object()), TypeError),
@@ -125,22 +128,24 @@ class TestCalendarSettingsValidator(object):
     def test_valid_input(self, arguments):
         fiscalyear._validate_fiscal_calendar_params(**arguments)
 
-def test_setup_fiscal_calendar():
-    # test defaults
-    day =  fiscalyear.FiscalDate(2017, 12, 1)
-    assert day.fiscal_year == 2018
-    assert day.quarter == 1
 
-    # change fiscal year settings
-    fiscalyear.setup_fiscal_calendar("same", 1, 1)
-    assert day.fiscal_year == 2017
-    assert day.quarter == 4
+class TestSetupFiscalCalendar(object):
 
-    # restore defaults and re-test
-    fiscalyear.setup_fiscal_calendar("previous", 10, 1)
-    assert day.fiscal_year == 2018
-    assert day.quarter == 1
+    def test_setup_fiscal_calendar(self):
+        # Test defaults
+        day =  fiscalyear.FiscalDate(2017, 12, 1)
+        assert day.fiscal_year == 2018
+        assert day.quarter == 1
 
+        # Change fiscal year settings
+        fiscalyear.setup_fiscal_calendar("same", 1, 1)
+        assert day.fiscal_year == 2017
+        assert day.quarter == 4
+
+        # Restore defaults and re-test
+        fiscalyear.setup_fiscal_calendar("previous", 10, 1)
+        assert day.fiscal_year == 2018
+        assert day.quarter == 1
 
 
 class TestFiscalCalendar:

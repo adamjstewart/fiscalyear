@@ -36,17 +36,20 @@ def _validate_fiscal_calendar_params(start_year, start_month, start_day):
     :type start_day: int or str
     :raises TypeError: If ``start_year`` is not a ``str``.
     :raises ValueError: If ``start_year`` is not ``'previous'`` or ``'same'``
-    :raises ValueError: If ``start_month`` or ``start_day`` is not an int or int-like string
+    :raises ValueError: If ``start_month`` or ``start_day`` is not an int or
+        int-like string
     :raises ValueError: If ``start_month`` or ``start_day`` is out of range
     """
     if not isinstance(start_year, str):
         raise TypeError("'start_year' must be a 'str', not: '%s'" % type(str))
-    if not start_year in ('previous',  'same'):
-        raise ValueError("start_year must be either 'previous' or 'same', not: '%s'" % start_year)
+    if start_year not in ('previous',  'same'):
+        msg = "'start_year' must be either 'previous' or 'same', not: '%s'"
+        raise ValueError(msg % start_year)
     _check_day(start_month, start_day)
 
 
 def setup_fiscal_calendar(start_year, start_month, start_day):
+    """Change the global calendar settings."""
     _validate_fiscal_calendar_params(start_year, start_month, start_day)
     global START_YEAR, START_MONTH, START_DAY
     START_YEAR = start_year
@@ -67,19 +70,21 @@ def fiscal_calendar(start_year=None, start_month=None, start_day=None):
     :param start_day: The first day of the first month of the fiscal year
     :type start_day: int or str
     :raises ValueError: If ``start_year`` is not ``'previous'`` or ``'same'``
-    :raises TypeError: If ``start_month`` or ``start_day`` is not an int or int-like string
+    :raises TypeError: If ``start_month`` or ``start_day`` is not an int or
+        int-like string
     :raises ValueError: If ``start_month`` or ``start_day`` is out of range
     """
-    # if arguments are omitted, use the currently active values.
+    # If arguments are omitted, use the currently active values.
     start_year = START_YEAR if start_year is None else start_year
     start_month = START_MONTH if start_month is None else start_month
     start_day = START_DAY if start_day is None else start_day
 
-    # Temporarily change global variables and then restore previous values
-    old_start_year, old_start_month, old_start_day = START_YEAR, START_MONTH, START_DAY
+    # Temporarily change global variables
+    previous_values = (START_YEAR, START_MONTH, START_DAY)
     setup_fiscal_calendar(start_year, start_month, start_day)
     yield
-    setup_fiscal_calendar(old_start_year, old_start_month, old_start_day)
+    # Restore previous values
+    setup_fiscal_calendar(*previous_values)
 
 
 def _check_int(value):
