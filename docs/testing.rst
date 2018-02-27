@@ -1,8 +1,13 @@
 Testing
 =======
 
-``fiscalyear`` comes with a full test-suite called ``test_fiscalyear``. To run the test-suite, you will need to install the `pytest <https://docs.pytest.org/en/latest/>`_ package.
+``fiscalyear`` comes with a full test-suite called ``test_fiscalyear``. To run the test-suite, you
+will need to install the following packages:
 
+* `pytest <https://docs.pytest.org/en/latest/>`_
+* `pytest-cov <https://docs.pytest.org/en/latest/>`_
+* `pytest-mock <https://docs.pytest.org/en/latest/>`_
+* `pytest-runner <https://docs.pytest.org/en/latest/>`_
 
 Running tests
 -------------
