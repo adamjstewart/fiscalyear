@@ -193,7 +193,7 @@ class FiscalYear(object):
 
     @classmethod
     def current(cls):
-        """ Alternartive constructor. Returns the current FiscalYear.
+        """Alternative constructor. Returns the current FiscalYear.
 
         :returns: A newly constructed FiscalYear object
         :rtype: FiscalYear
@@ -383,7 +383,7 @@ class FiscalQuarter(object):
 
     @classmethod
     def current(cls):
-        """ Alternartive constructor. Returns the current FiscalQuarter.
+        """Alternative constructor. Returns the current FiscalQuarter.
 
         :returns: A newly constructed FiscalQuarter object
         :rtype: FiscalQuarter
