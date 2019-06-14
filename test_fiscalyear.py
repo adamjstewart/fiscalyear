@@ -16,7 +16,7 @@ class TestCheckInt(object):
         ("-999", TypeError),
         # Technically speaking, _check_int should accept negative integers
         # but this isn't a public function + datetime doesn't handle them
-        # anyeway.
+        # anyway.
         (float(), TypeError),
         (object(), TypeError),
     ])
