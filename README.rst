@@ -26,7 +26,6 @@ The ``FiscalYear`` class provides an object for storing information about the st
 
 .. code-block:: python
 
-   >>> from fiscalyear import *
    >>> a = FiscalYear(2017)
    >>> a.start
    FiscalDateTime(2016, 10, 1, 0, 0)
@@ -37,7 +36,6 @@ You can also get the current ``FiscalYear`` with:
 
 .. code-block:: python
 
-   >>> from fiscalyear import *
    >>> FiscalYear.current()
    FiscalYear(2018)
 
@@ -72,7 +70,6 @@ You can also get the current ``FiscalQuarter`` with:
 
 .. code-block:: python
 
-   >>> from fiscalyear import *
    >>> FiscalQuarter.current()
    FiscalQuarter(2018, 2)
 
