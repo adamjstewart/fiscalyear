@@ -17,6 +17,16 @@ The recommended way to install ``fiscalyear`` is with ``pip``.
 The fiscalyear module will now appear with your base Python installation.
 
 
+Anaconda
+--------
+
+You can also install ``fiscalyear`` with the ``conda`` package manager.
+
+.. code-block:: console
+
+   $ conda install -c conda-forge fiscalyear
+
+
 Spack
 -----
 

@@ -7,6 +7,12 @@
 .. image:: https://readthedocs.org/projects/fiscalyear/badge/?version=latest
    :target: https://fiscalyear.readthedocs.io
 
+.. image:: https://badge.fury.io/py/fiscalyear.svg
+   :target: https://pypi.org/project/fiscalyear/
+
+.. image:: https://anaconda.org/conda-forge/fiscalyear/badges/version.svg
+   :target: https://anaconda.org/conda-forge/fiscalyear
+
 
 Overview
 ========
