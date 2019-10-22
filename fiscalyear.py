@@ -24,10 +24,41 @@ START_MONTH = 10
 START_DAY = 1
 
 
+def _validate_fiscal_calendar_params(start_year, start_month, start_day):
+    """Raise an Exception if the calendar parameters are invalid.
+
+    :param start_year: Relationship between the start of the fiscal year and
+        the calendar year. Possible values: ``'previous'`` or ``'same'``.
+    :type start_year: str
+    :param start_month: The first month of the fiscal year
+    :type start_month: int or str
+    :param start_day: The first day of the first month of the fiscal year
+    :type start_day: int or str
+    :raises TypeError: If ``start_year`` is not a ``str``.
+    :raises ValueError: If ``start_year`` is not ``'previous'`` or ``'same'``
+    :raises ValueError: If ``start_month`` or ``start_day`` is not an int or
+        int-like string
+    :raises ValueError: If ``start_month`` or ``start_day`` is out of range
+    """
+    if not isinstance(start_year, str):
+        raise TypeError("'start_year' must be a 'str', not: '%s'" % type(str))
+    if start_year not in ('previous',  'same'):
+        msg = "'start_year' must be either 'previous' or 'same', not: '%s'"
+        raise ValueError(msg % start_year)
+    _check_day(start_month, start_day)
+
+
+def setup_fiscal_calendar(start_year, start_month, start_day):
+    """Change the global calendar settings."""
+    _validate_fiscal_calendar_params(start_year, start_month, start_day)
+    global START_YEAR, START_MONTH, START_DAY
+    START_YEAR = start_year
+    START_MONTH = start_month
+    START_DAY = start_day
+
+
 @contextlib.contextmanager
-def fiscal_calendar(start_year=None,
-                    start_month=None,
-                    start_day=None):
+def fiscal_calendar(start_year=None, start_month=None, start_day=None):
     """A context manager that lets you modify the start of the fiscal calendar
     inside the scope of a with-statement.
 
@@ -38,43 +69,22 @@ def fiscal_calendar(start_year=None,
     :type start_month: int or str
     :param start_day: The first day of the first month of the fiscal year
     :type start_day: int or str
-    :raises AssertionError: If ``start_year`` is not ``'previous'`` or ``'same'``
-    :raises TypeError: If ``start_month`` or ``start_day`` is not an int or int-like string
+    :raises ValueError: If ``start_year`` is not ``'previous'`` or ``'same'``
+    :raises TypeError: If ``start_month`` or ``start_day`` is not an int or
+        int-like string
     :raises ValueError: If ``start_month`` or ``start_day`` is out of range
     """
-    global START_YEAR
-    global START_MONTH
-    global START_DAY
-
-    # Use default values if not changed
-    if start_year is None:
-        start_year = START_YEAR
-    if start_month is None:
-        start_month = START_MONTH
-    if start_day is None:
-        start_day = START_DAY
-
-    assert isinstance(start_year, str)
-    assert start_year == 'previous' or start_year == 'same'
-    start_month = _check_month(start_month)
-    start_day = _check_day(start_month, start_day)
-
-    # Backup previous values
-    old_start_year = START_YEAR
-    old_start_month = START_MONTH
-    old_start_day = START_DAY
+    # If arguments are omitted, use the currently active values.
+    start_year = START_YEAR if start_year is None else start_year
+    start_month = START_MONTH if start_month is None else start_month
+    start_day = START_DAY if start_day is None else start_day
 
     # Temporarily change global variables
-    START_YEAR = start_year
-    START_MONTH = start_month
-    START_DAY = start_day
-
+    previous_values = (START_YEAR, START_MONTH, START_DAY)
+    setup_fiscal_calendar(start_year, start_month, start_day)
     yield
-
     # Restore previous values
-    START_YEAR = old_start_year
-    START_MONTH = old_start_month
-    START_DAY = old_start_day
+    setup_fiscal_calendar(*previous_values)
 
 
 def _check_int(value):
@@ -225,11 +235,9 @@ class FiscalYear(object):
             return self == item
         elif isinstance(item, FiscalQuarter):
             return self._fiscal_year == item.fiscal_year
-        elif (isinstance(item, FiscalDateTime) or
-              isinstance(item, datetime.datetime)):
+        elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
-        elif (isinstance(item, FiscalDate) or
-              isinstance(item, datetime.date)):
+        elif isinstance(item, datetime.date):
             return self.start.date() <= item <= self.end.date()
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
@@ -405,11 +413,9 @@ class FiscalQuarter(object):
         """
         if isinstance(item, FiscalQuarter):
             return self == item
-        elif (isinstance(item, FiscalDateTime) or
-              isinstance(item, datetime.datetime)):
+        elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
-        elif (isinstance(item, FiscalDate) or
-              isinstance(item, datetime.date)):
+        elif isinstance(item, datetime.date):
             return self.start.date() <= item <= self.end.date()
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
