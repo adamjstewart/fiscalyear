@@ -164,7 +164,7 @@ class TestSetupFiscalCalendar(object):
 
         assert fiscalyear.START_DAY == 1
 
-    def test_setup_fiscal_calendar(self):
+    def test_complex(self):
         # Test defaults
         day = fiscalyear.FiscalDate(2017, 12, 1)
         assert day.fiscal_year == 2018
