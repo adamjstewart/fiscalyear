@@ -15,16 +15,16 @@ In order to explain how to change the fiscal calendar, let's use the U.K. person
    >>> a = fiscalyear.FiscalYear(2017)
 
 
-START_YEAR
+Start year
 ^^^^^^^^^^
 
-The first difference you'll notice between the U.S. and the U.K. fiscal calendars is that in the U.S., the 2017 fiscal year actually starts in 2016, while in the U.K. it starts in 2017. To control this, change the ``fiscalyear.START_YEAR`` from ``'previous'`` to ``'same'``.
+The first difference you'll notice between the U.S. and the U.K. fiscal calendars is that in the U.S., the 2017 fiscal year actually starts in 2016, while in the U.K. it starts in 2017. To control this, change the start year from ``'previous'`` to ``'same'``.
 
 .. code-block:: python
 
    >>> a.start.year
    2016
-   >>> fiscalyear.START_YEAR = 'same'
+   >>> fiscalyear.setup_fiscal_calendar(start_year='same')
    >>> a.start.year
    2017
 
@@ -32,32 +32,32 @@ The first difference you'll notice between the U.S. and the U.K. fiscal calendar
 Now that the start year is right, let's change the start month.
 
 
-START_MONTH
+Start month
 ^^^^^^^^^^^
 
-The start month is controlled by the ``fiscalyear.START_MONTH`` variable, and can be any valid month.
+The start month can be any valid month.
 
 .. code-block:: python
 
    >>> a.start.month
    10
-   >>> fiscalyear.START_MONTH = 4
+   >>> fiscalyear.setup_fiscal_calendar(start_month=4)
    >>> a.start.month
    4
 
 Finally, let's change the start day.
 
 
-START_DAY
+Start day
 ^^^^^^^^^
 
-The start day is controlled by the ``fiscalyear.START_DAY`` variable, and can be any valid day in the chosen month.
+The start day can be any valid day in the chosen month.
 
 .. code-block:: python
 
    >>> a.start.day
    1
-   >>> fiscalyear.START_DAY = 6
+   >>> fiscalyear.setup_fiscal_calendar(start_day=6)
    >>> a.start.day
    6
 
@@ -70,6 +70,13 @@ Putting everything together, we can see that the definition of the start and end
    FiscalDateTime(2017, 4, 6, 0, 0)
    >>> a.end
    FiscalDateTime(2018, 4, 5, 23, 59, 59)
+
+
+Of course, we can change all of these variables at the same time like so:
+
+.. code-block:: python
+
+   >>> fiscalyear.setup_fiscal_calendar('same', 4, 6)
 
 
 Temporarily changing the fiscal calendar
