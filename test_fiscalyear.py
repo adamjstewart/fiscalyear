@@ -131,6 +131,33 @@ class TestCalendarSettingsValidator(object):
 
 class TestSetupFiscalCalendar(object):
 
+    def test_start_year(self):
+        assert fiscalyear.START_YEAR == 'previous'
+
+        fiscalyear.setup_fiscal_calendar(start_year='same')
+        assert fiscalyear.START_YEAR == 'same'
+        fiscalyear.setup_fiscal_calendar(start_year='previous')
+
+        assert fiscalyear.START_YEAR == 'previous'
+
+    def test_start_month(self):
+        assert fiscalyear.START_MONTH == 10
+
+        fiscalyear.setup_fiscal_calendar(start_month=4)
+        assert fiscalyear.START_MONTH == 4
+        fiscalyear.setup_fiscal_calendar(start_month=10)
+
+        assert fiscalyear.START_MONTH == 10
+
+    def test_start_day(self):
+        assert fiscalyear.START_DAY == 1
+
+        fiscalyear.setup_fiscal_calendar(start_day=6)
+        assert fiscalyear.START_DAY == 6
+        fiscalyear.setup_fiscal_calendar(start_day=1)
+
+        assert fiscalyear.START_DAY == 1
+
     def test_setup_fiscal_calendar(self):
         # Test defaults
         day =  fiscalyear.FiscalDate(2017, 12, 1)

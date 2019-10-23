@@ -48,10 +48,30 @@ def _validate_fiscal_calendar_params(start_year, start_month, start_day):
     _check_day(start_month, start_day)
 
 
-def setup_fiscal_calendar(start_year, start_month, start_day):
-    """Change the global calendar settings."""
-    _validate_fiscal_calendar_params(start_year, start_month, start_day)
+def setup_fiscal_calendar(start_year=None, start_month=None, start_day=None):
+    """Modify the start of the fiscal calendar.
+
+    :param start_year: Relationship between the start of the fiscal year and
+        the calendar year. Possible values: ``'previous'`` or ``'same'``.
+    :type start_year: str
+    :param start_month: The first month of the fiscal year
+    :type start_month: int or str
+    :param start_day: The first day of the first month of the fiscal year
+    :type start_day: int or str
+    :raises ValueError: If ``start_year`` is not ``'previous'`` or ``'same'``
+    :raises TypeError: If ``start_month`` or ``start_day`` is not an int or
+        int-like string
+    :raises ValueError: If ``start_month`` or ``start_day`` is out of range
+    """
     global START_YEAR, START_MONTH, START_DAY
+
+    # If arguments are omitted, use the currently active values.
+    start_year = START_YEAR if start_year is None else start_year
+    start_month = START_MONTH if start_month is None else start_month
+    start_day = START_DAY if start_day is None else start_day
+
+    _validate_fiscal_calendar_params(start_year, start_month, start_day)
+
     START_YEAR = start_year
     START_MONTH = start_month
     START_DAY = start_day
@@ -82,7 +102,9 @@ def fiscal_calendar(start_year=None, start_month=None, start_day=None):
     # Temporarily change global variables
     previous_values = (START_YEAR, START_MONTH, START_DAY)
     setup_fiscal_calendar(start_year, start_month, start_day)
+
     yield
+
     # Restore previous values
     setup_fiscal_calendar(*previous_values)
 
