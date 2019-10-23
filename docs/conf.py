@@ -19,8 +19,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
-import fiscalyear
-import sphinx
+import fiscalyear  # noqa: E402
 
 
 # -- General configuration ------------------------------------------------
@@ -153,6 +152,3 @@ texinfo_documents = [
      author, 'fiscalyear', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
