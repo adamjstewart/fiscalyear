@@ -95,7 +95,7 @@ class TestCheckQuarter(object):
         assert int(value) == fiscalyear._check_quarter(value)
 
 
-class TestCalendarSettingsValidator(object):
+class TestValidateFiscalCalendarParams(object):
     @pytest.mark.parametrize('arguments, exception', [
         (dict(start_year='asdf', start_month=12, start_day=1), ValueError),
         (dict(start_year=float(1999), start_month=12, start_day=1), TypeError),
