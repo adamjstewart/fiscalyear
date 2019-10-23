@@ -530,7 +530,12 @@ class FiscalQuarter(object):
         if month < START_MONTH:
             year += 1
 
-        return FiscalDateTime(year, month, START_DAY, 0, 0, 0)
+        # Find the last day of the month
+        # If START_DAY is later, choose last day of month instead
+        max_day = calendar.monthrange(year, month)[1]
+        day = min(START_DAY, max_day)
+
+        return FiscalDateTime(year, month, day, 0, 0, 0)
 
     @property
     def end(self):

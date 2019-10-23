@@ -275,6 +275,35 @@ class TestFiscalCalendar:
             with fiscalyear.fiscal_calendar(start_month=2, start_day=29):
                 pass
 
+    def test_corner_cases(self):
+        # start_day does not exist in all months
+        with fiscalyear.fiscal_calendar(start_month=5, start_day=31):
+            # Non-leap year
+            assert fiscalyear.FiscalQuarter(2019, 1).start.day == 31
+            assert fiscalyear.FiscalQuarter(2019, 1).end.day == 30
+
+            assert fiscalyear.FiscalQuarter(2019, 2).start.day == 31
+            assert fiscalyear.FiscalQuarter(2019, 2).end.day == 29
+
+            assert fiscalyear.FiscalQuarter(2019, 3).start.day == 30
+            assert fiscalyear.FiscalQuarter(2019, 3).end.day == 27
+
+            assert fiscalyear.FiscalQuarter(2019, 4).start.day == 28
+            assert fiscalyear.FiscalQuarter(2019, 4).end.day == 30
+
+            # Leap year
+            assert fiscalyear.FiscalQuarter(2020, 1).start.day == 31
+            assert fiscalyear.FiscalQuarter(2020, 1).end.day == 30
+
+            assert fiscalyear.FiscalQuarter(2020, 2).start.day == 31
+            assert fiscalyear.FiscalQuarter(2020, 2).end.day == 29
+
+            assert fiscalyear.FiscalQuarter(2020, 3).start.day == 30
+            assert fiscalyear.FiscalQuarter(2020, 3).end.day == 28
+
+            assert fiscalyear.FiscalQuarter(2020, 4).start.day == 29
+            assert fiscalyear.FiscalQuarter(2020, 4).end.day == 30
+
 
 class TestFiscalYear:
 
