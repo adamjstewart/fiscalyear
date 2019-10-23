@@ -21,7 +21,6 @@ You can also get the current ``FiscalYear`` with:
 
 .. code-block:: python
 
-   >>> from fiscalyear import *
    >>> FiscalYear.current()
    FiscalYear(2018)
 

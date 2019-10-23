@@ -32,6 +32,7 @@ The ``FiscalYear`` class provides an object for storing information about the st
 
 .. code-block:: python
 
+   >>> from fiscalyear import *
    >>> a = FiscalYear(2017)
    >>> a.start
    FiscalDateTime(2016, 10, 1, 0, 0)
