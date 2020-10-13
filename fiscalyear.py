@@ -624,6 +624,10 @@ class _FiscalBase:
             return self.year - 1
 
     @property
+    def fiscal_month(self):
+        return (self.month - FiscalYear(self.year).start.month) % 12 + 1
+
+    @property
     def prev_fiscal_year(self):
         """:returns: The previous fiscal year
         :rtype: FiscalYear

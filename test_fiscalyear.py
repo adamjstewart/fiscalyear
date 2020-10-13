@@ -668,16 +668,22 @@ class TestFiscalDate:
         assert a.day == 1
 
         assert a.fiscal_year == 2017
+        assert a.fiscal_month == 4
         assert a.quarter == 2
 
-    def test_fiscal_year(self, a, c):
+    def test_fiscal_periods(self, a, c):
         with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert a.fiscal_year == 2017
+            assert a.fiscal_month == 4
             assert c.fiscal_year == 2018
+            assert c.fiscal_month == 2
+
 
         with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert a.fiscal_year == 2016
+            assert a.fiscal_month == 10
             assert c.fiscal_year == 2017
+            assert c.fiscal_month == 8
 
     def test_prev_fiscal_year(self, a):
         assert a.prev_fiscal_year == fiscalyear.FiscalYear(2016)
@@ -719,14 +725,18 @@ class TestFiscalDateTime:
         assert a.fiscal_year == 2017
         assert a.quarter == 2
 
-    def test_fiscal_year(self, a, c):
+    def test_fiscal_periods(self, a, c):
         with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert a.fiscal_year == 2017
+            assert a.fiscal_month == 4
             assert c.fiscal_year == 2018
+            assert c.fiscal_month == 2
 
         with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert a.fiscal_year == 2016
+            assert a.fiscal_month == 10
             assert c.fiscal_year == 2017
+            assert c.fiscal_month == 8
 
     def test_prev_fiscal_year(self, a):
         assert a.prev_fiscal_year == fiscalyear.FiscalYear(2016)
