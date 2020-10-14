@@ -1,5 +1,5 @@
 codecov
-pytest
+pytest==6.1.1
 pytest-cov
 pytest-mock
 pytest-runner
