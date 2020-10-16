@@ -92,6 +92,8 @@ The start and end of each quarter are stored as instances of the ``FiscalDateTim
    FiscalDateTime(2017, 4, 8, 20, 30, 31, 105323)
    >>> c.fiscal_year
    2017
+   >>> c.fiscal_month
+   7
    >>> c.quarter
    3
    >>> c.next_quarter
