@@ -659,15 +659,19 @@ class TestFiscalMonth:
 
     @pytest.fixture(scope='class')
     def c(self):
-        return fiscalyear.FiscalMonth('2016','1')
+        return fiscalyear.FiscalMonth('2016','2')
 
     @pytest.fixture(scope='class')
     def d(self):
-        return fiscalyear.FiscalQuarter(2017, 2)
+        return fiscalyear.FiscalQuarter(2016, 1)
 
     @pytest.fixture(scope='class')
     def e(self):
         return fiscalyear.FiscalMonth(2016, 12)
+
+    @pytest.fixture(scope='class')
+    def f(self):
+        return fiscalyear.FiscalQuarter(2017, 1)
 
     def test_basic(self, a):
         assert a.fiscal_year == 2016
@@ -680,27 +684,27 @@ class TestFiscalMonth:
         assert current == fiscalyear.FiscalMonth(2017,1)
 
     def test_repr(self, a):
-        assert repr(a) == 'FiscalMonth(2017,1)'
+        assert repr(a) == 'FiscalMonth(2016,1)'
 
     def test_str(self, a):
-        assert str(a) == 'FY2017 Period 1'
+        assert str(a) == 'FY2016 Period 1'
 
     def test_from_string(self, c):
-        assert c.fiscal_year == 2017
+        assert c.fiscal_year == 2016
 
     def test_wrong_type(self):
         with pytest.raises(TypeError):
-            fiscalyear.FiscalMonth(2017.5)
+            fiscalyear.FiscalMonth(2016.5)
 
         with pytest.raises(TypeError):
             fiscalyear.FiscalMonth('hello world')
 
     def test_out_of_range(self):
         with pytest.raises(ValueError):
-            fiscalyear.FiscalMonth(0)
+            fiscalyear.FiscalMonth(2016,0)
 
         with pytest.raises(ValueError):
-            fiscalyear.FiscalMonth(-12)
+            fiscalyear.FiscalMonth(2016,-12)
 
     def test_prev_fiscal_year(self, a, b):
         assert a == b.prev_fiscal_month
@@ -715,38 +719,25 @@ class TestFiscalMonth:
             assert a.start == datetime.datetime(2015, 10, 1, 0, 0, 0)
 
         with fiscalyear.fiscal_calendar(*UK_PERSONAL):
-            assert a.start == datetime.datetime(2016, 4, 6, 0, 0, 0)
+            assert a.start == datetime.datetime(2015, 4, 6, 0, 0, 0)
 
-    def test_end(self, a):
+    def test_end(self, e):
         assert e.end == e.year.end
 
         with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert e.end == datetime.datetime(2016, 9, 30, 23, 59, 59)
 
         with fiscalyear.fiscal_calendar(*UK_PERSONAL):
-            assert e.end == datetime.datetime(2017, 4, 5, 23, 59, 59)
+            assert e.end == datetime.datetime(2016, 4, 5, 23, 59, 59)
 
-    # Question: Should FiscalQuarter have m1, m2, m3 properties?
-    # def test_q1(self, a):
-    #     assert a.q1 == fiscalyear.FiscalQuarter(2016, 1)
-
-    # def test_q2(self, a):
-    #     assert a.q2 == fiscalyear.FiscalQuarter(2016, 2)
-
-    # def test_q3(self, a):
-    #     assert a.q3 == fiscalyear.FiscalQuarter(2016, 3)
-
-    # def test_q4(self, a):
-    #     assert a.q4 == fiscalyear.FiscalQuarter(2016, 4)
-
-    def test_contains(self, a, b, c, d):
+    def test_contains(self, a, b, c, d, f):
         assert b in c
-        assert d not in a
+        assert a not in f
         assert b in d
 
-        assert fiscalyear.FiscalDateTime(2016, 1, 1, 0, 0, 0) in a
+        assert fiscalyear.FiscalDateTime(2015, 10, 1, 0, 0, 0) in a
         assert datetime.datetime(2015, 10, 1, 0, 0, 0) in a
-        assert fiscalyear.FiscalDate(2016, 1, 1) in a
+        assert fiscalyear.FiscalDate(2015, 10, 1) in a
         assert datetime.date(2015, 10, 1) in a
 
         with pytest.raises(TypeError):

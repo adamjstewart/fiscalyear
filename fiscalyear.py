@@ -267,6 +267,8 @@ class FiscalYear(object):
             return self == item
         elif isinstance(item, FiscalQuarter):
             return self._fiscal_year == item.fiscal_year
+        elif isinstance(item, FiscalMonth):
+            return self._fiscal_year == item.fiscal_year
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
         elif isinstance(item, datetime.date):
@@ -455,6 +457,8 @@ class FiscalQuarter(object):
         """
         if isinstance(item, FiscalQuarter):
             return self == item
+        if isinstance(item, FiscalMonth):
+            return self.start <= item.start and item.end <= self.end
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
         elif isinstance(item, datetime.date):
@@ -598,6 +602,208 @@ class FiscalQuarter(object):
         if isinstance(other, FiscalQuarter):
             return ((self._fiscal_year,  self._quarter) >=
                     (other._fiscal_year, other._quarter))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+
+class FiscalMonth(object):
+    """A class representing a single fiscal month."""
+
+    __slots__ = ['_fiscal_year','_fiscal_month']
+
+    def __new__(cls, fiscal_year, fiscal_month):
+        """Constructor.
+
+        :param fiscal_year: The fiscal year
+        :type fiscal_year: int or str
+        :returns: A newly constructed FiscalYear object
+        :rtype: FiscalYear
+        :raises TypeError: If fiscal_year is not an int or int-like string
+        :raises ValueError: If fiscal_year is out of range
+        """
+        fiscal_year = _check_year(fiscal_year)
+        fiscal_month = _check_month(fiscal_month)
+
+        self = super(FiscalMonth, cls).__new__(cls)
+        self._fiscal_year = fiscal_year
+        self._fiscal_month = fiscal_month
+        return self
+
+    @classmethod
+    def current(cls):
+        """Alternative constructor. Returns the current FiscalMonth.
+
+        :returns: A newly constructed FiscalMonth object
+        :rtype: FiscalMonth
+        """
+        today = FiscalDate.today()
+        return cls(today.fiscal_year, today.fiscal_month)
+
+    def __repr__(self):
+        """Convert to formal string, for repr().
+
+        >>> fy = FiscalMonth(2017,1)
+        >>> repr(fy)
+        'FiscalMonth(2017,1)'
+        """
+        return '%s(%d,%d)' % (self.__class__.__name__,
+                           self._fiscal_year,
+                           self._fiscal_month)
+
+    def __str__(self):
+        """Convert to informal string, for str().
+
+        >>> fy = FiscalYear(2017, 1)
+        >>> str(fy)
+        'FY2017 Period 1'
+        """
+        return 'FY%d Period %d' % (self._fiscal_year, self._fiscal_month)
+
+    # TODO: Implement __format__ so that you can print
+    # fiscal year as 17 or 2017 (%y or %Y)
+
+    def __contains__(self, item):
+        """Returns True if item in self, else False.
+
+        :param item: The item to check
+        :type item: FiscalYear, FiscalQuarter, FiscalDateTime,
+            datetime, FiscalDate, or date
+        :rtype: bool
+        """
+        if isinstance(item, FiscalMonth):
+            return self == item
+        elif isinstance(item, datetime.datetime):
+            return self.start <= item <= self.end
+        elif isinstance(item, datetime.date):
+            return self.start.date() <= item <= self.end.date()
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(item).__name__))
+
+    # Read-only field accessors
+
+    @property
+    def fiscal_year(self):
+        """:returns: The fiscal year
+        :rtype: int
+        """
+        return self._fiscal_year
+    @property
+    def fiscal_month(self):
+        """:returns: The fiscal month
+        :rtype: int
+        """
+        return self._fiscal_month
+
+    @property
+    def start(self):
+        """:returns: Start of the fiscal month
+        :rtype: FiscalDateTime
+        """
+        if self._fiscal_month - START_MONTH < 1:
+            year = self._fiscal_year - 1
+        else:
+            year = self._fiscal_year
+
+        month = ((self._fiscal_month - START_MONTH) % 12 + 6) % 12 + 1
+
+        return FiscalDateTime(year, month, START_DAY)
+
+    @property
+    def end(self):
+        """:returns: End of the fiscal year
+        :rtype: FiscalDateTime
+        """
+        # Find the start of the next fiscal quarter
+        next_start = self.next_fiscal_month.start
+
+        # Substract 1 second
+        end = next_start - datetime.timedelta(seconds=1)
+
+        return FiscalDateTime(end.year, end.month, end.day,
+                              end.hour, end.minute, end.second,
+                              end.microsecond, end.tzinfo)
+
+    @property
+    def year(self):
+        """:returns: The fiscal year for the month
+        :rtype: FiscalQuarter
+        """
+        return FiscalYear(self._fiscal_year)
+
+    @property
+    def prev_fiscal_month(self):
+        """:returns: The previous fiscal month
+        :rtype: FiscalMonth
+        """
+        fiscal_year = self._fiscal_year
+        fiscal_month = self._fiscal_month - 1
+        if fiscal_month == 0:
+            fiscal_year -= 1
+            fiscal_month = 12
+
+        return FiscalMonth(fiscal_year, fiscal_month)
+
+    @property
+    def next_fiscal_month(self):
+        """:returns: The next fiscal month
+        :rtype: int
+        """
+        fiscal_year = self._fiscal_year
+        fiscal_month = self._fiscal_month + 1
+        if fiscal_month == 13:
+            fiscal_year += 1
+            fiscal_month = 1
+
+        return FiscalMonth(fiscal_year, fiscal_month)
+
+    # Comparisons of FiscalMonth objects with other
+
+    def __lt__(self, other):
+        if isinstance(other, FiscalMonth):
+            return ((self._fiscal_year,  self._fiscal_month) <
+                    (other._fiscal_year, other._fiscal_month))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+    def __le__(self, other):
+        if isinstance(other, FiscalMonth):
+            return ((self._fiscal_year,  self._fiscal_month) <=
+                    (other._fiscal_year, other._fiscal_month))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+    def __eq__(self, other):
+        if isinstance(other, FiscalMonth):
+            return ((self._fiscal_year,  self._fiscal_month) ==
+                    (other._fiscal_year, other._fiscal_month))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+    def __ne__(self, other):
+        if isinstance(other, FiscalMonth):
+            return ((self._fiscal_year,  self._fiscal_month) !=
+                    (other._fiscal_year, other._fiscal_month))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+    def __gt__(self, other):
+        if isinstance(other, FiscalMonth):
+            return ((self._fiscal_year,  self._fiscal_month) >
+                    (other._fiscal_year, other._fiscal_month))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+    def __ge__(self, other):
+        if isinstance(other, FiscalMonth):
+            return ((self._fiscal_year,  self._fiscal_month) >=
+                    (other._fiscal_year, other._fiscal_month))
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
                 type(self).__name__, type(other).__name__))
