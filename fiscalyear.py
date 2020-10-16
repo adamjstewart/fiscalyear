@@ -625,6 +625,9 @@ class _FiscalBase:
 
     @property
     def fiscal_month(self):
+        """:returns: The fiscal month
+        :rtype: int
+        """
         return (self.month - FiscalYear(self.year).start.month) % 12 + 1
 
     @property
