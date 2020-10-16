@@ -83,7 +83,7 @@ You can also get the current ``FiscalQuarter`` with:
 FiscalDateTime
 --------------
 
-The start and end of each quarter are stored as instances of the ``FiscalDateTime`` class. This class provides all of the same features as the ``datetime`` class, with the addition of the ability to query the fiscal year and quarter.
+The start and end of each quarter are stored as instances of the ``FiscalDateTime`` class. This class provides all of the same features as the ``datetime`` class, with the addition of the ability to query the fiscal year, fiscal month, and quarter.
 
 .. code-block:: python
 
