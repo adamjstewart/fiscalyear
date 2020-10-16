@@ -1,7 +1,7 @@
 fiscalyear
 ==========
 
-`fiscalyear <https://github.com/adamjstewart/fiscalyear>`_ is a small, lightweight Python module providing helpful utilities for managing the fiscal calendar. It is designed as an extension of the built-in `datetime <https://docs.python.org/3/library/datetime.html>`_ and `calendar <https://docs.python.org/3/library/calendar.html>`_ modules, adding the ability to query the fiscal year and fiscal quarter of a date or datetime object.
+`fiscalyear <https://github.com/adamjstewart/fiscalyear>`_ is a small, lightweight Python module providing helpful utilities for managing the fiscal calendar. It is designed as an extension of the built-in `datetime <https://docs.python.org/3/library/datetime.html>`_ and `calendar <https://docs.python.org/3/library/calendar.html>`_ modules, adding the ability to query the fiscal year, fiscal month, and fiscal quarter of a date or datetime object.
 
 
 .. toctree::
