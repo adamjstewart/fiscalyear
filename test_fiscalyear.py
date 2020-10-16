@@ -323,6 +323,10 @@ class TestFiscalYear:
     def d(self):
         return fiscalyear.FiscalQuarter(2017, 2)
 
+    @pytest.fixture(scope='class')
+    def e(self):
+        return fiscalyear.FiscalMonth(2017, 1)
+
     def test_basic(self, a):
         assert a.fiscal_year == 2016
 
@@ -391,10 +395,11 @@ class TestFiscalYear:
     def test_q4(self, a):
         assert a.q4 == fiscalyear.FiscalQuarter(2016, 4)
 
-    def test_contains(self, a, b, c, d):
+    def test_contains(self, a, b, c, d, e):
         assert b in c
         assert d not in a
         assert d in b
+        assert e in b
 
         assert fiscalyear.FiscalDateTime(2016, 1, 1, 0, 0, 0) in a
         assert datetime.datetime(2016, 1, 1, 0, 0, 0) in a

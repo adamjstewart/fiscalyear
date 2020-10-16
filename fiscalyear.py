@@ -701,12 +701,13 @@ class FiscalMonth(object):
         """:returns: Start of the fiscal month
         :rtype: FiscalDateTime
         """
-        if self._fiscal_month - START_MONTH < 1:
+
+        month = ((self._fiscal_month - START_MONTH) % 12 + 6) % 12 + 1
+
+        if month >= START_MONTH:
             year = self._fiscal_year - 1
         else:
             year = self._fiscal_year
-
-        month = ((self._fiscal_month - START_MONTH) % 12 + 6) % 12 + 1
 
         return FiscalDateTime(year, month, START_DAY)
 
