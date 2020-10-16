@@ -1,7 +1,7 @@
 codecov
 pytest<=4
 pytest-cov
-pytest-mock==2.0.0
+pytest-mock<=2
 pytest-runner
 sphinx
 sphinx_rtd_theme
