@@ -713,12 +713,14 @@ class TestFiscalMonth:
 
     def test_prev_fiscal_year(self, a, b):
         assert a == b.prev_fiscal_month
+        assert a.prev_fiscal_month == fiscalyear.FiscalMonth(2015,12)
 
     def test_next_fiscal_year(self, a, b):
         assert a.next_fiscal_month == b
 
-    def test_start(self, a):
+    def test_start(self, a,e):
         assert a.start == a.year.start
+        assert e.start == fiscalyear.FiscalDateTime(2016,9,1,0,0,0)
 
         with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert a.start == datetime.datetime(2015, 10, 1, 0, 0, 0)
