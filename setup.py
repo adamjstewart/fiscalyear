@@ -14,7 +14,7 @@ setuptools.setup(
     description='Utilities for managing the fiscal calendar',
     long_description=long_description,
     url='https://github.com/adamjstewart/fiscalyear',
-    download_url='https://github.com/adamjstewart/fiscalyear/archive/v0.2.0.tar.gz',  # noqa: E501
+    download_url='https://github.com/adamjstewart/fiscalyear/archive/v0.2.0.tar.gz',
     author=fiscalyear.__author__,
     author_email='ajstewart426@gmail.com',
     license='MIT',
@@ -44,6 +44,8 @@ setuptools.setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
 
         # Type of package
         'Topic :: Office/Business :: Financial :: Accounting',
