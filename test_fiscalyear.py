@@ -693,7 +693,7 @@ class TestFiscalMonth:
         assert repr(a) == 'FiscalMonth(2016, 1)'
 
     def test_str(self, a):
-        assert str(a) == 'FY2016 Period 1'
+        assert str(a) == 'FY2016 FM1'
 
     def test_from_string(self, c):
         assert c.fiscal_year == 2016

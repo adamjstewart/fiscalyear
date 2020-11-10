@@ -648,7 +648,7 @@ class FiscalMonth(object):
         >>> repr(fm)
         'FiscalMonth(2017,1)'
         """
-        return '%s(%d,%d)' % (self.__class__.__name__,
+        return '%s(%d, %d)' % (self.__class__.__name__,
                               self._fiscal_year,
                               self._fiscal_month)
 
@@ -659,7 +659,7 @@ class FiscalMonth(object):
         >>> str(fy)
         'FY2017 FM1'
         """
-        return 'FY%d Period %d' % (self._fiscal_year, self._fiscal_month)
+        return 'FY%d FM%d' % (self._fiscal_year, self._fiscal_month)
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
