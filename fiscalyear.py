@@ -617,10 +617,10 @@ class FiscalMonth(object):
 
         :param fiscal_year: The fiscal year
         :type fiscal_year: int or str
-        :returns: A newly constructed FiscalYear object
-        :rtype: FiscalYear
-        :raises TypeError: If fiscal_year is not an int or int-like string
-        :raises ValueError: If fiscal_year is out of range
+        :returns: A newly constructed FiscalMonth object
+        :rtype: FiscalMonth
+        :raises TypeError: If fiscal_year or fiscal_month is not an int or int-like string
+        :raises ValueError: If fiscal_year or fiscal_month is out of range
         """
         fiscal_year = _check_year(fiscal_year)
         fiscal_month = _check_month(fiscal_month)
@@ -643,8 +643,8 @@ class FiscalMonth(object):
     def __repr__(self):
         """Convert to formal string, for repr().
 
-        >>> fy = FiscalMonth(2017,1)
-        >>> repr(fy)
+        >>> fm = FiscalMonth(2017, 1)
+        >>> repr(fm)
         'FiscalMonth(2017,1)'
         """
         return '%s(%d,%d)' % (self.__class__.__name__,
@@ -654,9 +654,9 @@ class FiscalMonth(object):
     def __str__(self):
         """Convert to informal string, for str().
 
-        >>> fy = FiscalYear(2017, 1)
+        >>> fm = FiscalMonth(2017, 1)
         >>> str(fy)
-        'FY2017 Period 1'
+        'FY2017 FM1'
         """
         return 'FY%d Period %d' % (self._fiscal_year, self._fiscal_month)
 
