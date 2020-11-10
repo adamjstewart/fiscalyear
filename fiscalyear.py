@@ -619,7 +619,7 @@ class FiscalMonth(object):
         :type fiscal_year: int or str
         :returns: A newly constructed FiscalMonth object
         :rtype: FiscalMonth
-        :raises TypeError: If fiscal_year or fiscal_month is not    
+        :raises TypeError: If fiscal_year or fiscal_month is not
             an int or int-like string
         :raises ValueError: If fiscal_year or fiscal_month is out of range
         """
