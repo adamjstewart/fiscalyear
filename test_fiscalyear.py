@@ -652,19 +652,20 @@ class TestFiscalQuarter:
         with pytest.raises(TypeError):
             a >= 1
 
+
 class TestFiscalMonth:
 
     @pytest.fixture(scope='class')
     def a(self):
-        return fiscalyear.FiscalMonth(2016,1)
+        return fiscalyear.FiscalMonth(2016, 1)
 
     @pytest.fixture(scope='class')
     def b(self):
-        return fiscalyear.FiscalMonth(2016,2)
+        return fiscalyear.FiscalMonth(2016, 2)
 
     @pytest.fixture(scope='class')
     def c(self):
-        return fiscalyear.FiscalMonth('2016','2')
+        return fiscalyear.FiscalMonth('2016', '2')
 
     @pytest.fixture(scope='class')
     def d(self):
@@ -686,10 +687,10 @@ class TestFiscalMonth:
         mock_today = mocker.patch.object(fiscalyear.FiscalDate, 'today')
         mock_today.return_value = fiscalyear.FiscalDate(2016, 10, 1)
         current = fiscalyear.FiscalMonth.current()
-        assert current == fiscalyear.FiscalMonth(2017,1)
+        assert current == fiscalyear.FiscalMonth(2017, 1)
 
     def test_repr(self, a):
-        assert repr(a) == 'FiscalMonth(2016,1)'
+        assert repr(a) == 'FiscalMonth(2016, 1)'
 
     def test_str(self, a):
         assert str(a) == 'FY2016 Period 1'
@@ -706,21 +707,21 @@ class TestFiscalMonth:
 
     def test_out_of_range(self):
         with pytest.raises(ValueError):
-            fiscalyear.FiscalMonth(2016,0)
+            fiscalyear.FiscalMonth(2016, 0)
 
         with pytest.raises(ValueError):
-            fiscalyear.FiscalMonth(2016,-12)
+            fiscalyear.FiscalMonth(2016, -12)
 
     def test_prev_fiscal_year(self, a, b):
         assert a == b.prev_fiscal_month
-        assert a.prev_fiscal_month == fiscalyear.FiscalMonth(2015,12)
+        assert a.prev_fiscal_month == fiscalyear.FiscalMonth(2015, 12)
 
     def test_next_fiscal_year(self, a, b):
         assert a.next_fiscal_month == b
 
-    def test_start(self, a,e):
+    def test_start(self, a, e):
         assert a.start == a.year.start
-        assert e.start == fiscalyear.FiscalDateTime(2016,9,1,0,0,0)
+        assert e.start == fiscalyear.FiscalDateTime(2016, 9, 1, 0, 0, 0)
 
         with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert a.start == datetime.datetime(2015, 10, 1, 0, 0, 0)
