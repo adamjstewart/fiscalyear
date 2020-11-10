@@ -610,7 +610,7 @@ class FiscalQuarter(object):
 class FiscalMonth(object):
     """A class representing a single fiscal month."""
 
-    __slots__ = ['_fiscal_year','_fiscal_month']
+    __slots__ = ['_fiscal_year', '_fiscal_month']
 
     def __new__(cls, fiscal_year, fiscal_month):
         """Constructor.
@@ -619,7 +619,8 @@ class FiscalMonth(object):
         :type fiscal_year: int or str
         :returns: A newly constructed FiscalMonth object
         :rtype: FiscalMonth
-        :raises TypeError: If fiscal_year or fiscal_month is not an int or int-like string
+        :raises TypeError: If fiscal_year or fiscal_month is not 
+            an int or int-like string
         :raises ValueError: If fiscal_year or fiscal_month is out of range
         """
         fiscal_year = _check_year(fiscal_year)
@@ -648,8 +649,9 @@ class FiscalMonth(object):
         'FiscalMonth(2017,1)'
         """
         return '%s(%d,%d)' % (self.__class__.__name__,
-                           self._fiscal_year,
-                           self._fiscal_month)
+                              self._fiscal_year,
+                              self._fiscal_month)
+
 
     def __str__(self):
         """Convert to informal string, for str().
@@ -689,6 +691,7 @@ class FiscalMonth(object):
         :rtype: int
         """
         return self._fiscal_year
+
     @property
     def fiscal_month(self):
         """:returns: The fiscal month
