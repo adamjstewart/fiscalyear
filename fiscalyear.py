@@ -729,7 +729,7 @@ class FiscalMonth(object):
     @property
     def year(self):
         """:returns: The fiscal year for the month
-        :rtype: FiscalQuarter
+        :rtype: FiscalYear
         """
         return FiscalYear(self._fiscal_year)
 
@@ -749,7 +749,7 @@ class FiscalMonth(object):
     @property
     def next_fiscal_month(self):
         """:returns: The next fiscal month
-        :rtype: int
+        :rtype: FiscalMonth
         """
         fiscal_year = self._fiscal_year
         fiscal_month = self._fiscal_month + 1
