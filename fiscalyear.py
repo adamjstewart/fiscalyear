@@ -649,8 +649,8 @@ class FiscalMonth(object):
         'FiscalMonth(2017,1)'
         """
         return '%s(%d, %d)' % (self.__class__.__name__,
-                              self._fiscal_year,
-                              self._fiscal_month)
+                               self._fiscal_year,
+                               self._fiscal_month)
 
     def __str__(self):
         """Convert to informal string, for str().
