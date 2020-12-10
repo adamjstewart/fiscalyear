@@ -1,0 +1,36 @@
+name: pytest
+on:
+  push:
+    paths:
+    - '**.py'
+    - 'requirements.txt'
+    - '.github/workflows/pytest.yaml'
+  pull_request:
+    paths:
+    - '**.py'
+    - 'requirements.txt'
+    - '.github/workflows/pytest.yaml'
+jobs:
+  test:
+    name: pytest
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run unit tests
+      run: pytest --cov=fiscalyear --cov-report=xml
+    - name: Report coverage
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}

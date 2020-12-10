@@ -818,7 +818,6 @@ class TestFiscalDate:
             assert c.fiscal_year == 2018
             assert c.fiscal_month == 2
 
-
         with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert a.fiscal_year == 2016
             assert a.fiscal_month == 10

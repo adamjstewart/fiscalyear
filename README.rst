@@ -1,5 +1,8 @@
-.. image:: https://travis-ci.org/adamjstewart/fiscalyear.svg?branch=master
-   :target: https://travis-ci.org/adamjstewart/fiscalyear
+.. image:: https://github.com/adamjstewart/fiscalyear/workflows/pytest/badge.svg?branch=master
+   :target: https://github.com/adamjstewart/fiscalyear/actions
+
+.. image:: https://github.com/adamjstewart/fiscalyear/workflows/flake8/badge.svg?branch=master
+   :target: https://github.com/adamjstewart/fiscalyear/actions
 
 .. image:: https://codecov.io/gh/adamjstewart/fiscalyear/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/adamjstewart/fiscalyear
