@@ -183,6 +183,7 @@ def _check_day(month, day):
     else:
         raise ValueError('day must be in %d..%d' % (1, max_day), day)
 
+
 def _check_fiscal_day(fiscal_year, fiscal_day):
     """Check if day is a valid day of the fiscal  year.
 
@@ -370,9 +371,10 @@ class FiscalYear(object):
         :rtype: bool
         """
         fiscal_year = FiscalYear(self._fiscal_year)
-        starts_on_or_before_possible_leap_day = (fiscal_year.start.month, fiscal_year.start.day) < (3, 1)
+        starts_on_or_before_possible_leap_day = (
+            fiscal_year.start.month, fiscal_year.start.day) < (3, 1)
 
-        if START_YEAR == 'previous':   
+        if START_YEAR == 'previous':
             if starts_on_or_before_possible_leap_day:
                 calendar_year = self._fiscal_year - 1
             else:
@@ -383,9 +385,7 @@ class FiscalYear(object):
             else:
                 calendar_year = self._fiscal_year + 1
 
-
         return calendar.isleap(calendar_year)
-    
 
     # Comparisons of FiscalYear objects with other
 
@@ -974,7 +974,8 @@ class FiscalDay(object):
         """
 
         fiscal_year = FiscalYear(self._fiscal_year)
-        start = fiscal_year.start + datetime.timedelta(days=self._fiscal_day - 1)
+        days_elapsed = datetime.timedelta(days=self._fiscal_day - 1)
+        start = fiscal_year.start + days_elapsed
         return FiscalDateTime(start.year, start.month, start.day, 0, 0, 0)
 
     @property
@@ -1010,7 +1011,7 @@ class FiscalDay(object):
             fiscal_year -= 1
             try:
                 fiscal_day = _check_fiscal_day(fiscal_year, 365)
-            except:
+            except Exception:
                 fiscal_day = _check_fiscal_day(fiscal_year, 364)
 
         return FiscalDay(fiscal_year, fiscal_day)
@@ -1023,7 +1024,7 @@ class FiscalDay(object):
         fiscal_year = self._fiscal_year
         try:
             fiscal_day = _check_fiscal_day(fiscal_year, self._fiscal_day + 1)
-        except:
+        except Exception:
             fiscal_year += 1
             fiscal_day = 1
 
@@ -1033,7 +1034,7 @@ class FiscalDay(object):
 
     def __lt__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year,  self._fiscal_day) <
+            return ((self._fiscal_year, self._fiscal_day) <
                     (other._fiscal_year, other._fiscal_day))
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
@@ -1041,7 +1042,7 @@ class FiscalDay(object):
 
     def __le__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year,  self._fiscal_day) <=
+            return ((self._fiscal_year, self._fiscal_day) <=
                     (other._fiscal_year, other._fiscal_day))
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
@@ -1049,7 +1050,7 @@ class FiscalDay(object):
 
     def __eq__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year,  self._fiscal_day) ==
+            return ((self._fiscal_year, self._fiscal_day) ==
                     (other._fiscal_year, other._fiscal_day))
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
@@ -1057,7 +1058,7 @@ class FiscalDay(object):
 
     def __ne__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year,  self._fiscal_day) !=
+            return ((self._fiscal_year, self._fiscal_day) !=
                     (other._fiscal_year, other._fiscal_day))
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
@@ -1065,7 +1066,7 @@ class FiscalDay(object):
 
     def __gt__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year,  self._fiscal_day) >
+            return ((self._fiscal_year, self._fiscal_day) >
                     (other._fiscal_year, other._fiscal_day))
         else:
             raise TypeError("can't compare '%s' to '%s'" % (
@@ -1073,7 +1074,7 @@ class FiscalDay(object):
 
     def __ge__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year,  self._fiscal_day) >=
+            return ((self._fiscal_year, self._fiscal_day) >=
                     (other._fiscal_year, other._fiscal_day))
         else:
             raise TypeError("can't compare '%s' to '%s'" % (

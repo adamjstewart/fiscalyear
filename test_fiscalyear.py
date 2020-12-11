@@ -405,20 +405,20 @@ class TestFiscalYear:
 
     def test_is_leap(self, a, b, g):
         # default US start_year='previous', start_month=10
-        assert a.isleap == True
-        assert g.isleap == False
+        assert a.isleap is True
+        assert g.isleap is False
 
         with fiscalyear.fiscal_calendar(start_year='previous', start_month=1):
-            assert a.isleap == False
-            assert b.isleap == True
+            assert a.isleap is False
+            assert b.isleap is True
 
         with fiscalyear.fiscal_calendar(start_year='same', start_month=3):
-            assert a.isleap == False
-            assert g.isleap == True
+            assert a.isleap is False
+            assert g.isleap is True
 
         with fiscalyear.fiscal_calendar(start_year='same', start_month=1):
-            assert a.isleap == True
-            assert g.isleap == False
+            assert a.isleap is True
+            assert g.isleap is False
 
     def test_contains(self, a, b, c, d, e):
         assert b in c
