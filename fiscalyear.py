@@ -982,7 +982,7 @@ class FiscalDay(object):
 
     @property
     def end(self):
-        """:returns: End of the fiscal year
+        """:returns: End of the fiscal day
         :rtype: FiscalDateTime
         """
         # Find the start of the next fiscal quarter
