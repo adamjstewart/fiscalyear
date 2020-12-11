@@ -727,7 +727,9 @@ class TestFiscalMonth:
             assert a.start == datetime.datetime(2015, 10, 1, 0, 0, 0)
 
         with fiscalyear.fiscal_calendar(*UK_PERSONAL):
-            assert a.start == datetime.datetime(2015, 4, 6, 0, 0, 0)
+            assert a.start == datetime.datetime(2016, 4, 6, 0, 0, 0)
+            assert fiscalyear.FiscalMonth(2016, 12).start == datetime.datetime(
+                2017, 3, 6, 0, 0, 0)
 
     def test_end(self, e):
         assert e.end == fiscalyear.FiscalYear(e.fiscal_year).end
@@ -736,7 +738,7 @@ class TestFiscalMonth:
             assert e.end == datetime.datetime(2016, 9, 30, 23, 59, 59)
 
         with fiscalyear.fiscal_calendar(*UK_PERSONAL):
-            assert e.end == datetime.datetime(2016, 4, 5, 23, 59, 59)
+            assert e.end == datetime.datetime(2017, 4, 5, 23, 59, 59)
 
     def test_contains(self, a, b, c, d, f):
         assert b in c

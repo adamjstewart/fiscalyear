@@ -704,14 +704,28 @@ class FiscalMonth(object):
         :rtype: FiscalDateTime
         """
 
-        month = ((self._fiscal_month - START_MONTH) % 12 + 6) % 12 + 1
+        calendar_month = ((self._fiscal_month - START_MONTH) % 12 + 6) % 12 + 1
 
-        if month >= START_MONTH:
+        month_is_on_or_after_start_month = calendar_month >= START_MONTH
+
+        if START_YEAR == 'previous':
+            if month_is_on_or_after_start_month:
+                calendar_year = self._fiscal_year - 1
+            else:
+                calendar_year = self._fiscal_year
+        elif START_YEAR == 'same':
+            if month_is_on_or_after_start_month:
+                calendar_year = self._fiscal_year
+            else:
+                calendar_year = self._fiscal_year + 1
+
+        """
+        if calendar_month >= START_MONTH:
             year = self._fiscal_year - 1
         else:
             year = self._fiscal_year
-
-        return FiscalDateTime(year, month, START_DAY)
+        """
+        return FiscalDateTime(calendar_year, calendar_month, START_DAY)
 
     @property
     def end(self):
