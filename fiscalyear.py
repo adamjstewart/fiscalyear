@@ -693,7 +693,7 @@ class FiscalMonth(object):
 
         >>> fm = FiscalMonth(2017, 1)
         >>> repr(fm)
-        'FiscalMonth(2017,1)'
+        'FiscalMonth(2017, 1)'
         """
         return '%s(%d, %d)' % (self.__class__.__name__,
                                self._fiscal_year,
@@ -703,7 +703,7 @@ class FiscalMonth(object):
         """Convert to informal string, for str().
 
         >>> fm = FiscalMonth(2017, 1)
-        >>> str(fy)
+        >>> str(fm)
         'FY2017 FM1'
         """
         return 'FY%d FM%d' % (self._fiscal_year, self._fiscal_month)
@@ -715,7 +715,7 @@ class FiscalMonth(object):
         """Returns True if item in self, else False.
 
         :param item: The item to check
-        :type item: FiscalYear, FiscalQuarter, FiscalDateTime,
+        :type item: FiscalMonth, FiscalDateTime,
             datetime, FiscalDate, or date
         :rtype: bool
         """
@@ -753,18 +753,26 @@ class FiscalMonth(object):
         :rtype: FiscalDateTime
         """
 
-        month = ((self._fiscal_month - START_MONTH) % 12 + 6) % 12 + 1
+        calendar_month = ((self._fiscal_month - START_MONTH) % 12 + 6) % 12 + 1
 
-        if month >= START_MONTH:
-            year = self._fiscal_year - 1
-        else:
-            year = self._fiscal_year
+        month_is_on_or_after_start_month = calendar_month >= START_MONTH
 
-        return FiscalDateTime(year, month, START_DAY, 0, 0, 0)
+        if START_YEAR == 'previous':
+            if month_is_on_or_after_start_month:
+                calendar_year = self._fiscal_year - 1
+            else:
+                calendar_year = self._fiscal_year
+        elif START_YEAR == 'same':
+            if month_is_on_or_after_start_month:
+                calendar_year = self._fiscal_year
+            else:
+                calendar_year = self._fiscal_year + 1
+
+        return FiscalDateTime(calendar_year, calendar_month, START_DAY)
 
     @property
     def end(self):
-        """:returns: End of the fiscal year
+        """:returns: End of the fiscal month
         :rtype: FiscalDateTime
         """
         # Find the start of the next fiscal quarter
@@ -776,13 +784,6 @@ class FiscalMonth(object):
         return FiscalDateTime(end.year, end.month, end.day,
                               end.hour, end.minute, end.second,
                               end.microsecond, end.tzinfo)
-
-    @property
-    def year(self):
-        """:returns: The fiscal year for the month
-        :rtype: FiscalYear
-        """
-        return FiscalYear(self._fiscal_year)
 
     @property
     def prev_fiscal_month(self):
