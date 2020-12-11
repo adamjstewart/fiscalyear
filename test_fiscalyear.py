@@ -841,6 +841,9 @@ class TestFiscalDay:
         assert a.fiscal_year == 2016
         assert a.fiscal_day == 1
 
+        assert a.fiscal_month == 1
+        assert a.fiscal_quarter == 1
+
     def test_current(self, mocker):
         mock_today = mocker.patch.object(fiscalyear.FiscalDate, 'today')
         mock_today.return_value = fiscalyear.FiscalDate(2016, 10, 1)
@@ -871,9 +874,10 @@ class TestFiscalDay:
         with pytest.raises(ValueError):
             fiscalyear.FiscalDay(2016, -364)
 
-    def test_prev_fiscal_day(self, a, b):
+    def test_prev_fiscal_day(self, a, b, f):
         assert a == b.prev_fiscal_day
         assert a.prev_fiscal_day == fiscalyear.FiscalDay(2015, 365)
+        assert f.prev_fiscal_day == fiscalyear.FiscalDay(2016, 366)
 
     def test_next_fiscal_day(self, a, b):
         assert a.next_fiscal_day == b
@@ -896,6 +900,11 @@ class TestFiscalDay:
 
         with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert e.end == datetime.datetime(2017, 4, 5, 23, 59, 59)
+
+    def test_leap_year(self):
+        assert fiscalyear.FiscalDate(2016, 1, 1).fiscal_day == 93
+        assert fiscalyear.FiscalDate(2016, 2, 29).fiscal_day == 152
+        assert fiscalyear.FiscalDate(2017, 3, 1).fiscal_day == 152
 
     def test_contains(self, a, b, c, f):
         assert b in c

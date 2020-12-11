@@ -1010,9 +1010,9 @@ class FiscalDay(object):
         if fiscal_day == 0:
             fiscal_year -= 1
             try:
-                fiscal_day = _check_fiscal_day(fiscal_year, 365)
+                fiscal_day = _check_fiscal_day(fiscal_year, 366)
             except Exception:
-                fiscal_day = _check_fiscal_day(fiscal_year, 364)
+                fiscal_day = _check_fiscal_day(fiscal_year, 365)
 
         return FiscalDay(fiscal_year, fiscal_day)
 
