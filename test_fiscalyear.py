@@ -883,7 +883,7 @@ class TestFiscalDay:
         assert a.next_fiscal_day == b
 
     def test_start(self, a, e):
-        assert a.start == a.year.start
+        assert a.start == fiscalyear.FiscalYear(a.fiscal_year).start
         assert e.start == fiscalyear.FiscalDateTime(2016, 9, 30, 0, 0, 0)
 
         with fiscalyear.fiscal_calendar(*US_FEDERAL):
@@ -893,7 +893,7 @@ class TestFiscalDay:
             assert a.start == datetime.datetime(2016, 4, 6, 0, 0, 0)
 
     def test_end(self, e):
-        assert e.end == e.year.end
+        assert e.end == fiscalyear.FiscalYear(e.fiscal_year).end
 
         with fiscalyear.fiscal_calendar(*US_FEDERAL):
             assert e.end == datetime.datetime(2016, 9, 30, 23, 59, 59)

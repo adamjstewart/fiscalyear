@@ -994,13 +994,6 @@ class FiscalDay(object):
                               end.microsecond, end.tzinfo)
 
     @property
-    def year(self):
-        """:returns: The fiscal year for the day
-        :rtype: FiscalYear
-        """
-        return FiscalYear(self._fiscal_year)
-
-    @property
     def prev_fiscal_day(self):
         """:returns: The previous fiscal day
         :rtype: FiscalDay
