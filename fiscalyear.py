@@ -646,7 +646,7 @@ class FiscalMonth(object):
 
         >>> fm = FiscalMonth(2017, 1)
         >>> repr(fm)
-        'FiscalMonth(2017,1)'
+        'FiscalMonth(2017, 1)'
         """
         return '%s(%d, %d)' % (self.__class__.__name__,
                                self._fiscal_year,
@@ -656,7 +656,7 @@ class FiscalMonth(object):
         """Convert to informal string, for str().
 
         >>> fm = FiscalMonth(2017, 1)
-        >>> str(fy)
+        >>> str(fm)
         'FY2017 FM1'
         """
         return 'FY%d FM%d' % (self._fiscal_year, self._fiscal_month)
@@ -668,7 +668,7 @@ class FiscalMonth(object):
         """Returns True if item in self, else False.
 
         :param item: The item to check
-        :type item: FiscalYear, FiscalQuarter, FiscalDateTime,
+        :type item: FiscalMonth, FiscalDateTime,
             datetime, FiscalDate, or date
         :rtype: bool
         """
@@ -715,7 +715,7 @@ class FiscalMonth(object):
 
     @property
     def end(self):
-        """:returns: End of the fiscal year
+        """:returns: End of the fiscal month
         :rtype: FiscalDateTime
         """
         # Find the start of the next fiscal quarter
