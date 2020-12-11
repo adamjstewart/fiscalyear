@@ -183,6 +183,26 @@ def _check_day(month, day):
     else:
         raise ValueError('day must be in %d..%d' % (1, max_day), day)
 
+def _check_fiscal_day(fiscal_year, fiscal_day):
+    """Check if day is a valid day of the fiscal  year.
+
+    :param day: The fiscal year to test
+    :param day: The fiscal day to test
+    :return: The day
+    :rtype: int
+    :raises TypeError: If year or day is not an int or int-like string
+    :raises ValueError: If year or day is out of range
+    """
+    fiscal_year = _check_year(fiscal_year)
+    fiscal_day = _check_int(fiscal_day)
+
+    # Find the length of the year
+    max_day = 366 if FiscalYear(fiscal_year).isleap else 365
+    if 1 <= fiscal_day <= max_day:
+        return fiscal_day
+    else:
+        raise ValueError('day must be in %d..%d' % (1, max_day), fiscal_day)
+
 
 def _check_quarter(quarter):
     """Check if quarter is a valid quarter.
@@ -269,6 +289,8 @@ class FiscalYear(object):
             return self._fiscal_year == item.fiscal_year
         elif isinstance(item, FiscalMonth):
             return self._fiscal_year == item.fiscal_year
+        elif isinstance(item, FiscalDay):
+            return self._fiscal_year == item.fiscal_year
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
         elif isinstance(item, datetime.date):
@@ -341,6 +363,29 @@ class FiscalYear(object):
         :rtype: FiscalQuarter
         """
         return FiscalQuarter(self._fiscal_year, 4)
+
+    @property
+    def isleap(self):
+        """returns: True if the fiscal year contains a leap day, else False
+        :rtype: bool
+        """
+        fiscal_year = FiscalYear(self._fiscal_year)
+        starts_on_or_before_possible_leap_day = (fiscal_year.start.month, fiscal_year.start.day) < (3, 1)
+
+        if START_YEAR == 'previous':   
+            if starts_on_or_before_possible_leap_day:
+                calendar_year = self._fiscal_year - 1
+            else:
+                calendar_year = self._fiscal_year
+        elif START_YEAR == 'same':
+            if starts_on_or_before_possible_leap_day:
+                calendar_year = self._fiscal_year
+            else:
+                calendar_year = self._fiscal_year + 1
+
+
+        return calendar.isleap(calendar_year)
+    
 
     # Comparisons of FiscalYear objects with other
 
@@ -459,6 +504,8 @@ class FiscalQuarter(object):
             return self == item
         if isinstance(item, FiscalMonth):
             return self.start <= item.start and item.end <= self.end
+        if isinstance(item, FiscalDay):
+            return self.start <= item.start <= item.end <= self.end
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
         elif isinstance(item, datetime.date):
@@ -674,6 +721,8 @@ class FiscalMonth(object):
         """
         if isinstance(item, FiscalMonth):
             return self == item
+        if isinstance(item, FiscalDay):
+            return self.start <= item.start <= item.end <= self.end
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
         elif isinstance(item, datetime.date):
@@ -711,7 +760,7 @@ class FiscalMonth(object):
         else:
             year = self._fiscal_year
 
-        return FiscalDateTime(year, month, START_DAY)
+        return FiscalDateTime(year, month, START_DAY, 0, 0, 0)
 
     @property
     def end(self):
@@ -812,6 +861,224 @@ class FiscalMonth(object):
                 type(self).__name__, type(other).__name__))
 
 
+class FiscalDay(object):
+    """A class representing a single fiscal day."""
+
+    __slots__ = ['_fiscal_year', '_fiscal_day']
+
+    def __new__(cls, fiscal_year, fiscal_day):
+        """Constructor.
+
+        :param fiscal_year: The fiscal year
+        :type fiscal_year: int or str
+        :returns: A newly constructed FiscalDay object
+        :rtype: FiscalDay
+        :raises TypeError: If fiscal_year or fiscal_day is not
+            an int or int-like string
+        :raises ValueError: If fiscal_year or fiscal_day is out of range
+        """
+        fiscal_year = _check_year(fiscal_year)
+        fiscal_day = _check_fiscal_day(fiscal_year, fiscal_day)
+
+        self = super(FiscalDay, cls).__new__(cls)
+        self._fiscal_year = fiscal_year
+        self._fiscal_day = fiscal_day
+        return self
+
+    @classmethod
+    def current(cls):
+        """Alternative constructor. Returns the current FiscalDay.
+
+        :returns: A newly constructed FiscalDay object
+        :rtype: FiscalDay
+        """
+        today = FiscalDate.today()
+        return cls(today.fiscal_year, today.fiscal_day)
+
+    def __repr__(self):
+        """Convert to formal string, for repr().
+
+        >>> fd = FiscalDay(2017, 1)
+        >>> repr(fd)
+        'FiscalDay(2017,1)'
+        """
+        return '%s(%d, %d)' % (self.__class__.__name__,
+                               self._fiscal_year,
+                               self._fiscal_day)
+
+    def __str__(self):
+        """Convert to informal string, for str().
+
+        >>> fm = FiscalDay(2017, 1)
+        >>> str(fy)
+        'FY2017 FD1'
+        """
+        return 'FY%d FD%d' % (self._fiscal_year, self._fiscal_day)
+
+    # TODO: Implement __format__ so that you can print
+    # fiscal year as 17 or 2017 (%y or %Y)
+
+    def __contains__(self, item):
+        """Returns True if item in self, else False.
+
+        :param item: The item to check
+        :type item: FiscalYear, FiscalQuarter, FiscalDateTime,
+            datetime, FiscalDate, or date
+        :rtype: bool
+        """
+        if isinstance(item, FiscalDay):
+            return self == item
+        elif isinstance(item, datetime.datetime):
+            return self.start <= item <= self.end
+        elif isinstance(item, datetime.date):
+            return self.start.date() <= item <= self.end.date()
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(item).__name__))
+
+    # Read-only field accessors
+
+    @property
+    def fiscal_year(self):
+        """:returns: The fiscal year
+        :rtype: int
+        """
+        return self._fiscal_year
+
+    @property
+    def fiscal_quarter(self):
+        """:returns: The fiscal quarter
+        :rtype: int
+        """
+        return self.start.quarter
+
+    @property
+    def fiscal_month(self):
+        """:returns: The fiscal month
+        :rtype: int
+        """
+        return self.start.fiscal_month
+
+    @property
+    def fiscal_day(self):
+        """:returns: The fiscal day
+        :rtype: int
+        """
+        return self._fiscal_day
+
+    @property
+    def start(self):
+        """:returns: Start of the fiscal day
+        :rtype: FiscalDateTime
+        """
+
+        fiscal_year = FiscalYear(self._fiscal_year)
+        start = fiscal_year.start + datetime.timedelta(days=self._fiscal_day - 1)
+        return FiscalDateTime(start.year, start.month, start.day, 0, 0, 0)
+
+    @property
+    def end(self):
+        """:returns: End of the fiscal year
+        :rtype: FiscalDateTime
+        """
+        # Find the start of the next fiscal quarter
+        next_start = self.next_fiscal_day.start
+
+        # Substract 1 second
+        end = next_start - datetime.timedelta(seconds=1)
+
+        return FiscalDateTime(end.year, end.month, end.day,
+                              end.hour, end.minute, end.second,
+                              end.microsecond, end.tzinfo)
+
+    @property
+    def year(self):
+        """:returns: The fiscal year for the day
+        :rtype: FiscalYear
+        """
+        return FiscalYear(self._fiscal_year)
+
+    @property
+    def prev_fiscal_day(self):
+        """:returns: The previous fiscal day
+        :rtype: FiscalDay
+        """
+        fiscal_year = self._fiscal_year
+        fiscal_day = self._fiscal_day - 1
+        if fiscal_day == 0:
+            fiscal_year -= 1
+            try:
+                fiscal_day = _check_fiscal_day(fiscal_year, 365)
+            except:
+                fiscal_day = _check_fiscal_day(fiscal_year, 364)
+
+        return FiscalDay(fiscal_year, fiscal_day)
+
+    @property
+    def next_fiscal_day(self):
+        """:returns: The next fiscal day
+        :rtype: FiscalDay
+        """
+        fiscal_year = self._fiscal_year
+        try:
+            fiscal_day = _check_fiscal_day(fiscal_year, self._fiscal_day + 1)
+        except:
+            fiscal_year += 1
+            fiscal_day = 1
+
+        return FiscalDay(fiscal_year, fiscal_day)
+
+    # Comparisons of FiscalDay objects with other
+
+    def __lt__(self, other):
+        if isinstance(other, FiscalDay):
+            return ((self._fiscal_year,  self._fiscal_day) <
+                    (other._fiscal_year, other._fiscal_day))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+    def __le__(self, other):
+        if isinstance(other, FiscalDay):
+            return ((self._fiscal_year,  self._fiscal_day) <=
+                    (other._fiscal_year, other._fiscal_day))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+    def __eq__(self, other):
+        if isinstance(other, FiscalDay):
+            return ((self._fiscal_year,  self._fiscal_day) ==
+                    (other._fiscal_year, other._fiscal_day))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+    def __ne__(self, other):
+        if isinstance(other, FiscalDay):
+            return ((self._fiscal_year,  self._fiscal_day) !=
+                    (other._fiscal_year, other._fiscal_day))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+    def __gt__(self, other):
+        if isinstance(other, FiscalDay):
+            return ((self._fiscal_year,  self._fiscal_day) >
+                    (other._fiscal_year, other._fiscal_day))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+    def __ge__(self, other):
+        if isinstance(other, FiscalDay):
+            return ((self._fiscal_year,  self._fiscal_day) >=
+                    (other._fiscal_year, other._fiscal_day))
+        else:
+            raise TypeError("can't compare '%s' to '%s'" % (
+                type(self).__name__, type(other).__name__))
+
+
 class _FiscalBase:
     """The base class for FiscalDate and FiscalDateTime that
     provides the following common attributes in addition to
@@ -838,6 +1105,19 @@ class _FiscalBase:
         :rtype: int
         """
         return (self.month - FiscalYear(self.year).start.month) % 12 + 1
+
+    @property
+    def fiscal_day(self):
+        """:returns: The fiscal day
+        :rtype: int
+        """
+        day_of_calendar_year = self.timetuple().tm_yday
+        fiscal_year = FiscalYear(self.fiscal_year)
+        beginning_of_fiscal_year = fiscal_year.start.timetuple().tm_yday
+        days_elapsed = day_of_calendar_year - beginning_of_fiscal_year + 1
+        if days_elapsed < 1:
+            days_elapsed = (365 if fiscal_year.isleap else 366) + days_elapsed
+        return days_elapsed
 
     @property
     def prev_fiscal_year(self):

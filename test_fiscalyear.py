@@ -327,6 +327,14 @@ class TestFiscalYear:
     def e(self):
         return fiscalyear.FiscalMonth(2017, 1)
 
+    @pytest.fixture(scope='class')
+    def f(self):
+        return fiscalyear.FiscalDay(2017, 1, 15)
+
+    @pytest.fixture(scope='class')
+    def g(self):
+        return fiscalyear.FiscalYear(2015)
+
     def test_basic(self, a):
         assert a.fiscal_year == 2016
 
@@ -394,6 +402,23 @@ class TestFiscalYear:
 
     def test_q4(self, a):
         assert a.q4 == fiscalyear.FiscalQuarter(2016, 4)
+
+    def test_is_leap(self, a, b, g):
+        # default US start_year='previous', start_month=10
+        assert a.isleap == True
+        assert g.isleap == False
+
+        with fiscalyear.fiscal_calendar(start_year='previous', start_month=1):
+            assert a.isleap == False
+            assert b.isleap == True
+
+        with fiscalyear.fiscal_calendar(start_year='same', start_month=3):
+            assert a.isleap == False
+            assert g.isleap == True
+
+        with fiscalyear.fiscal_calendar(start_year='same', start_month=1):
+            assert a.isleap == True
+            assert g.isleap == False
 
     def test_contains(self, a, b, c, d, e):
         assert b in c
@@ -747,6 +772,141 @@ class TestFiscalMonth:
         assert datetime.datetime(2015, 10, 1, 0, 0, 0) in a
         assert fiscalyear.FiscalDate(2015, 10, 1) in a
         assert datetime.date(2015, 10, 1) in a
+
+        with pytest.raises(TypeError):
+            'hello world' in a
+
+    def test_less_than(self, a, b):
+        assert a < b
+
+        with pytest.raises(TypeError):
+            a < 1
+
+    def test_less_than_equals(self, a, b, c):
+        assert a <= b <= c
+
+        with pytest.raises(TypeError):
+            a <= 1
+
+    def test_equals(self, b, c):
+        assert b == c
+
+        with pytest.raises(TypeError):
+            b == 1
+
+    def test_not_equals(self, a, b):
+        assert a != b
+
+        with pytest.raises(TypeError):
+            a != 1
+
+    def test_greater_than(self, a, b):
+        assert b > a
+
+        with pytest.raises(TypeError):
+            a > 1
+
+    def test_greater_than_equals(self, a, b, c):
+        assert c >= b >= a
+
+        with pytest.raises(TypeError):
+            a >= 1
+
+
+class TestFiscalDay:
+
+    @pytest.fixture(scope='class')
+    def a(self):
+        return fiscalyear.FiscalDay(2016, 1)
+
+    @pytest.fixture(scope='class')
+    def b(self):
+        return fiscalyear.FiscalDay(2016, 2)
+
+    @pytest.fixture(scope='class')
+    def c(self):
+        return fiscalyear.FiscalDay('2016', '2')
+
+    @pytest.fixture(scope='class')
+    def e(self):
+        return fiscalyear.FiscalDay(2016, 366)
+
+    @pytest.fixture(scope='class')
+    def f(self):
+        return fiscalyear.FiscalDay(2017, 1)
+
+    def test_basic(self, a):
+        assert a.fiscal_year == 2016
+        assert a.fiscal_day == 1
+
+    def test_current(self, mocker):
+        mock_today = mocker.patch.object(fiscalyear.FiscalDate, 'today')
+        mock_today.return_value = fiscalyear.FiscalDate(2016, 10, 1)
+        current = fiscalyear.FiscalDay.current()
+        assert current == fiscalyear.FiscalDay(2017, 1)
+
+    def test_repr(self, a):
+        assert repr(a) == 'FiscalDay(2016, 1)'
+
+    def test_str(self, a):
+        assert str(a) == 'FY2016 FD1'
+
+    def test_from_string(self, c):
+        assert c.fiscal_year == 2016
+        assert c.fiscal_day == 2
+
+    def test_wrong_type(self):
+        with pytest.raises(TypeError):
+            fiscalyear.FiscalDay(2016.5)
+
+        with pytest.raises(TypeError):
+            fiscalyear.FiscalDay('hello world')
+
+    def test_out_of_range(self):
+        with pytest.raises(ValueError):
+            fiscalyear.FiscalDay(2016, 0)
+
+        with pytest.raises(ValueError):
+            fiscalyear.FiscalDay(2016, -364)
+
+    def test_prev_fiscal_day(self, a, b):
+        assert a == b.prev_fiscal_day
+        assert a.prev_fiscal_day == fiscalyear.FiscalDay(2015, 365)
+
+    def test_next_fiscal_day(self, a, b):
+        assert a.next_fiscal_day == b
+
+    def test_start(self, a, e):
+        assert a.start == a.year.start
+        assert e.start == fiscalyear.FiscalDateTime(2016, 9, 30, 0, 0, 0)
+
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
+            assert a.start == datetime.datetime(2015, 10, 1, 0, 0, 0)
+
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
+            assert a.start == datetime.datetime(2016, 4, 6, 0, 0, 0)
+
+    def test_end(self, e):
+        assert e.end == e.year.end
+
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
+            assert e.end == datetime.datetime(2016, 9, 30, 23, 59, 59)
+
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
+            assert e.end == datetime.datetime(2017, 4, 5, 23, 59, 59)
+
+    def test_contains(self, a, b, c, f):
+        assert b in c
+        assert a not in f
+
+        assert fiscalyear.FiscalDateTime(2015, 10, 1, 0, 0, 0) in a
+        assert datetime.datetime(2015, 10, 1, 0, 0, 0) in a
+        assert fiscalyear.FiscalDate(2015, 10, 1) in a
+        assert datetime.date(2015, 10, 1) in a
+
+        assert b in fiscalyear.FiscalMonth(2016, 1)
+        assert b in fiscalyear.FiscalQuarter(2016, 1)
+        assert b in fiscalyear.FiscalYear(2016)
 
         with pytest.raises(TypeError):
             'hello world' in a
