@@ -872,6 +872,8 @@ class FiscalDay(object):
 
         :param fiscal_year: The fiscal year
         :type fiscal_year: int or str
+        :param fiscal_year: The fiscal year
+        :type fiscal_year: int or str
         :returns: A newly constructed FiscalDay object
         :rtype: FiscalDay
         :raises TypeError: If fiscal_year or fiscal_day is not
@@ -910,8 +912,8 @@ class FiscalDay(object):
     def __str__(self):
         """Convert to informal string, for str().
 
-        >>> fm = FiscalDay(2017, 1)
-        >>> str(fy)
+        >>> fd = FiscalDay(2017, 1)
+        >>> str(fd)
         'FY2017 FD1'
         """
         return 'FY%d FD%d' % (self._fiscal_year, self._fiscal_day)
