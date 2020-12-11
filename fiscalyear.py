@@ -729,13 +729,6 @@ class FiscalMonth(object):
                               end.microsecond, end.tzinfo)
 
     @property
-    def year(self):
-        """:returns: The fiscal year for the month
-        :rtype: FiscalYear
-        """
-        return FiscalYear(self._fiscal_year)
-
-    @property
     def prev_fiscal_month(self):
         """:returns: The previous fiscal month
         :rtype: FiscalMonth
