@@ -704,7 +704,9 @@ class FiscalMonth(object):
         :rtype: FiscalDateTime
         """
 
-        calendar_month = ((self._fiscal_month - START_MONTH) % 12 + 6) % 12 + 1
+        calendar_month = (START_MONTH + self._fiscal_month - 1) % 12
+        if calendar_month == 0:
+            calendar_month = 12
 
         month_is_on_or_after_start_month = calendar_month >= START_MONTH
 
