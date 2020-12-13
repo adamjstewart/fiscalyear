@@ -721,12 +721,6 @@ class FiscalMonth(object):
             else:
                 calendar_year = self._fiscal_year + 1
 
-        """
-        if calendar_month >= START_MONTH:
-            year = self._fiscal_year - 1
-        else:
-            year = self._fiscal_year
-        """
         return FiscalDateTime(calendar_year, calendar_month, START_DAY)
 
     @property
