@@ -715,7 +715,7 @@ class FiscalMonth(object):
         """
         if isinstance(item, FiscalMonth):
             return self == item
-        if isinstance(item, FiscalDay):
+        elif isinstance(item, FiscalDay):
             return self.start <= item.start <= item.end <= self.end
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end

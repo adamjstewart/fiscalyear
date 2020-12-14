@@ -84,7 +84,6 @@ You can also get the current ``FiscalQuarter`` with:
 
 .. code-block:: python
 
-   >>> from fiscalyear import *
    >>> FiscalQuarter.current()
    FiscalQuarter(2018, 2)
 
