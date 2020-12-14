@@ -185,11 +185,11 @@ def _check_day(month, day):
 
 
 def _check_fiscal_day(fiscal_year, fiscal_day):
-    """Check if day is a valid day of the fiscal  year.
+    """Check if day is a valid day of the fiscal year.
 
-    :param day: The fiscal year to test
-    :param day: The fiscal day to test
-    :return: The day
+    :param fiscal_year: The fiscal year to test
+    :param fiscal_day: The fiscal day to test
+    :return: The fiscal day
     :rtype: int
     :raises TypeError: If year or day is not an int or int-like string
     :raises ValueError: If year or day is out of range
@@ -874,8 +874,8 @@ class FiscalDay(object):
 
         :param fiscal_year: The fiscal year
         :type fiscal_year: int or str
-        :param fiscal_year: The fiscal year
-        :type fiscal_year: int or str
+        :param fiscal_day: The fiscal day
+        :type fiscal_day: int or str
         :returns: A newly constructed FiscalDay object
         :rtype: FiscalDay
         :raises TypeError: If fiscal_year or fiscal_day is not
@@ -905,7 +905,7 @@ class FiscalDay(object):
 
         >>> fd = FiscalDay(2017, 1)
         >>> repr(fd)
-        'FiscalDay(2017,1)'
+        'FiscalDay(2017, 1)'
         """
         return '%s(%d, %d)' % (self.__class__.__name__,
                                self._fiscal_year,
@@ -927,7 +927,7 @@ class FiscalDay(object):
         """Returns True if item in self, else False.
 
         :param item: The item to check
-        :type item: FiscalYear, FiscalQuarter, FiscalDateTime,
+        :type item: FiscalDay, FiscalDateTime,
             datetime, FiscalDate, or date
         :rtype: bool
         """
@@ -1008,7 +1008,7 @@ class FiscalDay(object):
             fiscal_year -= 1
             try:
                 fiscal_day = _check_fiscal_day(fiscal_year, 366)
-            except Exception:
+            except ValueError:
                 fiscal_day = _check_fiscal_day(fiscal_year, 365)
 
         return FiscalDay(fiscal_year, fiscal_day)
@@ -1021,7 +1021,7 @@ class FiscalDay(object):
         fiscal_year = self._fiscal_year
         try:
             fiscal_day = _check_fiscal_day(fiscal_year, self._fiscal_day + 1)
-        except Exception:
+        except ValueError:
             fiscal_year += 1
             fiscal_day = 1
 
@@ -1115,7 +1115,7 @@ class _FiscalBase:
         beginning_of_fiscal_year = fiscal_year.start.timetuple().tm_yday
         days_elapsed = day_of_calendar_year - beginning_of_fiscal_year + 1
         if days_elapsed < 1:
-            days_elapsed = (365 if fiscal_year.isleap else 366) + days_elapsed
+            days_elapsed += (365 if fiscal_year.isleap else 366)
         return days_elapsed
 
     @property
