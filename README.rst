@@ -79,6 +79,8 @@ These objects represent the standalone ``FiscalQuarter`` class.
    True
    >>> b in a
    True
+   >>> b.next_quarter
+   FiscalQuarter(2017, 4)
 
 You can also get the current ``FiscalQuarter`` with:
 
@@ -102,6 +104,8 @@ FiscalMonth
    True
    >>> c in b
    True
+   >>> c.next_fiscal_month
+   FiscalMonth(2017, 10)
 
 You can also get the current ``FiscalMonth`` with:
 
@@ -127,6 +131,8 @@ FiscalDay
    True
    >>> d in c
    True
+   >>>d.next_fiscal_day
+   FiscalDay(2017, 251)
 
 You can also get the current ``FiscalDay`` with:
 
