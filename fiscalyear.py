@@ -286,11 +286,7 @@ class FiscalYear(object):
         """
         if isinstance(item, FiscalYear):
             return self == item
-        elif isinstance(item, FiscalQuarter):
-            return self._fiscal_year == item.fiscal_year
-        elif isinstance(item, FiscalMonth):
-            return self._fiscal_year == item.fiscal_year
-        elif isinstance(item, FiscalDay):
+        elif isinstance(item, (FiscalQuarter, FiscalMonth, FiscalDay)):
             return self._fiscal_year == item.fiscal_year
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
