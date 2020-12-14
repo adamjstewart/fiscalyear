@@ -3,6 +3,7 @@ Basic Usage
 
 ``fiscalyear`` provides several useful classes.
 
+
 FiscalYear
 ----------
 
@@ -16,6 +17,8 @@ The ``FiscalYear`` class provides an object for storing information about the st
    FiscalDateTime(2016, 10, 1, 0, 0)
    >>> a.end
    FiscalDateTime(2017, 9, 30, 23, 59, 59)
+   >>> a.isleap
+   False
 
 You can also get the current ``FiscalYear`` with:
 
@@ -64,7 +67,7 @@ You can also get the current ``FiscalQuarter`` with:
 FiscalDateTime
 --------------
 
-The start and end of each quarter are stored as instances of the ``FiscalDateTime`` class. This class provides all of the same features as the ``datetime`` class, with the addition of the ability to query the fiscal year, fiscal month, and quarter.
+The start and end of each quarter are stored as instances of the ``FiscalDateTime`` class. This class provides all of the same features as the ``datetime`` class, with the addition of the ability to query the fiscal year, fiscal quarter, fiscal month, and fiscal day.
 
 .. code-block:: python
 
@@ -73,12 +76,14 @@ The start and end of each quarter are stored as instances of the ``FiscalDateTim
    FiscalDateTime(2017, 4, 8, 20, 30, 31, 105323)
    >>> c.fiscal_year
    2017
-   >>> c.fiscal_month
-   7
    >>> c.quarter
    3
    >>> c.next_quarter
    FiscalQuarter(2017, 4)
+   >>> c.fiscal_month
+   7
+   >>> c.fiscal_day
+   190
 
 
 FiscalDate
