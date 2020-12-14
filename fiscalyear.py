@@ -498,10 +498,8 @@ class FiscalQuarter(object):
         """
         if isinstance(item, FiscalQuarter):
             return self == item
-        if isinstance(item, FiscalMonth):
+        elif isinstance(item, (FiscalMonth, FiscalDay)):
             return self.start <= item.start and item.end <= self.end
-        if isinstance(item, FiscalDay):
-            return self.start <= item.start <= item.end <= self.end
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
         elif isinstance(item, datetime.date):
