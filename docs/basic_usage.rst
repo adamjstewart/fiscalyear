@@ -67,7 +67,9 @@ You can also get the current ``FiscalQuarter`` with:
 
 
 FiscalMonth
-----------
+-----------
+
+The ``FiscalMonth`` class allows you to keep track of the fiscal month.
 
 .. code-block:: python
 
@@ -94,6 +96,8 @@ You can also get the current ``FiscalMonth`` with:
 FiscalDay
 ----------
 
+To keep track of the fiscal day, use the ``FiscalDay`` class.
+
 .. code-block:: python
 
    >>> d = FiscalDay(2017, 250)
@@ -107,7 +111,7 @@ FiscalDay
    True
    >>> d in c
    True
-   >>>d.next_fiscal_day
+   >>> d.next_fiscal_day
    FiscalDay(2017, 251)
 
 You can also get the current ``FiscalDay`` with:
@@ -121,7 +125,7 @@ You can also get the current ``FiscalDay`` with:
 FiscalDateTime
 --------------
 
-The start and end of each quarter are stored as instances of the ``FiscalDateTime`` class. This class provides all of the same features as the ``datetime`` class, with the addition of the ability to query the fiscal year, fiscal quarter, fiscal month, and fiscal day.
+The start and end of each of the above objects are stored as instances of the ``FiscalDateTime`` class. This class provides all of the same features as the ``datetime`` class, with the addition of the ability to query the fiscal year, fiscal quarter, fiscal month, and fiscal day.
 
 .. code-block:: python
 

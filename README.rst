@@ -93,6 +93,8 @@ You can also get the current ``FiscalQuarter`` with:
 FiscalMonth
 -----------
 
+The ``FiscalMonth`` class allows you to keep track of the fiscal month.
+
 .. code-block:: python
 
    >>> c = FiscalMonth(2017, 9)
@@ -117,6 +119,8 @@ You can also get the current ``FiscalMonth`` with:
 
 FiscalDay
 ----------
+
+To keep track of the fiscal day, use the ``FiscalDay`` class.
 
 .. code-block:: python
 
