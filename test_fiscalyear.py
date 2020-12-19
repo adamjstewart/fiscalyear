@@ -6,145 +6,156 @@ import pytest
 
 
 # Fiscal calendars to test
-US_FEDERAL = ('previous', 10, 1)
-UK_PERSONAL = ('same', 4, 6)
+US_FEDERAL = ("previous", 10, 1)
+UK_PERSONAL = ("same", 4, 6)
 
 
 class TestCheckInt(object):
-    @pytest.mark.parametrize('value, exception', [
-        ('asdf', TypeError),
-        ('-999', TypeError),
-        # Technically speaking, _check_int should accept negative integers
-        # but this isn't a public function + datetime doesn't handle them
-        # anyway.
-        (float(), TypeError),
-        (object(), TypeError),
-    ])
+    @pytest.mark.parametrize(
+        "value, exception",
+        [
+            ("asdf", TypeError),
+            ("-999", TypeError),
+            # Technically speaking, _check_int should accept negative integers
+            # but this isn't a public function + datetime doesn't handle them
+            # anyway.
+            (float(), TypeError),
+            (object(), TypeError),
+        ],
+    )
     def test_invalid_input(self, value, exception):
         with pytest.raises(exception):
             fiscalyear._check_int(value)
 
-    @pytest.mark.parametrize('value', [1, 2, 0, -1, -2, '1', '0', '999'])
+    @pytest.mark.parametrize("value", [1, 2, 0, -1, -2, "1", "0", "999"])
     def test_valid_input(self, value):
         assert int(value) == fiscalyear._check_int(value)
 
 
 class TestCheckYear(object):
-    @pytest.mark.parametrize('value, exception', [
-        ('asdf', TypeError),
-        (float(), TypeError),
-        (object(), TypeError),
-        ('-1', TypeError),
-        (-1, ValueError),
-        (0, ValueError),
-        ('0', ValueError),
-        (10000, ValueError),
-        ('10000', ValueError),
-    ])
+    @pytest.mark.parametrize(
+        "value, exception",
+        [
+            ("asdf", TypeError),
+            (float(), TypeError),
+            (object(), TypeError),
+            ("-1", TypeError),
+            (-1, ValueError),
+            (0, ValueError),
+            ("0", ValueError),
+            (10000, ValueError),
+            ("10000", ValueError),
+        ],
+    )
     def test_invalid_input(self, value, exception):
         with pytest.raises(exception):
             fiscalyear._check_year(value)
 
-    @pytest.mark.parametrize('value', [1, 2, '1', '999'])
+    @pytest.mark.parametrize("value", [1, 2, "1", "999"])
     def test_valid_input(self, value):
         assert int(value) == fiscalyear._check_year(value)
 
 
 class TestCheckDay(object):
-    @pytest.mark.parametrize('month, day, exception', [
-        (1, 'asdf', TypeError),
-        (1, '-999', TypeError),
-        (1, float(), TypeError),
-        (1, object(), TypeError),
-        (1, -1, ValueError),
-        (1, '-1', TypeError),
-        (1, 0, ValueError),
-        (1, '0', ValueError),
-        (1, 32, ValueError),
-        (1, 32, ValueError),
-    ])
+    @pytest.mark.parametrize(
+        "month, day, exception",
+        [
+            (1, "asdf", TypeError),
+            (1, "-999", TypeError),
+            (1, float(), TypeError),
+            (1, object(), TypeError),
+            (1, -1, ValueError),
+            (1, "-1", TypeError),
+            (1, 0, ValueError),
+            (1, "0", ValueError),
+            (1, 32, ValueError),
+            (1, 32, ValueError),
+        ],
+    )
     def test_invalid_input(self, month, day, exception):
         with pytest.raises(exception):
             fiscalyear._check_day(month, day)
 
     @pytest.mark.parametrize(
-        'month, day', [(1, 1), (1, 2), (1, '1'), (1, 31), (1, '31')]
+        "month, day", [(1, 1), (1, 2), (1, "1"), (1, 31), (1, "31")]
     )
     def test_valid_input(self, month, day):
         assert int(day) == fiscalyear._check_day(month, day)
 
 
 class TestCheckQuarter(object):
-    @pytest.mark.parametrize('value, exception', [
-        ('asdf', TypeError),
-        (float(), TypeError),
-        (object(), TypeError),
-        ('-1', TypeError),
-        (-1, ValueError),
-        (0, ValueError),
-        ('0', ValueError),
-        (5, ValueError),
-        ('5', ValueError),
-    ])
+    @pytest.mark.parametrize(
+        "value, exception",
+        [
+            ("asdf", TypeError),
+            (float(), TypeError),
+            (object(), TypeError),
+            ("-1", TypeError),
+            (-1, ValueError),
+            (0, ValueError),
+            ("0", ValueError),
+            (5, ValueError),
+            ("5", ValueError),
+        ],
+    )
     def test_invalid_input(self, value, exception):
         with pytest.raises(exception):
             fiscalyear._check_quarter(value)
 
-    @pytest.mark.parametrize('value', [1, 2, '1', '4'])
+    @pytest.mark.parametrize("value", [1, 2, "1", "4"])
     def test_valid_input(self, value):
         assert int(value) == fiscalyear._check_quarter(value)
 
 
 class TestValidateFiscalCalendarParams(object):
-    @pytest.mark.parametrize('arguments, exception', [
-        (dict(start_year='asdf', start_month=12, start_day=1), ValueError),
-        (dict(start_year=float(1999), start_month=12, start_day=1), TypeError),
-        (dict(start_year=object(), start_month=12, start_day=1), TypeError),
-
-        (dict(start_year='same', start_month='asdf', start_day=1), TypeError),
-        (dict(start_year='same', start_month=float(12), start_day=1),
-         TypeError),
-        (dict(start_year='same', start_month=object(), start_day=1),
-         TypeError),
-        (dict(start_year='same', start_month=-1, start_day=1), ValueError),
-        (dict(start_year='same', start_month=0, start_day=1), ValueError),
-        (dict(start_year='same', start_month=13, start_day=1), ValueError),
-
-        (dict(start_year='same', start_month=12, start_day='asdf'), TypeError),
-        (dict(start_year='same', start_month=12, start_day=float(1)),
-         TypeError),
-        (dict(start_year='same', start_month=12, start_day=object()),
-         TypeError),
-        (dict(start_year='same', start_month=12, start_day=0), ValueError),
-        (dict(start_year='same', start_month=12, start_day=-1), ValueError),
-        (dict(start_year='same', start_month=12, start_day=32), ValueError),
-    ])
+    @pytest.mark.parametrize(
+        "arguments, exception",
+        [
+            (dict(start_year="asdf", start_month=12, start_day=1), ValueError),
+            (dict(start_year=float(1999), start_month=12, start_day=1), TypeError),
+            (dict(start_year=object(), start_month=12, start_day=1), TypeError),
+            (dict(start_year="same", start_month="asdf", start_day=1), TypeError),
+            (dict(start_year="same", start_month=float(12), start_day=1), TypeError),
+            (dict(start_year="same", start_month=object(), start_day=1), TypeError),
+            (dict(start_year="same", start_month=-1, start_day=1), ValueError),
+            (dict(start_year="same", start_month=0, start_day=1), ValueError),
+            (dict(start_year="same", start_month=13, start_day=1), ValueError),
+            (dict(start_year="same", start_month=12, start_day="asdf"), TypeError),
+            (dict(start_year="same", start_month=12, start_day=float(1)), TypeError),
+            (dict(start_year="same", start_month=12, start_day=object()), TypeError),
+            (dict(start_year="same", start_month=12, start_day=0), ValueError),
+            (dict(start_year="same", start_month=12, start_day=-1), ValueError),
+            (dict(start_year="same", start_month=12, start_day=32), ValueError),
+        ],
+    )
     def test_invalid_input(self, arguments, exception):
         with pytest.raises(exception):
             fiscalyear._validate_fiscal_calendar_params(**arguments)
 
-    @pytest.mark.parametrize('arguments', [
-        dict(start_year='same', start_month=1, start_day=1),
-        dict(start_year='same', start_month=1, start_day=31),
-        dict(start_year='same', start_month=12, start_day=1),
-        dict(start_year='previous', start_month=1, start_day=1),
-        dict(start_year='previous', start_month=1, start_day=31),
-        dict(start_year='previous', start_month=12, start_day=1),
-    ])
+    @pytest.mark.parametrize(
+        "arguments",
+        [
+            dict(start_year="same", start_month=1, start_day=1),
+            dict(start_year="same", start_month=1, start_day=31),
+            dict(start_year="same", start_month=12, start_day=1),
+            dict(start_year="previous", start_month=1, start_day=1),
+            dict(start_year="previous", start_month=1, start_day=31),
+            dict(start_year="previous", start_month=12, start_day=1),
+        ],
+    )
     def test_valid_input(self, arguments):
         fiscalyear._validate_fiscal_calendar_params(**arguments)
 
 
 class TestSetupFiscalCalendar(object):
-
     def test_start_year(self):
-        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_YEAR == "previous"
 
-        fiscalyear.setup_fiscal_calendar(start_year='same')
-        assert fiscalyear.START_YEAR == 'same'
-        fiscalyear.setup_fiscal_calendar(start_year='previous')
+        fiscalyear.setup_fiscal_calendar(start_year="same")
+        assert fiscalyear.START_YEAR == "same"
+        fiscalyear.setup_fiscal_calendar(start_year="previous")
 
-        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_YEAR == "previous"
 
     def test_start_month(self):
         assert fiscalyear.START_MONTH == 10
@@ -171,25 +182,24 @@ class TestSetupFiscalCalendar(object):
         assert day.quarter == 1
 
         # Change fiscal year settings
-        fiscalyear.setup_fiscal_calendar('same', 1, 1)
+        fiscalyear.setup_fiscal_calendar("same", 1, 1)
         assert day.fiscal_year == 2017
         assert day.quarter == 4
 
         # Restore defaults and re-test
-        fiscalyear.setup_fiscal_calendar('previous', 10, 1)
+        fiscalyear.setup_fiscal_calendar("previous", 10, 1)
         assert day.fiscal_year == 2018
         assert day.quarter == 1
 
 
 class TestFiscalCalendar:
-
     def test_start_year(self):
-        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_YEAR == "previous"
 
-        with fiscalyear.fiscal_calendar(start_year='same'):
-            assert fiscalyear.START_YEAR == 'same'
+        with fiscalyear.fiscal_calendar(start_year="same"):
+            assert fiscalyear.START_YEAR == "same"
 
-        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_YEAR == "previous"
 
     def test_start_month(self):
         assert fiscalyear.START_MONTH == 10
@@ -208,48 +218,48 @@ class TestFiscalCalendar:
         assert fiscalyear.START_DAY == 1
 
     def test_complex(self):
-        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_YEAR == "previous"
         assert fiscalyear.START_MONTH == 10
         assert fiscalyear.START_DAY == 1
 
-        with fiscalyear.fiscal_calendar('same', 4, 6):
-            assert fiscalyear.START_YEAR == 'same'
+        with fiscalyear.fiscal_calendar("same", 4, 6):
+            assert fiscalyear.START_YEAR == "same"
             assert fiscalyear.START_MONTH == 4
             assert fiscalyear.START_DAY == 6
 
-        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_YEAR == "previous"
         assert fiscalyear.START_MONTH == 10
         assert fiscalyear.START_DAY == 1
 
     def test_nested(self):
-        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_YEAR == "previous"
         assert fiscalyear.START_MONTH == 10
         assert fiscalyear.START_DAY == 1
 
-        with fiscalyear.fiscal_calendar(start_year='same'):
-            assert fiscalyear.START_YEAR == 'same'
+        with fiscalyear.fiscal_calendar(start_year="same"):
+            assert fiscalyear.START_YEAR == "same"
             assert fiscalyear.START_MONTH == 10
             assert fiscalyear.START_DAY == 1
 
             with fiscalyear.fiscal_calendar(start_month=4):
-                assert fiscalyear.START_YEAR == 'same'
+                assert fiscalyear.START_YEAR == "same"
                 assert fiscalyear.START_MONTH == 4
                 assert fiscalyear.START_DAY == 1
 
                 with fiscalyear.fiscal_calendar(start_day=6):
-                    assert fiscalyear.START_YEAR == 'same'
+                    assert fiscalyear.START_YEAR == "same"
                     assert fiscalyear.START_MONTH == 4
                     assert fiscalyear.START_DAY == 6
 
-                assert fiscalyear.START_YEAR == 'same'
+                assert fiscalyear.START_YEAR == "same"
                 assert fiscalyear.START_MONTH == 4
                 assert fiscalyear.START_DAY == 1
 
-            assert fiscalyear.START_YEAR == 'same'
+            assert fiscalyear.START_YEAR == "same"
             assert fiscalyear.START_MONTH == 10
             assert fiscalyear.START_DAY == 1
 
-        assert fiscalyear.START_YEAR == 'previous'
+        assert fiscalyear.START_YEAR == "previous"
         assert fiscalyear.START_MONTH == 10
         assert fiscalyear.START_DAY == 1
 
@@ -263,7 +273,7 @@ class TestFiscalCalendar:
                 pass
 
         with pytest.raises(TypeError):
-            with fiscalyear.fiscal_calendar(start_day='hello world'):
+            with fiscalyear.fiscal_calendar(start_day="hello world"):
                 pass
 
     def test_out_of_range(self):
@@ -306,32 +316,31 @@ class TestFiscalCalendar:
 
 
 class TestFiscalYear:
-
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def a(self):
         return fiscalyear.FiscalYear(2016)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def b(self):
         return fiscalyear.FiscalYear(2017)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def c(self):
-        return fiscalyear.FiscalYear('2017')
+        return fiscalyear.FiscalYear("2017")
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def d(self):
         return fiscalyear.FiscalQuarter(2017, 2)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def e(self):
         return fiscalyear.FiscalMonth(2017, 1)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def f(self):
         return fiscalyear.FiscalDay(2017, 1, 15)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def g(self):
         return fiscalyear.FiscalYear(2015)
 
@@ -339,16 +348,16 @@ class TestFiscalYear:
         assert a.fiscal_year == 2016
 
     def test_current(self, mocker):
-        mock_today = mocker.patch.object(fiscalyear.FiscalDate, 'today')
+        mock_today = mocker.patch.object(fiscalyear.FiscalDate, "today")
         mock_today.return_value = fiscalyear.FiscalDate(2016, 10, 1)
         current = fiscalyear.FiscalYear.current()
         assert current == fiscalyear.FiscalYear(2017)
 
     def test_repr(self, a):
-        assert repr(a) == 'FiscalYear(2016)'
+        assert repr(a) == "FiscalYear(2016)"
 
     def test_str(self, a):
-        assert str(a) == 'FY2016'
+        assert str(a) == "FY2016"
 
     def test_from_string(self, c):
         assert c.fiscal_year == 2017
@@ -358,7 +367,7 @@ class TestFiscalYear:
             fiscalyear.FiscalYear(2017.5)
 
         with pytest.raises(TypeError):
-            fiscalyear.FiscalYear('hello world')
+            fiscalyear.FiscalYear("hello world")
 
     def test_out_of_range(self):
         with pytest.raises(ValueError):
@@ -408,15 +417,15 @@ class TestFiscalYear:
         assert isinstance(a.isleap, bool)
         assert isinstance(g.isleap, bool)
 
-        with fiscalyear.fiscal_calendar(start_year='previous', start_month=1):
+        with fiscalyear.fiscal_calendar(start_year="previous", start_month=1):
             assert not a.isleap
             assert b.isleap
 
-        with fiscalyear.fiscal_calendar(start_year='same', start_month=3):
+        with fiscalyear.fiscal_calendar(start_year="same", start_month=3):
             assert not a.isleap
             assert g.isleap
 
-        with fiscalyear.fiscal_calendar(start_year='same', start_month=1):
+        with fiscalyear.fiscal_calendar(start_year="same", start_month=1):
             assert a.isleap
             assert not g.isleap
 
@@ -432,7 +441,7 @@ class TestFiscalYear:
         assert datetime.date(2016, 1, 1) in a
 
         with pytest.raises(TypeError):
-            'hello world' in a
+            "hello world" in a
 
     def test_less_than(self, a, b):
         assert a < b
@@ -472,50 +481,49 @@ class TestFiscalYear:
 
 
 class TestFiscalQuarter:
-
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def a(self):
         return fiscalyear.FiscalQuarter(2016, 4)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def b(self):
         return fiscalyear.FiscalQuarter(2017, 1)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def c(self):
         return fiscalyear.FiscalQuarter(2017, 2)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def d(self):
         return fiscalyear.FiscalQuarter(2017, 3)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def e(self):
         return fiscalyear.FiscalQuarter(2017, 4)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def f(self):
         return fiscalyear.FiscalQuarter(2018, 1)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def g(self):
-        return fiscalyear.FiscalQuarter('2018', '1')
+        return fiscalyear.FiscalQuarter("2018", "1")
 
     def test_basic(self, a):
         assert a.fiscal_year == 2016
         assert a.quarter == 4
 
     def test_current(self, mocker):
-        mock_today = mocker.patch.object(fiscalyear.FiscalDate, 'today')
+        mock_today = mocker.patch.object(fiscalyear.FiscalDate, "today")
         mock_today.return_value = fiscalyear.FiscalDate(2016, 10, 1)
         current = fiscalyear.FiscalQuarter.current()
         assert current == fiscalyear.FiscalQuarter(2017, 1)
 
     def test_repr(self, a):
-        assert repr(a) == 'FiscalQuarter(2016, 4)'
+        assert repr(a) == "FiscalQuarter(2016, 4)"
 
     def test_str(self, a):
-        assert str(a) == 'FY2016 Q4'
+        assert str(a) == "FY2016 Q4"
 
     def test_from_string(self, g):
         assert g.fiscal_year == 2018
@@ -526,7 +534,7 @@ class TestFiscalQuarter:
             fiscalyear.FiscalQuarter(2017.5, 1.2)
 
         with pytest.raises(TypeError):
-            fiscalyear.FiscalQuarter('hello', 'world')
+            fiscalyear.FiscalQuarter("hello", "world")
 
     def test_out_of_range(self):
         with pytest.raises(ValueError):
@@ -557,12 +565,12 @@ class TestFiscalQuarter:
             assert a.start == datetime.datetime(2015, 12, 1, 0, 0)
 
     def test_end(self, a):
-        with fiscalyear.fiscal_calendar(start_month=1, start_year='same'):
+        with fiscalyear.fiscal_calendar(start_month=1, start_year="same"):
             assert a.end == datetime.datetime(2016, 12, 31, 23, 59, 59)
 
     def test_bad_start_year(self, a):
         backup_start_year = fiscalyear.START_YEAR
-        fiscalyear.START_YEAR = 'hello world'
+        fiscalyear.START_YEAR = "hello world"
 
         with pytest.raises(ValueError):
             a.start
@@ -679,28 +687,27 @@ class TestFiscalQuarter:
 
 
 class TestFiscalMonth:
-
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def a(self):
         return fiscalyear.FiscalMonth(2016, 1)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def b(self):
         return fiscalyear.FiscalMonth(2016, 2)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def c(self):
-        return fiscalyear.FiscalMonth('2016', '2')
+        return fiscalyear.FiscalMonth("2016", "2")
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def d(self):
         return fiscalyear.FiscalQuarter(2016, 1)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def e(self):
         return fiscalyear.FiscalMonth(2016, 12)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def f(self):
         return fiscalyear.FiscalQuarter(2017, 1)
 
@@ -709,16 +716,16 @@ class TestFiscalMonth:
         assert a.fiscal_month == 1
 
     def test_current(self, mocker):
-        mock_today = mocker.patch.object(fiscalyear.FiscalDate, 'today')
+        mock_today = mocker.patch.object(fiscalyear.FiscalDate, "today")
         mock_today.return_value = fiscalyear.FiscalDate(2016, 10, 1)
         current = fiscalyear.FiscalMonth.current()
         assert current == fiscalyear.FiscalMonth(2017, 1)
 
     def test_repr(self, a):
-        assert repr(a) == 'FiscalMonth(2016, 1)'
+        assert repr(a) == "FiscalMonth(2016, 1)"
 
     def test_str(self, a):
-        assert str(a) == 'FY2016 FM1'
+        assert str(a) == "FY2016 FM1"
 
     def test_from_string(self, c):
         assert c.fiscal_year == 2016
@@ -728,7 +735,7 @@ class TestFiscalMonth:
             fiscalyear.FiscalMonth(2016.5)
 
         with pytest.raises(TypeError):
-            fiscalyear.FiscalMonth('hello world')
+            fiscalyear.FiscalMonth("hello world")
 
     def test_out_of_range(self):
         with pytest.raises(ValueError):
@@ -754,7 +761,8 @@ class TestFiscalMonth:
         with fiscalyear.fiscal_calendar(*UK_PERSONAL):
             assert a.start == datetime.datetime(2016, 4, 6, 0, 0, 0)
             assert fiscalyear.FiscalMonth(2016, 12).start == datetime.datetime(
-                2017, 3, 6, 0, 0, 0)
+                2017, 3, 6, 0, 0, 0
+            )
 
     def test_end(self, e):
         assert e.end == fiscalyear.FiscalYear(e.fiscal_year).end
@@ -776,7 +784,7 @@ class TestFiscalMonth:
         assert datetime.date(2015, 10, 1) in a
 
         with pytest.raises(TypeError):
-            'hello world' in a
+            "hello world" in a
 
     def test_less_than(self, a, b):
         assert a < b
@@ -816,24 +824,23 @@ class TestFiscalMonth:
 
 
 class TestFiscalDay:
-
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def a(self):
         return fiscalyear.FiscalDay(2016, 1)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def b(self):
         return fiscalyear.FiscalDay(2016, 2)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def c(self):
-        return fiscalyear.FiscalDay('2016', '2')
+        return fiscalyear.FiscalDay("2016", "2")
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def e(self):
         return fiscalyear.FiscalDay(2016, 366)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def f(self):
         return fiscalyear.FiscalDay(2017, 1)
 
@@ -845,16 +852,16 @@ class TestFiscalDay:
         assert a.fiscal_quarter == 1
 
     def test_current(self, mocker):
-        mock_today = mocker.patch.object(fiscalyear.FiscalDate, 'today')
+        mock_today = mocker.patch.object(fiscalyear.FiscalDate, "today")
         mock_today.return_value = fiscalyear.FiscalDate(2016, 10, 1)
         current = fiscalyear.FiscalDay.current()
         assert current == fiscalyear.FiscalDay(2017, 1)
 
     def test_repr(self, a):
-        assert repr(a) == 'FiscalDay(2016, 1)'
+        assert repr(a) == "FiscalDay(2016, 1)"
 
     def test_str(self, a):
-        assert str(a) == 'FY2016 FD1'
+        assert str(a) == "FY2016 FD1"
 
     def test_from_string(self, c):
         assert c.fiscal_year == 2016
@@ -865,7 +872,7 @@ class TestFiscalDay:
             fiscalyear.FiscalDay(2016.5)
 
         with pytest.raises(TypeError):
-            fiscalyear.FiscalDay('hello world')
+            fiscalyear.FiscalDay("hello world")
 
     def test_out_of_range(self):
         with pytest.raises(ValueError):
@@ -920,7 +927,7 @@ class TestFiscalDay:
         assert b in fiscalyear.FiscalYear(2016)
 
         with pytest.raises(TypeError):
-            'hello world' in a
+            "hello world" in a
 
     def test_less_than(self, a, b):
         assert a < b
@@ -960,16 +967,15 @@ class TestFiscalDay:
 
 
 class TestFiscalDate:
-
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def a(self):
         return fiscalyear.FiscalDate(2017, 1, 1)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def b(self):
         return fiscalyear.FiscalDate(2017, 8, 31)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def c(self):
         return fiscalyear.FiscalDate(2017, 11, 15)
 
@@ -1011,16 +1017,15 @@ class TestFiscalDate:
 
 
 class TestFiscalDateTime:
-
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def a(self):
         return fiscalyear.FiscalDateTime(2017, 1, 1, 0, 0, 0)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def b(self):
         return fiscalyear.FiscalDateTime(2017, 8, 31, 23, 59, 59)
 
-    @pytest.fixture(scope='class')
+    @pytest.fixture(scope="class")
     def c(self):
         return fiscalyear.FiscalDateTime(2017, 11, 15, 12, 4, 30)
 

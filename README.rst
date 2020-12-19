@@ -4,6 +4,9 @@
 .. image:: https://github.com/adamjstewart/fiscalyear/workflows/flake8/badge.svg?branch=master
    :target: https://github.com/adamjstewart/fiscalyear/actions
 
+.. image:: https://github.com/adamjstewart/fiscalyear/workflows/black/badge.svg?branch=master
+   :target: https://github.com/adamjstewart/fiscalyear/actions
+
 .. image:: https://codecov.io/gh/adamjstewart/fiscalyear/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/adamjstewart/fiscalyear
 
@@ -16,6 +19,8 @@
 .. image:: https://anaconda.org/conda-forge/fiscalyear/badges/version.svg
    :target: https://anaconda.org/conda-forge/fiscalyear
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
 
 Overview
 ========
