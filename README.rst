@@ -61,7 +61,7 @@ You can also get the current ``FiscalYear`` with:
 FiscalQuarter
 -------------
 
-The ``FiscalYear`` class also allows you to query information about a specific quarter.
+The ``FiscalYear`` class also allows you to query information about a specific fiscal quarter.
 
 .. code-block:: python
 
@@ -84,7 +84,7 @@ These objects represent the standalone ``FiscalQuarter`` class.
    True
    >>> b in a
    True
-   >>> b.next_quarter
+   >>> b.next_fiscal_quarter
    FiscalQuarter(2017, 4)
 
 You can also get the current ``FiscalQuarter`` with:
@@ -163,9 +163,9 @@ The start and end of each of the above objects are stored as instances of the ``
    FiscalDateTime(2017, 4, 8, 20, 30, 31, 105323)
    >>> e.fiscal_year
    2017
-   >>> e.quarter
+   >>> e.fiscal_quarter
    3
-   >>> e.next_quarter
+   >>> e.next_fiscal_quarter
    FiscalQuarter(2017, 4)
    >>> e.fiscal_month
    7

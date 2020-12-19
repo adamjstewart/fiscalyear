@@ -8,7 +8,12 @@ __version__ = "0.2.0"
 import calendar
 import contextlib
 import datetime
+import sys
+import warnings
 
+
+if not sys.warnoptions:
+    warnings.simplefilter("default")
 
 # Number of months in each quarter
 MONTHS_PER_QUARTER = 12 // 4
@@ -449,27 +454,27 @@ class FiscalYear(object):
 class FiscalQuarter(object):
     """A class representing a single fiscal quarter."""
 
-    __slots__ = ["_fiscal_year", "_quarter"]
+    __slots__ = ["_fiscal_year", "_fiscal_quarter"]
 
-    def __new__(cls, fiscal_year, quarter):
+    def __new__(cls, fiscal_year, fiscal_quarter):
         """Constructor.
 
         :param fiscal_year: The fiscal year
         :type fiscal_year: int or str
-        :param quarter: The fiscal quarter [1 - 4]
-        :type quarter: int or str
+        :param fiscal_quarter: The fiscal quarter
+        :type fiscal_quarter: int or str
         :returns: A newly constructed FiscalQuarter object
         :rtype: FiscalQuarter
-        :raises TypeError: If fiscal_year or quarter is not
+        :raises TypeError: If fiscal_year or fiscal_quarter is not
             an int or int-like string
-        :raises ValueError: If fiscal_year or quarter is out of range
+        :raises ValueError: If fiscal_year or fiscal_quarter is out of range
         """
         fiscal_year = _check_year(fiscal_year)
-        quarter = _check_quarter(quarter)
+        fiscal_quarter = _check_quarter(fiscal_quarter)
 
         self = super(FiscalQuarter, cls).__new__(cls)
         self._fiscal_year = fiscal_year
-        self._quarter = quarter
+        self._fiscal_quarter = fiscal_quarter
         return self
 
     @classmethod
@@ -480,7 +485,7 @@ class FiscalQuarter(object):
         :rtype: FiscalQuarter
         """
         today = FiscalDate.today()
-        return cls(today.fiscal_year, today.quarter)
+        return cls(today.fiscal_year, today.fiscal_quarter)
 
     def __repr__(self):
         """Convert to formal string, for repr().
@@ -492,7 +497,7 @@ class FiscalQuarter(object):
         return "%s(%d, %d)" % (
             self.__class__.__name__,
             self._fiscal_year,
-            self._quarter,
+            self._fiscal_quarter,
         )
 
     def __str__(self):
@@ -502,7 +507,7 @@ class FiscalQuarter(object):
         >>> str(q3)
         'FY2017 Q3'
         """
-        return "FY%d Q%d" % (self._fiscal_year, self._quarter)
+        return "FY%d Q%d" % (self._fiscal_year, self._fiscal_quarter)
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
@@ -539,37 +544,64 @@ class FiscalQuarter(object):
         return self._fiscal_year
 
     @property
-    def quarter(self):
+    def fiscal_quarter(self):
         """:returns: The fiscal quarter
         :rtype: int
         """
-        return self._quarter
+        return self._fiscal_quarter
 
     @property
-    def prev_quarter(self):
+    def quarter(self):
+        warnings.warn(
+            "FiscalQuarter.quarter is deprecated, "
+            "use FiscalQuarter.fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.fiscal_quarter
+
+    @property
+    def prev_fiscal_quarter(self):
         """:returns: The previous fiscal quarter
         :rtype: FiscalQuarter
         """
         fiscal_year = self._fiscal_year
-        quarter = self._quarter - 1
-        if quarter == 0:
+        fiscal_quarter = self._fiscal_quarter - 1
+        if fiscal_quarter == 0:
             fiscal_year -= 1
-            quarter = 4
+            fiscal_quarter = 4
 
-        return FiscalQuarter(fiscal_year, quarter)
+        return FiscalQuarter(fiscal_year, fiscal_quarter)
+
+    @property
+    def prev_quarter(self):
+        warnings.warn(
+            "FiscalQuarter.prev_quarter is deprecated, "
+            "use FiscalQuarter.prev_fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.prev_fiscal_quarter
+
+    @property
+    def next_fiscal_quarter(self):
+        """:returns: The next fiscal quarter
+        :rtype: FiscalQuarter
+        """
+        fiscal_year = self._fiscal_year
+        fiscal_quarter = self._fiscal_quarter + 1
+        if fiscal_quarter == 5:
+            fiscal_year += 1
+            fiscal_quarter = 1
+
+        return FiscalQuarter(fiscal_year, fiscal_quarter)
 
     @property
     def next_quarter(self):
-        """:returns: The next fiscal quarter
-        :rtype: int
-        """
-        fiscal_year = self._fiscal_year
-        quarter = self._quarter + 1
-        if quarter == 5:
-            fiscal_year += 1
-            quarter = 1
-
-        return FiscalQuarter(fiscal_year, quarter)
+        warnings.warn(
+            "FiscalQuarter.next_quarter is deprecated, "
+            "use FiscalQuarter.next_fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.next_fiscal_quarter
 
     @property
     def start(self):
@@ -579,7 +611,7 @@ class FiscalQuarter(object):
 
         # Find the first month of the fiscal quarter
         month = START_MONTH
-        month += (self._quarter - 1) * MONTHS_PER_QUARTER
+        month += (self._fiscal_quarter - 1) * MONTHS_PER_QUARTER
         month %= 12
         if month == 0:
             month = 12
@@ -610,7 +642,7 @@ class FiscalQuarter(object):
         :rtype: FiscalDateTime
         """
         # Find the start of the next fiscal quarter
-        next_start = self.next_quarter.start
+        next_start = self.next_fiscal_quarter.start
 
         # Substract 1 second
         end = next_start - datetime.timedelta(seconds=1)
@@ -630,9 +662,9 @@ class FiscalQuarter(object):
 
     def __lt__(self, other):
         if isinstance(other, FiscalQuarter):
-            return (self._fiscal_year, self._quarter) < (
+            return (self._fiscal_year, self._fiscal_quarter) < (
                 other._fiscal_year,
-                other._quarter,
+                other._fiscal_quarter,
             )
         else:
             raise TypeError(
@@ -642,9 +674,9 @@ class FiscalQuarter(object):
 
     def __le__(self, other):
         if isinstance(other, FiscalQuarter):
-            return (self._fiscal_year, self._quarter) <= (
+            return (self._fiscal_year, self._fiscal_quarter) <= (
                 other._fiscal_year,
-                other._quarter,
+                other._fiscal_quarter,
             )
         else:
             raise TypeError(
@@ -654,9 +686,9 @@ class FiscalQuarter(object):
 
     def __eq__(self, other):
         if isinstance(other, FiscalQuarter):
-            return (self._fiscal_year, self._quarter) == (
+            return (self._fiscal_year, self._fiscal_quarter) == (
                 other._fiscal_year,
-                other._quarter,
+                other._fiscal_quarter,
             )
         else:
             raise TypeError(
@@ -666,9 +698,9 @@ class FiscalQuarter(object):
 
     def __ne__(self, other):
         if isinstance(other, FiscalQuarter):
-            return (self._fiscal_year, self._quarter) != (
+            return (self._fiscal_year, self._fiscal_quarter) != (
                 other._fiscal_year,
-                other._quarter,
+                other._fiscal_quarter,
             )
         else:
             raise TypeError(
@@ -678,9 +710,9 @@ class FiscalQuarter(object):
 
     def __gt__(self, other):
         if isinstance(other, FiscalQuarter):
-            return (self._fiscal_year, self._quarter) > (
+            return (self._fiscal_year, self._fiscal_quarter) > (
                 other._fiscal_year,
-                other._quarter,
+                other._fiscal_quarter,
             )
         else:
             raise TypeError(
@@ -690,9 +722,9 @@ class FiscalQuarter(object):
 
     def __ge__(self, other):
         if isinstance(other, FiscalQuarter):
-            return (self._fiscal_year, self._quarter) >= (
+            return (self._fiscal_year, self._fiscal_quarter) >= (
                 other._fiscal_year,
-                other._quarter,
+                other._fiscal_quarter,
             )
         else:
             raise TypeError(
@@ -711,6 +743,8 @@ class FiscalMonth(object):
 
         :param fiscal_year: The fiscal year
         :type fiscal_year: int or str
+        :param fiscal_month: The fiscal month
+        :type fiscal_month: int or str
         :returns: A newly constructed FiscalMonth object
         :rtype: FiscalMonth
         :raises TypeError: If fiscal_year or fiscal_month is not
@@ -1041,7 +1075,7 @@ class FiscalDay(object):
         """:returns: The fiscal quarter
         :rtype: int
         """
-        return self.start.quarter
+        return self.start.fiscal_quarter
 
     @property
     def fiscal_month(self):
@@ -1216,6 +1250,25 @@ class _FiscalBase:
             return self.year - 1
 
     @property
+    def fiscal_quarter(self):
+        """:returns: The fiscal quarter
+        :rtype: int
+        """
+        for quarter in range(1, 5):
+            q = FiscalQuarter(self.fiscal_year, quarter)
+            if self in q:
+                return quarter
+
+    @property
+    def quarter(self):
+        warnings.warn(
+            "FiscalDate(Time).quarter is deprecated, "
+            "use FiscalDate(Time).fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.fiscal_quarter
+
+    @property
     def fiscal_month(self):
         """:returns: The fiscal month
         :rtype: int
@@ -1250,32 +1303,76 @@ class _FiscalBase:
         return FiscalYear(self.fiscal_year + 1)
 
     @property
-    def quarter(self):
-        """:returns: The quarter of the fiscal year
-        :rtype: int
+    def prev_fiscal_quarter(self):
+        """:returns: The previous fiscal quarter
+        :rtype: FiscalQuarter
         """
-        for quarter in range(1, 5):
-            q = FiscalQuarter(self.fiscal_year, quarter)
-            if self in q:
-                return quarter
+        fiscal_quarter = FiscalQuarter(self.fiscal_year, self.fiscal_quarter)
+
+        return fiscal_quarter.prev_fiscal_quarter
 
     @property
     def prev_quarter(self):
-        """:returns: The previous quarter
+        warnings.warn(
+            "FiscalDate(Time).prev_quarter is deprecated, "
+            "use FiscalDate(Time).prev_fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.prev_fiscal_quarter
+
+    @property
+    def next_fiscal_quarter(self):
+        """:returns: The next fiscal quarter
         :rtype: FiscalQuarter
         """
-        quarter = FiscalQuarter(self.fiscal_year, self.quarter)
+        fiscal_quarter = FiscalQuarter(self.fiscal_year, self.fiscal_quarter)
 
-        return quarter.prev_quarter
+        return fiscal_quarter.next_fiscal_quarter
 
     @property
     def next_quarter(self):
-        """:returns: The next quarter
-        :rtype: FiscalQuarter
-        """
-        quarter = FiscalQuarter(self.fiscal_year, self.quarter)
+        warnings.warn(
+            "FiscalDate(Time).next_quarter is deprecated, "
+            "use FiscalDate(Time).next_fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.next_fiscal_quarter
 
-        return quarter.next_quarter
+    @property
+    def prev_fiscal_month(self):
+        """:returns: The previous fiscal month
+        :rtype: FiscalMonth
+        """
+        fiscal_month = FiscalMonth(self.fiscal_year, self.fiscal_month)
+
+        return fiscal_month.prev_fiscal_month
+
+    @property
+    def next_fiscal_month(self):
+        """:returns: The next fiscal month
+        :rtype: FiscalMonth
+        """
+        fiscal_month = FiscalMonth(self.fiscal_year, self.fiscal_month)
+
+        return fiscal_month.next_fiscal_month
+
+    @property
+    def prev_fiscal_day(self):
+        """:returns: The previous fiscal day
+        :rtype: FiscalDay
+        """
+        fiscal_day = FiscalDay(self.fiscal_year, self.fiscal_day)
+
+        return fiscal_day.prev_fiscal_day
+
+    @property
+    def next_fiscal_day(self):
+        """:returns: The next fiscal day
+        :rtype: FiscalDay
+        """
+        fiscal_day = FiscalDay(self.fiscal_year, self.fiscal_day)
+
+        return fiscal_day.next_fiscal_day
 
 
 class FiscalDate(datetime.date, _FiscalBase):
