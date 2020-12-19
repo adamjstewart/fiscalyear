@@ -54,6 +54,8 @@ These objects represent the standalone ``FiscalQuarter`` class.
    True
    >>> b in a
    True
+   >>> b.next_quarter
+   FiscalQuarter(2017, 4)
 
 You can also get the current ``FiscalQuarter`` with:
 
@@ -64,25 +66,81 @@ You can also get the current ``FiscalQuarter`` with:
    FiscalQuarter(2018, 2)
 
 
-FiscalDateTime
---------------
+FiscalMonth
+-----------
 
-The start and end of each quarter are stored as instances of the ``FiscalDateTime`` class. This class provides all of the same features as the ``datetime`` class, with the addition of the ability to query the fiscal year, fiscal quarter, fiscal month, and fiscal day.
+The ``FiscalMonth`` class allows you to keep track of the fiscal month.
 
 .. code-block:: python
 
-   >>> c = FiscalDateTime.now()
-   >>> c
+   >>> c = FiscalMonth(2017, 9)
+   >>> c.start
+   FiscalDateTime(2017, 6, 1, 0, 0)
+   >>> c.end
+   FiscalDateTime(2017, 6, 30, 23, 59, 59)
+   >>> c in a
+   True
+   >>> c in b
+   True
+   >>> c.next_fiscal_month
+   FiscalMonth(2017, 10)
+
+You can also get the current ``FiscalMonth`` with:
+
+.. code-block:: python
+
+   >>> FiscalMonth.current()
+   FiscalMonth(2018, 4)
+
+
+FiscalDay
+----------
+
+To keep track of the fiscal day, use the ``FiscalDay`` class.
+
+.. code-block:: python
+
+   >>> d = FiscalDay(2017, 250)
+   >>> d.start
+   FiscalDateTime(2017, 6, 6, 0, 0)
+   >>> d.end
+   FiscalDateTime(2017, 6, 6, 23, 59, 59)
+   >>> d in a
+   True
+   >>> d in b
+   True
+   >>> d in c
+   True
+   >>> d.next_fiscal_day
+   FiscalDay(2017, 251)
+
+You can also get the current ``FiscalDay`` with:
+
+.. code-block:: python
+
+   >>> FiscalDay.current()
+   FiscalDay(2018, 94)
+
+
+FiscalDateTime
+--------------
+
+The start and end of each of the above objects are stored as instances of the ``FiscalDateTime`` class. This class provides all of the same features as the ``datetime`` class, with the addition of the ability to query the fiscal year, fiscal quarter, fiscal month, and fiscal day.
+
+.. code-block:: python
+
+   >>> e = FiscalDateTime.now()
+   >>> e
    FiscalDateTime(2017, 4, 8, 20, 30, 31, 105323)
-   >>> c.fiscal_year
+   >>> e.fiscal_year
    2017
-   >>> c.quarter
+   >>> e.quarter
    3
-   >>> c.next_quarter
+   >>> e.next_quarter
    FiscalQuarter(2017, 4)
-   >>> c.fiscal_month
+   >>> e.fiscal_month
    7
-   >>> c.fiscal_day
+   >>> e.fiscal_day
    190
 
 
@@ -93,10 +151,10 @@ If you don't care about the time component of the ``FiscalDateTime`` class, the 
 
 .. code-block:: python
 
-   >>> d = FiscalDate.today()
-   >>> d
+   >>> f = FiscalDate.today()
+   >>> f
    FiscalDate(2017, 4, 8)
-   >>> d.fiscal_year
+   >>> f.fiscal_year
    2017
-   >>> d.prev_fiscal_year
+   >>> f.prev_fiscal_year
    FiscalYear(2016)
