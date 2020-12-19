@@ -2,6 +2,6 @@ API Docs
 ========
 
 .. automodule:: fiscalyear
-    :members:
-    :inherited-members:
-    :undoc-members:
+   :members:
+   :inherited-members:
+   :undoc-members:
