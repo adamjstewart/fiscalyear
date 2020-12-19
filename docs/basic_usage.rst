@@ -93,7 +93,7 @@ You can also get the current ``FiscalMonth`` with:
 
 
 FiscalDay
-----------
+---------
 
 To keep track of the fiscal day, use the ``FiscalDay`` class.
 
