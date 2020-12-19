@@ -35,11 +35,10 @@ If you work in an HPC environment, the `Spack <https://spack.io/>`_ package mana
 .. code-block:: console
 
    $ spack install py-fiscalyear
-   $ spack activate py-fiscalyear
-   $ module load python
+   $ spack load py-fiscalyear
 
 
-The resulting module file will automatically add ``fiscalyear`` to your ``PYTHONPATH``. See the `Spack Documentation <https://spack.readthedocs.io/en/latest/>`_ to get started.
+See the `Spack Documentation <https://spack.readthedocs.io/en/latest/>`_ to get started.
 
 
 Source
@@ -57,13 +56,6 @@ Now build the module.
 .. code-block:: console
 
    $ python setup.py build
-
-
-At this point, you can optionally run the unit tests to make sure everything is working properly. This requires `pytest <https://docs.pytest.org/en/latest/>`_ for unit testing.
-
-.. code-block:: console
-
-   $ python setup.py test
 
 
 Finally, install the package to somewhere in your ``PYTHONPATH``.

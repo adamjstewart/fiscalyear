@@ -1,12 +1,17 @@
 Coverage
 ========
 
-``fiscalyear`` uses ``pytest-cov`` to determine the percentage of the code base that is covered by unit tests. You will need to install this package along with ``pytest`` to run the coverage tests yourself.
+``fiscalyear`` uses ``pytest-cov`` to determine the percentage of the code base that is covered by unit tests. You will need to install the following packages to run the coverage tests yourself.
+
+* `pytest <https://docs.pytest.org/en/latest/>`_
+* `pytest-cov <https://github.com/pytest-dev/pytest-cov>`_
+* `pytest-mock <https://github.com/pytest-dev/pytest-mock/>`_
+
 
 Running coverage tests
 ----------------------
 
-Once you have ``pytest`` and ``pytest-cov`` installed, you can run the coverage tests locally.
+Once you have the dependencies installed, you can run the coverage tests locally.
 
 .. code-block:: console
 
@@ -34,4 +39,4 @@ Once you have ``pytest`` and ``pytest-cov`` installed, you can run the coverage 
 Continuous Integration (CI)
 ---------------------------
 
-In addition to unit tests, Travis CI also runs coverage tests. The results of these tests are reported back to `codecov <https://codecov.io/gh>`_ and displayed through a badge on the README.
+In addition to unit tests, GitHub Actions also runs coverage tests. The results of these tests are reported back to `codecov <https://codecov.io/gh>`_ and displayed through a badge on the README.
