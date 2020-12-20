@@ -179,17 +179,17 @@ class TestSetupFiscalCalendar(object):
         # Test defaults
         day = fiscalyear.FiscalDate(2017, 12, 1)
         assert day.fiscal_year == 2018
-        assert day.quarter == 1
+        assert day.fiscal_quarter == 1
 
         # Change fiscal year settings
         fiscalyear.setup_fiscal_calendar("same", 1, 1)
         assert day.fiscal_year == 2017
-        assert day.quarter == 4
+        assert day.fiscal_quarter == 4
 
         # Restore defaults and re-test
         fiscalyear.setup_fiscal_calendar("previous", 10, 1)
         assert day.fiscal_year == 2018
-        assert day.quarter == 1
+        assert day.fiscal_quarter == 1
 
 
 class TestFiscalCalendar:
@@ -511,7 +511,7 @@ class TestFiscalQuarter:
 
     def test_basic(self, a):
         assert a.fiscal_year == 2016
-        assert a.quarter == 4
+        assert a.fiscal_quarter == 4
 
     def test_current(self, mocker):
         mock_today = mocker.patch.object(fiscalyear.FiscalDate, "today")
@@ -527,7 +527,7 @@ class TestFiscalQuarter:
 
     def test_from_string(self, g):
         assert g.fiscal_year == 2018
-        assert g.quarter == 1
+        assert g.fiscal_quarter == 1
 
     def test_wrong_type(self):
         with pytest.raises(TypeError):
@@ -546,19 +546,25 @@ class TestFiscalQuarter:
         with pytest.raises(ValueError):
             fiscalyear.FiscalQuarter(0, 2)
 
-    def test_prev_quarter(self, a, b, c, d, e, f):
-        assert a == b.prev_quarter
-        assert b == c.prev_quarter
-        assert c == d.prev_quarter
-        assert d == e.prev_quarter
-        assert e == f.prev_quarter
+    def test_deprecated(self, a):
+        with pytest.deprecated_call():
+            a.quarter
+            a.prev_quarter
+            a.next_quarter
 
-    def test_next_quarter(self, a, b, c, d, e, f):
-        assert a.next_quarter == b
-        assert b.next_quarter == c
-        assert c.next_quarter == d
-        assert d.next_quarter == e
-        assert e.next_quarter == f
+    def test_prev_fiscal_quarter(self, a, b, c, d, e, f):
+        assert a == b.prev_fiscal_quarter
+        assert b == c.prev_fiscal_quarter
+        assert c == d.prev_fiscal_quarter
+        assert d == e.prev_fiscal_quarter
+        assert e == f.prev_fiscal_quarter
+
+    def test_next_fiscal_quarter(self, a, b, c, d, e, f):
+        assert a.next_fiscal_quarter == b
+        assert b.next_fiscal_quarter == c
+        assert c.next_fiscal_quarter == d
+        assert d.next_fiscal_quarter == e
+        assert e.next_fiscal_quarter == f
 
     def test_start(self, a):
         with fiscalyear.fiscal_calendar(start_month=3):
@@ -986,7 +992,7 @@ class TestFiscalDate:
 
         assert a.fiscal_year == 2017
         assert a.fiscal_month == 4
-        assert a.quarter == 2
+        assert a.fiscal_quarter == 2
 
     def test_fiscal_periods(self, a, c):
         with fiscalyear.fiscal_calendar(*US_FEDERAL):
@@ -1007,13 +1013,31 @@ class TestFiscalDate:
     def test_next_fiscal_year(self, a):
         assert a.next_fiscal_year == fiscalyear.FiscalYear(2018)
 
-    def test_prev_quarter(self, a, c):
-        assert a.prev_quarter == fiscalyear.FiscalQuarter(2017, 1)
-        assert c.prev_quarter == fiscalyear.FiscalQuarter(2017, 4)
+    def test_prev_fiscal_quarter(self, a, c):
+        assert a.prev_fiscal_quarter == fiscalyear.FiscalQuarter(2017, 1)
+        assert c.prev_fiscal_quarter == fiscalyear.FiscalQuarter(2017, 4)
 
-    def test_next_quarter(self, a, c):
-        assert a.next_quarter == fiscalyear.FiscalQuarter(2017, 3)
-        assert c.next_quarter == fiscalyear.FiscalQuarter(2018, 2)
+    def test_next_fiscal_quarter(self, a, c):
+        assert a.next_fiscal_quarter == fiscalyear.FiscalQuarter(2017, 3)
+        assert c.next_fiscal_quarter == fiscalyear.FiscalQuarter(2018, 2)
+
+    def test_prev_fiscal_month(self, a):
+        assert a.prev_fiscal_month == fiscalyear.FiscalMonth(2017, 3)
+
+    def test_next_fiscal_month(self, a):
+        assert a.next_fiscal_month == fiscalyear.FiscalMonth(2017, 5)
+
+    def test_prev_fiscal_day(self, a):
+        assert a.prev_fiscal_day == fiscalyear.FiscalDay(2017, 92)
+
+    def test_next_fiscal_day(self, a):
+        assert a.next_fiscal_day == fiscalyear.FiscalDay(2017, 94)
+
+    def test_deprecated(self, a):
+        with pytest.deprecated_call():
+            a.quarter
+            a.prev_quarter
+            a.next_quarter
 
 
 class TestFiscalDateTime:
@@ -1038,7 +1062,7 @@ class TestFiscalDateTime:
         assert a.second == 0
 
         assert a.fiscal_year == 2017
-        assert a.quarter == 2
+        assert a.fiscal_quarter == 2
 
     def test_fiscal_periods(self, a, c):
         with fiscalyear.fiscal_calendar(*US_FEDERAL):
@@ -1059,10 +1083,28 @@ class TestFiscalDateTime:
     def test_next_fiscal_year(self, a):
         assert a.next_fiscal_year == fiscalyear.FiscalYear(2018)
 
-    def test_prev_quarter(self, a, c):
-        assert a.prev_quarter == fiscalyear.FiscalQuarter(2017, 1)
-        assert c.prev_quarter == fiscalyear.FiscalQuarter(2017, 4)
+    def test_prev_fiscal_quarter(self, a, c):
+        assert a.prev_fiscal_quarter == fiscalyear.FiscalQuarter(2017, 1)
+        assert c.prev_fiscal_quarter == fiscalyear.FiscalQuarter(2017, 4)
 
-    def test_next_quarter(self, a, c):
-        assert a.next_quarter == fiscalyear.FiscalQuarter(2017, 3)
-        assert c.next_quarter == fiscalyear.FiscalQuarter(2018, 2)
+    def test_next_fiscal_quarter(self, a, c):
+        assert a.next_fiscal_quarter == fiscalyear.FiscalQuarter(2017, 3)
+        assert c.next_fiscal_quarter == fiscalyear.FiscalQuarter(2018, 2)
+
+    def test_prev_fiscal_month(self, a):
+        assert a.prev_fiscal_month == fiscalyear.FiscalMonth(2017, 3)
+
+    def test_next_fiscal_month(self, a):
+        assert a.next_fiscal_month == fiscalyear.FiscalMonth(2017, 5)
+
+    def test_prev_fiscal_day(self, a):
+        assert a.prev_fiscal_day == fiscalyear.FiscalDay(2017, 92)
+
+    def test_next_fiscal_day(self, a):
+        assert a.next_fiscal_day == fiscalyear.FiscalDay(2017, 94)
+
+    def test_deprecated(self, a):
+        with pytest.deprecated_call():
+            a.quarter
+            a.prev_quarter
+            a.next_quarter
