@@ -1282,11 +1282,12 @@ class _FiscalBase:
         """
         fiscal_year = FiscalYear(self.fiscal_year)
 
-        days_elapsed = (self - fiscal_year.start.date()).days
-        if days_elapsed < 0:
-            days_elapsed += 365 if fiscal_year.isleap else 366
+        if isinstance(self, FiscalDateTime):
+            year_start = fiscal_year.start
+        else:
+            year_start = fiscal_year.start.date()
 
-        return days_elapsed + 1
+        return (self - year_start).days + 1
 
     @property
     def prev_fiscal_year(self):
