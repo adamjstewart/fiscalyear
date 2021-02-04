@@ -1276,6 +1276,13 @@ class _FiscalBase:
         return (self.month - FiscalYear(self.year).start.month) % 12 + 1
 
     @property
+    def fiscal_week(self):
+        """returns: The fiscal week
+        :rtype: int
+        """
+        return -(-self.fiscal_day // 7)
+
+    @property
     def fiscal_day(self):
         """:returns: The fiscal day
         :rtype: int

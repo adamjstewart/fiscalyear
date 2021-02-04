@@ -169,6 +169,8 @@ The start and end of each of the above objects are stored as instances of the ``
    FiscalQuarter(2017, 4)
    >>> e.fiscal_month
    7
+   >>> e.fiscal_week
+   28
    >>> e.fiscal_day
    190
 

@@ -1027,6 +1027,18 @@ class TestFiscalDate:
     def test_prev_fiscal_month(self, a):
         assert a.prev_fiscal_month == fiscalyear.FiscalMonth(2017, 3)
 
+    def test_fiscal_week(self):
+        a = fiscalyear.FiscalDay(2017, 1).start
+        b = fiscalyear.FiscalDay(2017, 7).start
+        assert a.fiscal_week == 1
+        assert b.fiscal_week == 1
+
+        c = fiscalyear.FiscalDay(2017, 8).start
+        assert c.fiscal_week == 2
+
+        d = fiscalyear.FiscalDay(2016, 366).start
+        assert d.fiscal_week == 53
+
     def test_next_fiscal_month(self, a):
         assert a.next_fiscal_month == fiscalyear.FiscalMonth(2017, 5)
 
