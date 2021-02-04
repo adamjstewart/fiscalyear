@@ -1104,13 +1104,12 @@ class _FiscalBase:
         """:returns: The fiscal day
         :rtype: int
         """
-        day_of_calendar_year = self.timetuple().tm_yday
         fiscal_year = FiscalYear(self.fiscal_year)
-        beginning_of_fiscal_year = fiscal_year.start.timetuple().tm_yday
-        days_elapsed = day_of_calendar_year - beginning_of_fiscal_year + 1
-        if days_elapsed < 1:
+        days_elapsed = (self - fiscal_year.start.date()).days
+        if days_elapsed < 0:
             days_elapsed += (365 if fiscal_year.isleap else 366)
-        return days_elapsed
+
+        return days_elapsed + 1
 
     @property
     def prev_fiscal_year(self):

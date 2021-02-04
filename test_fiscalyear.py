@@ -905,6 +905,9 @@ class TestFiscalDay:
         assert fiscalyear.FiscalDate(2016, 1, 1).fiscal_day == 93
         assert fiscalyear.FiscalDate(2016, 2, 29).fiscal_day == 152
         assert fiscalyear.FiscalDate(2017, 3, 1).fiscal_day == 152
+        assert fiscalyear.FiscalDate(2016, 9, 30).fiscal_day == 366
+        assert fiscalyear.FiscalDate(2017, 9, 30).fiscal_day == 365
+        assert fiscalyear.FiscalDate(2018, 9, 30).fiscal_day == 365
 
     def test_contains(self, a, b, c, f):
         assert b in c
