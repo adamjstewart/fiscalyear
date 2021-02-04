@@ -2,13 +2,18 @@
 
 from __future__ import division, with_statement
 
-__author__ = 'Adam J. Stewart'
-__version__ = '0.2.0'
+__author__ = "Adam J. Stewart"
+__version__ = "0.3.0"
 
 import calendar
 import contextlib
 import datetime
+import sys
+import warnings
 
+
+if not sys.warnoptions:
+    warnings.simplefilter("default")
 
 # Number of months in each quarter
 MONTHS_PER_QUARTER = 12 // 4
@@ -19,7 +24,7 @@ MAX_QUARTER = 4
 # These global variables control the start of the fiscal year.
 # The default is to use the U.S. federal government's fiscal year,
 # but they can be changed to use any other fiscal year.
-START_YEAR = 'previous'
+START_YEAR = "previous"
 START_MONTH = 10
 START_DAY = 1
 
@@ -42,7 +47,7 @@ def _validate_fiscal_calendar_params(start_year, start_month, start_day):
     """
     if not isinstance(start_year, str):
         raise TypeError("'start_year' must be a 'str', not: '%s'" % type(str))
-    if start_year not in ('previous',  'same'):
+    if start_year not in ("previous", "same"):
         msg = "'start_year' must be either 'previous' or 'same', not: '%s'"
         raise ValueError(msg % start_year)
     _check_day(start_month, start_day)
@@ -122,8 +127,9 @@ def _check_int(value):
     elif isinstance(value, str) and value.isdigit():
         return int(value)
     else:
-        raise TypeError('an int or int-like string is required (got %s)' % (
-            type(value).__name__))
+        raise TypeError(
+            "an int or int-like string is required (got %s)" % (type(value).__name__)
+        )
 
 
 def _check_year(year):
@@ -140,8 +146,9 @@ def _check_year(year):
     if datetime.MINYEAR <= year <= datetime.MAXYEAR:
         return year
     else:
-        raise ValueError('year must be in %d..%d' % (
-            datetime.MINYEAR, datetime.MAXYEAR), year)
+        raise ValueError(
+            "year must be in %d..%d" % (datetime.MINYEAR, datetime.MAXYEAR), year
+        )
 
 
 def _check_month(month):
@@ -158,7 +165,7 @@ def _check_month(month):
     if 1 <= month <= 12:
         return month
     else:
-        raise ValueError('month must be in %d..%d' % (1, 12), month)
+        raise ValueError("month must be in %d..%d" % (1, 12), month)
 
 
 def _check_day(month, day):
@@ -181,7 +188,7 @@ def _check_day(month, day):
     if 1 <= day <= max_day:
         return day
     else:
-        raise ValueError('day must be in %d..%d' % (1, max_day), day)
+        raise ValueError("day must be in %d..%d" % (1, max_day), day)
 
 
 def _check_fiscal_day(fiscal_year, fiscal_day):
@@ -202,7 +209,7 @@ def _check_fiscal_day(fiscal_year, fiscal_day):
     if 1 <= fiscal_day <= max_day:
         return fiscal_day
     else:
-        raise ValueError('day must be in %d..%d' % (1, max_day), fiscal_day)
+        raise ValueError("day must be in %d..%d" % (1, max_day), fiscal_day)
 
 
 def _check_quarter(quarter):
@@ -219,14 +226,15 @@ def _check_quarter(quarter):
     if MIN_QUARTER <= quarter <= MAX_QUARTER:
         return quarter
     else:
-        raise ValueError('quarter must be in %d..%d' % (
-            MIN_QUARTER, MAX_QUARTER), quarter)
+        raise ValueError(
+            "quarter must be in %d..%d" % (MIN_QUARTER, MAX_QUARTER), quarter
+        )
 
 
 class FiscalYear(object):
     """A class representing a single fiscal year."""
 
-    __slots__ = '_fiscal_year'
+    __slots__ = "_fiscal_year"
 
     def __new__(cls, fiscal_year):
         """Constructor.
@@ -261,8 +269,7 @@ class FiscalYear(object):
         >>> repr(fy)
         'FiscalYear(2017)'
         """
-        return '%s(%d)' % (self.__class__.__name__,
-                           self._fiscal_year)
+        return "%s(%d)" % (self.__class__.__name__, self._fiscal_year)
 
     def __str__(self):
         """Convert to informal string, for str().
@@ -271,7 +278,7 @@ class FiscalYear(object):
         >>> str(fy)
         'FY2017'
         """
-        return 'FY%d' % (self._fiscal_year)
+        return "FY%d" % (self._fiscal_year)
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
@@ -293,8 +300,10 @@ class FiscalYear(object):
         elif isinstance(item, datetime.date):
             return self.start.date() <= item <= self.end.date()
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(item).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(item).__name__)
+            )
 
     # Read-only field accessors
 
@@ -368,14 +377,16 @@ class FiscalYear(object):
         """
         fiscal_year = FiscalYear(self._fiscal_year)
         starts_on_or_before_possible_leap_day = (
-            fiscal_year.start.month, fiscal_year.start.day) < (3, 1)
+            fiscal_year.start.month,
+            fiscal_year.start.day,
+        ) < (3, 1)
 
-        if START_YEAR == 'previous':
+        if START_YEAR == "previous":
             if starts_on_or_before_possible_leap_day:
                 calendar_year = self._fiscal_year - 1
             else:
                 calendar_year = self._fiscal_year
-        elif START_YEAR == 'same':
+        elif START_YEAR == "same":
             if starts_on_or_before_possible_leap_day:
                 calendar_year = self._fiscal_year
             else:
@@ -389,69 +400,81 @@ class FiscalYear(object):
         if isinstance(other, FiscalYear):
             return self._fiscal_year < other._fiscal_year
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __le__(self, other):
         if isinstance(other, FiscalYear):
             return self._fiscal_year <= other._fiscal_year
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __eq__(self, other):
         if isinstance(other, FiscalYear):
             return self._fiscal_year == other._fiscal_year
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __ne__(self, other):
         if isinstance(other, FiscalYear):
             return self._fiscal_year != other._fiscal_year
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __gt__(self, other):
         if isinstance(other, FiscalYear):
             return self._fiscal_year > other._fiscal_year
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __ge__(self, other):
         if isinstance(other, FiscalYear):
             return self._fiscal_year >= other._fiscal_year
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
 
 class FiscalQuarter(object):
     """A class representing a single fiscal quarter."""
 
-    __slots__ = ['_fiscal_year', '_quarter']
+    __slots__ = ["_fiscal_year", "_fiscal_quarter"]
 
-    def __new__(cls, fiscal_year, quarter):
+    def __new__(cls, fiscal_year, fiscal_quarter):
         """Constructor.
 
         :param fiscal_year: The fiscal year
         :type fiscal_year: int or str
-        :param quarter: The fiscal quarter [1 - 4]
-        :type quarter: int or str
+        :param fiscal_quarter: The fiscal quarter
+        :type fiscal_quarter: int or str
         :returns: A newly constructed FiscalQuarter object
         :rtype: FiscalQuarter
-        :raises TypeError: If fiscal_year or quarter is not
+        :raises TypeError: If fiscal_year or fiscal_quarter is not
             an int or int-like string
-        :raises ValueError: If fiscal_year or quarter is out of range
+        :raises ValueError: If fiscal_year or fiscal_quarter is out of range
         """
         fiscal_year = _check_year(fiscal_year)
-        quarter = _check_quarter(quarter)
+        fiscal_quarter = _check_quarter(fiscal_quarter)
 
         self = super(FiscalQuarter, cls).__new__(cls)
         self._fiscal_year = fiscal_year
-        self._quarter = quarter
+        self._fiscal_quarter = fiscal_quarter
         return self
 
     @classmethod
@@ -462,7 +485,7 @@ class FiscalQuarter(object):
         :rtype: FiscalQuarter
         """
         today = FiscalDate.today()
-        return cls(today.fiscal_year, today.quarter)
+        return cls(today.fiscal_year, today.fiscal_quarter)
 
     def __repr__(self):
         """Convert to formal string, for repr().
@@ -471,9 +494,11 @@ class FiscalQuarter(object):
         >>> repr(q3)
         'FiscalQuarter(2017, 3)'
         """
-        return '%s(%d, %d)' % (self.__class__.__name__,
-                               self._fiscal_year,
-                               self._quarter)
+        return "%s(%d, %d)" % (
+            self.__class__.__name__,
+            self._fiscal_year,
+            self._fiscal_quarter,
+        )
 
     def __str__(self):
         """Convert to informal string, for str().
@@ -482,8 +507,7 @@ class FiscalQuarter(object):
         >>> str(q3)
         'FY2017 Q3'
         """
-        return 'FY%d Q%d' % (self._fiscal_year,
-                             self._quarter)
+        return "FY%d Q%d" % (self._fiscal_year, self._fiscal_quarter)
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
@@ -505,8 +529,10 @@ class FiscalQuarter(object):
         elif isinstance(item, datetime.date):
             return self.start.date() <= item <= self.end.date()
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(item).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(item).__name__)
+            )
 
     # Read-only field accessors
 
@@ -518,37 +544,64 @@ class FiscalQuarter(object):
         return self._fiscal_year
 
     @property
-    def quarter(self):
+    def fiscal_quarter(self):
         """:returns: The fiscal quarter
         :rtype: int
         """
-        return self._quarter
+        return self._fiscal_quarter
 
     @property
-    def prev_quarter(self):
+    def quarter(self):
+        warnings.warn(
+            "FiscalQuarter.quarter is deprecated, "
+            "use FiscalQuarter.fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.fiscal_quarter
+
+    @property
+    def prev_fiscal_quarter(self):
         """:returns: The previous fiscal quarter
         :rtype: FiscalQuarter
         """
         fiscal_year = self._fiscal_year
-        quarter = self._quarter - 1
-        if quarter == 0:
+        fiscal_quarter = self._fiscal_quarter - 1
+        if fiscal_quarter == 0:
             fiscal_year -= 1
-            quarter = 4
+            fiscal_quarter = 4
 
-        return FiscalQuarter(fiscal_year, quarter)
+        return FiscalQuarter(fiscal_year, fiscal_quarter)
+
+    @property
+    def prev_quarter(self):
+        warnings.warn(
+            "FiscalQuarter.prev_quarter is deprecated, "
+            "use FiscalQuarter.prev_fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.prev_fiscal_quarter
+
+    @property
+    def next_fiscal_quarter(self):
+        """:returns: The next fiscal quarter
+        :rtype: FiscalQuarter
+        """
+        fiscal_year = self._fiscal_year
+        fiscal_quarter = self._fiscal_quarter + 1
+        if fiscal_quarter == 5:
+            fiscal_year += 1
+            fiscal_quarter = 1
+
+        return FiscalQuarter(fiscal_year, fiscal_quarter)
 
     @property
     def next_quarter(self):
-        """:returns: The next fiscal quarter
-        :rtype: int
-        """
-        fiscal_year = self._fiscal_year
-        quarter = self._quarter + 1
-        if quarter == 5:
-            fiscal_year += 1
-            quarter = 1
-
-        return FiscalQuarter(fiscal_year, quarter)
+        warnings.warn(
+            "FiscalQuarter.next_quarter is deprecated, "
+            "use FiscalQuarter.next_fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.next_fiscal_quarter
 
     @property
     def start(self):
@@ -558,19 +611,20 @@ class FiscalQuarter(object):
 
         # Find the first month of the fiscal quarter
         month = START_MONTH
-        month += (self._quarter - 1) * MONTHS_PER_QUARTER
+        month += (self._fiscal_quarter - 1) * MONTHS_PER_QUARTER
         month %= 12
         if month == 0:
             month = 12
 
         # Find the calendar year of the start of the fiscal quarter
-        if START_YEAR == 'previous':
+        if START_YEAR == "previous":
             year = self._fiscal_year - 1
-        elif START_YEAR == 'same':
+        elif START_YEAR == "same":
             year = self._fiscal_year
         else:
-            raise ValueError("START_YEAR must be either 'previous' or 'same'",
-                             START_YEAR)
+            raise ValueError(
+                "START_YEAR must be either 'previous' or 'same'", START_YEAR
+            )
 
         if month < START_MONTH:
             year += 1
@@ -588,76 +642,109 @@ class FiscalQuarter(object):
         :rtype: FiscalDateTime
         """
         # Find the start of the next fiscal quarter
-        next_start = self.next_quarter.start
+        next_start = self.next_fiscal_quarter.start
 
         # Substract 1 second
         end = next_start - datetime.timedelta(seconds=1)
 
-        return FiscalDateTime(end.year, end.month, end.day,
-                              end.hour, end.minute, end.second,
-                              end.microsecond, end.tzinfo)
+        return FiscalDateTime(
+            end.year,
+            end.month,
+            end.day,
+            end.hour,
+            end.minute,
+            end.second,
+            end.microsecond,
+            end.tzinfo,
+        )
 
     # Comparisons of FiscalQuarter objects with other
 
     def __lt__(self, other):
         if isinstance(other, FiscalQuarter):
-            return ((self._fiscal_year,  self._quarter) <
-                    (other._fiscal_year, other._quarter))
+            return (self._fiscal_year, self._fiscal_quarter) < (
+                other._fiscal_year,
+                other._fiscal_quarter,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __le__(self, other):
         if isinstance(other, FiscalQuarter):
-            return ((self._fiscal_year,  self._quarter) <=
-                    (other._fiscal_year, other._quarter))
+            return (self._fiscal_year, self._fiscal_quarter) <= (
+                other._fiscal_year,
+                other._fiscal_quarter,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __eq__(self, other):
         if isinstance(other, FiscalQuarter):
-            return ((self._fiscal_year,  self._quarter) ==
-                    (other._fiscal_year, other._quarter))
+            return (self._fiscal_year, self._fiscal_quarter) == (
+                other._fiscal_year,
+                other._fiscal_quarter,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __ne__(self, other):
         if isinstance(other, FiscalQuarter):
-            return ((self._fiscal_year,  self._quarter) !=
-                    (other._fiscal_year, other._quarter))
+            return (self._fiscal_year, self._fiscal_quarter) != (
+                other._fiscal_year,
+                other._fiscal_quarter,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __gt__(self, other):
         if isinstance(other, FiscalQuarter):
-            return ((self._fiscal_year,  self._quarter) >
-                    (other._fiscal_year, other._quarter))
+            return (self._fiscal_year, self._fiscal_quarter) > (
+                other._fiscal_year,
+                other._fiscal_quarter,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __ge__(self, other):
         if isinstance(other, FiscalQuarter):
-            return ((self._fiscal_year,  self._quarter) >=
-                    (other._fiscal_year, other._quarter))
+            return (self._fiscal_year, self._fiscal_quarter) >= (
+                other._fiscal_year,
+                other._fiscal_quarter,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
 
 class FiscalMonth(object):
     """A class representing a single fiscal month."""
 
-    __slots__ = ['_fiscal_year', '_fiscal_month']
+    __slots__ = ["_fiscal_year", "_fiscal_month"]
 
     def __new__(cls, fiscal_year, fiscal_month):
         """Constructor.
 
         :param fiscal_year: The fiscal year
         :type fiscal_year: int or str
+        :param fiscal_month: The fiscal month
+        :type fiscal_month: int or str
         :returns: A newly constructed FiscalMonth object
         :rtype: FiscalMonth
         :raises TypeError: If fiscal_year or fiscal_month is not
@@ -689,9 +776,11 @@ class FiscalMonth(object):
         >>> repr(fm)
         'FiscalMonth(2017, 1)'
         """
-        return '%s(%d, %d)' % (self.__class__.__name__,
-                               self._fiscal_year,
-                               self._fiscal_month)
+        return "%s(%d, %d)" % (
+            self.__class__.__name__,
+            self._fiscal_year,
+            self._fiscal_month,
+        )
 
     def __str__(self):
         """Convert to informal string, for str().
@@ -700,7 +789,7 @@ class FiscalMonth(object):
         >>> str(fm)
         'FY2017 FM1'
         """
-        return 'FY%d FM%d' % (self._fiscal_year, self._fiscal_month)
+        return "FY%d FM%d" % (self._fiscal_year, self._fiscal_month)
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
@@ -722,8 +811,10 @@ class FiscalMonth(object):
         elif isinstance(item, datetime.date):
             return self.start.date() <= item <= self.end.date()
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(item).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(item).__name__)
+            )
 
     # Read-only field accessors
 
@@ -753,12 +844,12 @@ class FiscalMonth(object):
 
         month_is_on_or_after_start_month = calendar_month >= START_MONTH
 
-        if START_YEAR == 'previous':
+        if START_YEAR == "previous":
             if month_is_on_or_after_start_month:
                 calendar_year = self._fiscal_year - 1
             else:
                 calendar_year = self._fiscal_year
-        elif START_YEAR == 'same':
+        elif START_YEAR == "same":
             if month_is_on_or_after_start_month:
                 calendar_year = self._fiscal_year
             else:
@@ -777,9 +868,16 @@ class FiscalMonth(object):
         # Substract 1 second
         end = next_start - datetime.timedelta(seconds=1)
 
-        return FiscalDateTime(end.year, end.month, end.day,
-                              end.hour, end.minute, end.second,
-                              end.microsecond, end.tzinfo)
+        return FiscalDateTime(
+            end.year,
+            end.month,
+            end.day,
+            end.hour,
+            end.minute,
+            end.second,
+            end.microsecond,
+            end.tzinfo,
+        )
 
     @property
     def prev_fiscal_month(self):
@@ -811,57 +909,81 @@ class FiscalMonth(object):
 
     def __lt__(self, other):
         if isinstance(other, FiscalMonth):
-            return ((self._fiscal_year,  self._fiscal_month) <
-                    (other._fiscal_year, other._fiscal_month))
+            return (self._fiscal_year, self._fiscal_month) < (
+                other._fiscal_year,
+                other._fiscal_month,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __le__(self, other):
         if isinstance(other, FiscalMonth):
-            return ((self._fiscal_year,  self._fiscal_month) <=
-                    (other._fiscal_year, other._fiscal_month))
+            return (self._fiscal_year, self._fiscal_month) <= (
+                other._fiscal_year,
+                other._fiscal_month,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __eq__(self, other):
         if isinstance(other, FiscalMonth):
-            return ((self._fiscal_year,  self._fiscal_month) ==
-                    (other._fiscal_year, other._fiscal_month))
+            return (self._fiscal_year, self._fiscal_month) == (
+                other._fiscal_year,
+                other._fiscal_month,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __ne__(self, other):
         if isinstance(other, FiscalMonth):
-            return ((self._fiscal_year,  self._fiscal_month) !=
-                    (other._fiscal_year, other._fiscal_month))
+            return (self._fiscal_year, self._fiscal_month) != (
+                other._fiscal_year,
+                other._fiscal_month,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __gt__(self, other):
         if isinstance(other, FiscalMonth):
-            return ((self._fiscal_year,  self._fiscal_month) >
-                    (other._fiscal_year, other._fiscal_month))
+            return (self._fiscal_year, self._fiscal_month) > (
+                other._fiscal_year,
+                other._fiscal_month,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __ge__(self, other):
         if isinstance(other, FiscalMonth):
-            return ((self._fiscal_year,  self._fiscal_month) >=
-                    (other._fiscal_year, other._fiscal_month))
+            return (self._fiscal_year, self._fiscal_month) >= (
+                other._fiscal_year,
+                other._fiscal_month,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
 
 class FiscalDay(object):
     """A class representing a single fiscal day."""
 
-    __slots__ = ['_fiscal_year', '_fiscal_day']
+    __slots__ = ["_fiscal_year", "_fiscal_day"]
 
     def __new__(cls, fiscal_year, fiscal_day):
         """Constructor.
@@ -901,9 +1023,11 @@ class FiscalDay(object):
         >>> repr(fd)
         'FiscalDay(2017, 1)'
         """
-        return '%s(%d, %d)' % (self.__class__.__name__,
-                               self._fiscal_year,
-                               self._fiscal_day)
+        return "%s(%d, %d)" % (
+            self.__class__.__name__,
+            self._fiscal_year,
+            self._fiscal_day,
+        )
 
     def __str__(self):
         """Convert to informal string, for str().
@@ -912,7 +1036,7 @@ class FiscalDay(object):
         >>> str(fd)
         'FY2017 FD1'
         """
-        return 'FY%d FD%d' % (self._fiscal_year, self._fiscal_day)
+        return "FY%d FD%d" % (self._fiscal_year, self._fiscal_day)
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
@@ -932,8 +1056,10 @@ class FiscalDay(object):
         elif isinstance(item, datetime.date):
             return self.start.date() <= item <= self.end.date()
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(item).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(item).__name__)
+            )
 
     # Read-only field accessors
 
@@ -949,7 +1075,7 @@ class FiscalDay(object):
         """:returns: The fiscal quarter
         :rtype: int
         """
-        return self.start.quarter
+        return self.start.fiscal_quarter
 
     @property
     def fiscal_month(self):
@@ -987,9 +1113,16 @@ class FiscalDay(object):
         # Substract 1 second
         end = next_start - datetime.timedelta(seconds=1)
 
-        return FiscalDateTime(end.year, end.month, end.day,
-                              end.hour, end.minute, end.second,
-                              end.microsecond, end.tzinfo)
+        return FiscalDateTime(
+            end.year,
+            end.month,
+            end.day,
+            end.hour,
+            end.minute,
+            end.second,
+            end.microsecond,
+            end.tzinfo,
+        )
 
     @property
     def prev_fiscal_day(self):
@@ -1025,51 +1158,75 @@ class FiscalDay(object):
 
     def __lt__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year, self._fiscal_day) <
-                    (other._fiscal_year, other._fiscal_day))
+            return (self._fiscal_year, self._fiscal_day) < (
+                other._fiscal_year,
+                other._fiscal_day,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __le__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year, self._fiscal_day) <=
-                    (other._fiscal_year, other._fiscal_day))
+            return (self._fiscal_year, self._fiscal_day) <= (
+                other._fiscal_year,
+                other._fiscal_day,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __eq__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year, self._fiscal_day) ==
-                    (other._fiscal_year, other._fiscal_day))
+            return (self._fiscal_year, self._fiscal_day) == (
+                other._fiscal_year,
+                other._fiscal_day,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __ne__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year, self._fiscal_day) !=
-                    (other._fiscal_year, other._fiscal_day))
+            return (self._fiscal_year, self._fiscal_day) != (
+                other._fiscal_year,
+                other._fiscal_day,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __gt__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year, self._fiscal_day) >
-                    (other._fiscal_year, other._fiscal_day))
+            return (self._fiscal_year, self._fiscal_day) > (
+                other._fiscal_year,
+                other._fiscal_day,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
     def __ge__(self, other):
         if isinstance(other, FiscalDay):
-            return ((self._fiscal_year, self._fiscal_day) >=
-                    (other._fiscal_year, other._fiscal_day))
+            return (self._fiscal_year, self._fiscal_day) >= (
+                other._fiscal_year,
+                other._fiscal_day,
+            )
         else:
-            raise TypeError("can't compare '%s' to '%s'" % (
-                type(self).__name__, type(other).__name__))
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
 
 
 class _FiscalBase:
@@ -1093,6 +1250,25 @@ class _FiscalBase:
             return self.year - 1
 
     @property
+    def fiscal_quarter(self):
+        """:returns: The fiscal quarter
+        :rtype: int
+        """
+        for quarter in range(1, 5):
+            q = FiscalQuarter(self.fiscal_year, quarter)
+            if self in q:
+                return quarter
+
+    @property
+    def quarter(self):
+        warnings.warn(
+            "FiscalDate(Time).quarter is deprecated, "
+            "use FiscalDate(Time).fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.fiscal_quarter
+
+    @property
     def fiscal_month(self):
         """:returns: The fiscal month
         :rtype: int
@@ -1105,6 +1281,7 @@ class _FiscalBase:
         :rtype: int
         """
         fiscal_year = FiscalYear(self.fiscal_year)
+
         days_elapsed = (self - fiscal_year.start.date()).days
         if days_elapsed < 0:
             days_elapsed += (365 if fiscal_year.isleap else 366)
@@ -1126,41 +1303,87 @@ class _FiscalBase:
         return FiscalYear(self.fiscal_year + 1)
 
     @property
-    def quarter(self):
-        """:returns: The quarter of the fiscal year
-        :rtype: int
+    def prev_fiscal_quarter(self):
+        """:returns: The previous fiscal quarter
+        :rtype: FiscalQuarter
         """
-        for quarter in range(1, 5):
-            q = FiscalQuarter(self.fiscal_year, quarter)
-            if self in q:
-                return quarter
+        fiscal_quarter = FiscalQuarter(self.fiscal_year, self.fiscal_quarter)
+
+        return fiscal_quarter.prev_fiscal_quarter
 
     @property
     def prev_quarter(self):
-        """:returns: The previous quarter
+        warnings.warn(
+            "FiscalDate(Time).prev_quarter is deprecated, "
+            "use FiscalDate(Time).prev_fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.prev_fiscal_quarter
+
+    @property
+    def next_fiscal_quarter(self):
+        """:returns: The next fiscal quarter
         :rtype: FiscalQuarter
         """
-        quarter = FiscalQuarter(self.fiscal_year, self.quarter)
+        fiscal_quarter = FiscalQuarter(self.fiscal_year, self.fiscal_quarter)
 
-        return quarter.prev_quarter
+        return fiscal_quarter.next_fiscal_quarter
 
     @property
     def next_quarter(self):
-        """:returns: The next quarter
-        :rtype: FiscalQuarter
-        """
-        quarter = FiscalQuarter(self.fiscal_year, self.quarter)
+        warnings.warn(
+            "FiscalDate(Time).next_quarter is deprecated, "
+            "use FiscalDate(Time).next_fiscal_quarter instead",
+            DeprecationWarning,
+        )
+        return self.next_fiscal_quarter
 
-        return quarter.next_quarter
+    @property
+    def prev_fiscal_month(self):
+        """:returns: The previous fiscal month
+        :rtype: FiscalMonth
+        """
+        fiscal_month = FiscalMonth(self.fiscal_year, self.fiscal_month)
+
+        return fiscal_month.prev_fiscal_month
+
+    @property
+    def next_fiscal_month(self):
+        """:returns: The next fiscal month
+        :rtype: FiscalMonth
+        """
+        fiscal_month = FiscalMonth(self.fiscal_year, self.fiscal_month)
+
+        return fiscal_month.next_fiscal_month
+
+    @property
+    def prev_fiscal_day(self):
+        """:returns: The previous fiscal day
+        :rtype: FiscalDay
+        """
+        fiscal_day = FiscalDay(self.fiscal_year, self.fiscal_day)
+
+        return fiscal_day.prev_fiscal_day
+
+    @property
+    def next_fiscal_day(self):
+        """:returns: The next fiscal day
+        :rtype: FiscalDay
+        """
+        fiscal_day = FiscalDay(self.fiscal_year, self.fiscal_day)
+
+        return fiscal_day.next_fiscal_day
 
 
 class FiscalDate(datetime.date, _FiscalBase):
     """A wrapper around the builtin datetime.date class
     that provides the following attributes."""
+
     pass
 
 
 class FiscalDateTime(datetime.datetime, _FiscalBase):
     """A wrapper around the builtin datetime.datetime class
     that provides the following attributes."""
+
     pass

@@ -5,9 +5,8 @@ Testing
 will need to install the following packages:
 
 * `pytest <https://docs.pytest.org/en/latest/>`_
-* `pytest-cov <https://docs.pytest.org/en/latest/>`_
-* `pytest-mock <https://docs.pytest.org/en/latest/>`_
-* `pytest-runner <https://docs.pytest.org/en/latest/>`_
+* `pytest-mock <https://github.com/pytest-dev/pytest-mock/>`_
+
 
 Running tests
 -------------
@@ -33,22 +32,7 @@ Once ``pytest`` is installed, simply ``cd`` to the root directory of ``fiscalyea
 ``pytest`` provides automatic test detection that locates the ``test_fiscalyear.py`` file and runs tests that begin with ``test_*``.
 
 
-Running tests during installation
----------------------------------
-
-Unit tests can optionally be run during installation as well. To build, test, and install the ``fiscalyear`` module, run:
-
-.. code-block:: console
-
-   $ python setup.py build
-   $ python setup.py test
-   $ python setup.py install --prefix=/path/to/installation/prefix
-
-
-This also requires the ``pytest-runner`` package to be installed.
-
-
 Continuous Integration (CI)
 ---------------------------
 
-In order to prevent bugs from being introduced into the code, ``fiscalyear`` uses `Travis CI <https://docs.travis-ci.com/>`_ for continuous integration. After every commit or pull request, Travis automatically runs the test-suite across all supported versions of Python 2 and 3. This has the added benefit of preventing incompatibilities between different Python versions.
+In order to prevent bugs from being introduced into the code, ``fiscalyear`` uses `GitHub Actions <https://github.com/features/actions>`_ for continuous integration. After every commit or pull request, GitHub Actions automatically runs the test-suite across all supported versions of Python 2 and 3. This has the added benefit of preventing incompatibilities between different Python versions.
