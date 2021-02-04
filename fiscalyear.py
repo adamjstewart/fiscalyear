@@ -1281,11 +1281,10 @@ class _FiscalBase:
         :rtype: int
         """
         fiscal_year = FiscalYear(self.fiscal_year)
+        year_start = fiscal_year.start
 
-        if isinstance(self, FiscalDateTime):
-            year_start = fiscal_year.start
-        else:
-            year_start = fiscal_year.start.date()
+        if isinstance(self, FiscalDate):
+            year_start = year_start.date()
 
         return (self - year_start).days + 1
 
