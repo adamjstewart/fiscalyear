@@ -829,6 +829,144 @@ class TestFiscalMonth:
             a >= 1
 
 
+class TestFiscalWeek:
+    @pytest.fixture(scope="class")
+    def a(self):
+        return fiscalyear.FiscalWeek(2016, 1)
+
+    @pytest.fixture(scope="class")
+    def b(self):
+        return fiscalyear.FiscalWeek(2016, 2)
+
+    @pytest.fixture(scope="class")
+    def c(self):
+        return fiscalyear.FiscalWeek("2016", "2")
+
+    @pytest.fixture(scope="class")
+    def e(self):
+        return fiscalyear.FiscalWeek(2016, 53)
+
+    @pytest.fixture(scope="class")
+    def f(self):
+        return fiscalyear.FiscalWeek(2017, 1)
+
+    def test_basic(self, a):
+        assert a.fiscal_year == 2016
+        assert a.fiscal_week == 1
+
+        assert a.fiscal_month == 1
+        assert a.fiscal_quarter == 1
+
+    def test_current(self, mocker):
+        mock_today = mocker.patch.object(fiscalyear.FiscalDate, "today")
+        mock_today.return_value = fiscalyear.FiscalDate(2016, 10, 1)
+        current = fiscalyear.FiscalWeek.current()
+        assert current == fiscalyear.FiscalWeek(2017, 1)
+
+    def test_repr(self, a):
+        assert repr(a) == "FiscalWeek(2016, 1)"
+
+    def test_str(self, a):
+        assert str(a) == "FY2016 FW1"
+
+    def test_from_string(self, c):
+        assert c.fiscal_year == 2016
+        assert c.fiscal_week == 2
+
+    def test_wrong_type(self):
+        with pytest.raises(TypeError):
+            fiscalyear.FiscalWeek(2016.5)
+
+        with pytest.raises(TypeError):
+            fiscalyear.FiscalWeek("hello world")
+
+    def test_out_of_range(self):
+        with pytest.raises(ValueError):
+            fiscalyear.FiscalWeek(2016, 0)
+
+        with pytest.raises(ValueError):
+            fiscalyear.FiscalWeek(2016, -364)
+
+    def test_prev_fiscal_week(self, a, b, f):
+        assert a == b.prev_fiscal_week
+        assert a.prev_fiscal_week == fiscalyear.FiscalWeek(2015, 52)
+        assert f.prev_fiscal_week == fiscalyear.FiscalWeek(2016, 53)
+
+    def test_next_fiscal_week(self, a, b):
+        assert a.next_fiscal_week == b
+
+    def test_start(self, a, e):
+        assert a.start == fiscalyear.FiscalYear(a.fiscal_year).start
+        assert e.start == fiscalyear.FiscalDateTime(2016, 9, 29, 0, 0, 0)
+
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
+            assert a.start == datetime.datetime(2015, 10, 1, 0, 0, 0)
+
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
+            assert a.start == datetime.datetime(2016, 4, 6, 0, 0, 0)
+
+    def test_end(self, e):
+        assert e.end == fiscalyear.FiscalYear(e.fiscal_year).end
+
+        with fiscalyear.fiscal_calendar(*US_FEDERAL):
+            assert e.end == datetime.datetime(2016, 9, 30, 23, 59, 59)
+
+        with fiscalyear.fiscal_calendar(*UK_PERSONAL):
+            assert e.end == datetime.datetime(2017, 4, 5, 23, 59, 59)
+
+    def test_contains(self, a, b, c, f):
+        assert b in c
+        assert a not in f
+
+        assert fiscalyear.FiscalDateTime(2015, 10, 1, 0, 0, 0) in a
+        assert datetime.datetime(2015, 10, 1, 0, 0, 0) in a
+        assert fiscalyear.FiscalDate(2015, 10, 1) in a
+        assert datetime.date(2015, 10, 1) in a
+
+        assert b in fiscalyear.FiscalMonth(2016, 1)
+        assert b in fiscalyear.FiscalQuarter(2016, 1)
+        assert b in fiscalyear.FiscalYear(2016)
+
+        with pytest.raises(TypeError):
+            "hello world" in a
+
+    def test_less_than(self, a, b):
+        assert a < b
+
+        with pytest.raises(TypeError):
+            a < 1
+
+    def test_less_than_equals(self, a, b, c):
+        assert a <= b <= c
+
+        with pytest.raises(TypeError):
+            a <= 1
+
+    def test_equals(self, b, c):
+        assert b == c
+
+        with pytest.raises(TypeError):
+            b == 1
+
+    def test_not_equals(self, a, b):
+        assert a != b
+
+        with pytest.raises(TypeError):
+            a != 1
+
+    def test_greater_than(self, a, b):
+        assert b > a
+
+        with pytest.raises(TypeError):
+            a > 1
+
+    def test_greater_than_equals(self, a, b, c):
+        assert c >= b >= a
+
+        with pytest.raises(TypeError):
+            a >= 1
+
+
 class TestFiscalDay:
     @pytest.fixture(scope="class")
     def a(self):
