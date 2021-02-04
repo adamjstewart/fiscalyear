@@ -1284,7 +1284,7 @@ class _FiscalBase:
 
         days_elapsed = (self - fiscal_year.start.date()).days
         if days_elapsed < 0:
-            days_elapsed += (365 if fiscal_year.isleap else 366)
+            days_elapsed += 365 if fiscal_year.isleap else 366
 
         return days_elapsed + 1
 
