@@ -3,7 +3,7 @@
 from __future__ import division, with_statement
 
 __author__ = "Adam J. Stewart"
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 import calendar
 import contextlib
