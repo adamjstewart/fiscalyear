@@ -1273,7 +1273,10 @@ class _FiscalBase:
         """:returns: The fiscal month
         :rtype: int
         """
-        return (self.month - FiscalYear(self.year).start.month) % 12 + 1
+        for month in range(1, 13):
+            m = FiscalMonth(self.fiscal_year, month)
+            if self in m:
+                return month
 
     @property
     def fiscal_day(self):
