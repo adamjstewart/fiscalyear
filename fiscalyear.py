@@ -29,6 +29,26 @@ START_MONTH = 10
 START_DAY = 1
 
 
+def _check_only_start_or_end_present(start_month, start_day,
+                                     end_month, end_day):
+    """Checks that only start_* or end_* are present.
+
+    :param start_month: The first month of the fiscal year
+    :param start_day: The first day of the first month of the fiscal year
+    :param end_month: The last month of the fiscal year
+    :param end_day: The last day of the last month of the fiscal year
+    :raises ValueError: If ``start_month`` and/or ``start_day`` is passed
+        along with  ``end_month`` and/or ``end_day``
+    """
+    start_present = start_month is not None or start_day is not None
+    end_present = end_month is not None or end_day is not None
+    if start_present and end_present:
+        emsg = "invalid combination of " + \
+            "start_month, start_day, end_month, end_day; " + \
+            "pass either start_* or end_*"
+        raise ValueError(emsg)
+
+
 def _start_day_from_end(end_month, end_day):
     """Returns start day from end month and day.
 
@@ -104,9 +124,6 @@ def setup_fiscal_calendar(start_year=None, start_month=None, start_day=None,
                           end_month=None, end_day=None):
     """Modify the fiscal calendar.
 
-    If either of ``start_month`` or ``start_day`` are present, ``end_month``
-    and ``end_day`` are ignored.
-
     :param start_year: Relationship between the start of the fiscal year and
         the calendar year. Possible values: ``'previous'`` or ``'same'``.
     :type start_year: str
@@ -122,8 +139,12 @@ def setup_fiscal_calendar(start_year=None, start_month=None, start_day=None,
     :raises TypeError: If ``start_month`` or ``start_day`` is not an int or
         int-like string
     :raises ValueError: If ``start_month`` or ``start_day`` is out of range
+    :raises ValueError: If ``start_month`` and/or ``start_day`` is passed
+        along with  ``end_month`` and/or ``end_day``
     """
     global START_YEAR, START_MONTH, START_DAY
+
+    _check_only_start_or_end_present(start_month, start_day, end_month, end_day)
 
     if start_month is None and start_day is None:
         start_month, start_day = _start_month_day_from_end(end_month, end_day)
