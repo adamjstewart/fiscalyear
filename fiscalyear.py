@@ -8,12 +8,7 @@ __version__ = "0.3.2"
 import calendar
 import contextlib
 import datetime
-import sys
 import warnings
-
-
-if not sys.warnoptions:
-    warnings.simplefilter("default")
 
 # Number of months in each quarter
 MONTHS_PER_QUARTER = 12 // 4
