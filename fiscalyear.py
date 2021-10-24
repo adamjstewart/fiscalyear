@@ -24,6 +24,73 @@ START_MONTH = 10
 START_DAY = 1
 
 
+def _check_only_start_or_end_present(start_month, start_day,
+                                     end_month, end_day):
+    """Checks that only start_* or end_* are present.
+
+    :param start_month: The first month of the fiscal year
+    :param start_day: The first day of the first month of the fiscal year
+    :param end_month: The last month of the fiscal year
+    :param end_day: The last day of the last month of the fiscal year
+    :raises ValueError: If ``start_month`` and/or ``start_day`` is passed
+        along with  ``end_month`` and/or ``end_day``
+    """
+    start_present = start_month is not None or start_day is not None
+    end_present = end_month is not None or end_day is not None
+    if start_present and end_present:
+        emsg = "invalid combination of " + \
+            "start_month, start_day, end_month, end_day; " + \
+            "pass either start_* or end_*"
+        raise ValueError(emsg)
+
+
+def _start_day_from_end(end_month, end_day):
+    """Returns start day from end month and day.
+
+    :param end_month: The last month of the fiscal year
+    :type end_month: int or str
+    :param end_day: The last day of the last month of the fiscal year
+    :type end_day: int or str
+    :raises ValueError: If ``end_month`` or ``end_day`` is not an int or
+        int-like string
+    :raises ValueError: If ``end_month`` or ``end_day`` is out of range
+    """
+    day = _check_day(end_month, end_day) + 1
+    max_day = calendar.monthrange(2001, end_month)[1]
+    start_day = 1 if day > max_day else day
+    return start_day
+
+
+def _start_month_day_from_end(end_month, end_day):
+    """Returns start month and day from end month and day.
+
+    :param end_month: The last month of the fiscal year
+    :type end_month: int or str
+    :param end_day: The last day of the last month of the fiscal year
+    :type end_day: int or str
+    :raises ValueError: If ``end_month`` or ``end_day`` is not an int or
+        int-like string
+    :raises ValueError: If ``end_month`` or ``end_day`` is out of range
+    """
+    if end_month is None and end_day is None:
+        start_day = None
+        start_month = None
+    elif end_month is None:
+        month = 12 if START_MONTH == 1 else START_MONTH - 1
+        start_day = _start_day_from_end(month, end_day)
+        start_month = None
+    elif end_day is None:
+        start_day = None
+        start_month = _check_month(end_month) % 12 + 1
+    else:
+        day = _check_day(end_month, end_day)
+        month = _check_month(end_month)
+        start_day = _start_day_from_end(month, day)
+        start_month = month if start_day > day else month % 12 + 1
+
+    return start_month, start_day
+
+
 def _validate_fiscal_calendar_params(start_year, start_month, start_day):
     """Raise an Exception if the calendar parameters are invalid.
 
@@ -48,8 +115,9 @@ def _validate_fiscal_calendar_params(start_year, start_month, start_day):
     _check_day(start_month, start_day)
 
 
-def setup_fiscal_calendar(start_year=None, start_month=None, start_day=None):
-    """Modify the start of the fiscal calendar.
+def setup_fiscal_calendar(start_year=None, start_month=None, start_day=None,
+                          end_month=None, end_day=None):
+    """Modify the fiscal calendar.
 
     :param start_year: Relationship between the start of the fiscal year and
         the calendar year. Possible values: ``'previous'`` or ``'same'``.
@@ -58,12 +126,23 @@ def setup_fiscal_calendar(start_year=None, start_month=None, start_day=None):
     :type start_month: int or str
     :param start_day: The first day of the first month of the fiscal year
     :type start_day: int or str
+    :param end_month: The last month of the fiscal year
+    :type end_month: int or str
+    :param end_day: The last day of the last month of the fiscal year
+    :type end_day: int or str
     :raises ValueError: If ``start_year`` is not ``'previous'`` or ``'same'``
     :raises TypeError: If ``start_month`` or ``start_day`` is not an int or
         int-like string
     :raises ValueError: If ``start_month`` or ``start_day`` is out of range
+    :raises ValueError: If ``start_month`` and/or ``start_day`` is passed
+        along with  ``end_month`` and/or ``end_day``
     """
     global START_YEAR, START_MONTH, START_DAY
+
+    _check_only_start_or_end_present(start_month, start_day, end_month, end_day)
+
+    if start_month is None and start_day is None:
+        start_month, start_day = _start_month_day_from_end(end_month, end_day)
 
     # If arguments are omitted, use the currently active values.
     start_year = START_YEAR if start_year is None else start_year

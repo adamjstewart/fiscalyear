@@ -147,6 +147,124 @@ class TestValidateFiscalCalendarParams(object):
         fiscalyear._validate_fiscal_calendar_params(**arguments)
 
 
+class TestCheckOnlyStartOrEndPresent(object):
+    @pytest.mark.parametrize(
+        "arguments, exception",
+        [
+            (dict(start_month=None, start_day=1, end_month=12, end_day=31),
+             ValueError),
+            (dict(start_month=1, start_day=None, end_month=12, end_day=31),
+             ValueError),
+            (dict(start_month=1, start_day=1, end_month=None, end_day=31),
+             ValueError),
+            (dict(start_month=1, start_day=1, end_month=12, end_day=None),
+             ValueError),
+            (dict(start_month=None, start_day=1, end_month=None, end_day=31),
+             ValueError),
+            (dict(start_month=1, start_day=None, end_month=None, end_day=31),
+             ValueError),
+            (dict(start_month=None, start_day=1, end_month=12, end_day=None),
+             ValueError),
+            (dict(start_month=1, start_day=None, end_month=12, end_day=None),
+             ValueError),
+        ],
+    )
+    def test_invalid_input(self, arguments, exception):
+        with pytest.raises(exception):
+            fiscalyear._check_only_start_or_end_present(**arguments)
+
+    @pytest.mark.parametrize(
+        "arguments",
+        [
+            dict(start_month=None, start_day=None, end_month=12, end_day=31),
+            dict(start_month=None, start_day=None, end_month=4, end_day=30),
+            dict(start_month=None, start_day=None, end_month='12', end_day='31'),
+            dict(start_month=None, start_day=None, end_month='4', end_day='30'),
+            dict(start_month=1, start_day=1, end_month=None, end_day=None),
+            dict(start_month=6, start_day=15, end_month=None, end_day=None),
+            dict(start_month='1', start_day='1', end_month=None, end_day=None),
+            dict(start_month='6', start_day='15', end_month=None, end_day=None),
+            dict(start_month=None, start_day=None, end_month=None, end_day=None),
+        ],
+    )
+    def test_valid_input(self, arguments):
+        fiscalyear._check_only_start_or_end_present(**arguments)
+
+
+class TestStartDayFromEndParams(object):
+    @pytest.mark.parametrize(
+        "arguments, exception",
+        [
+            (dict(end_month="asdf", end_day=1), TypeError),
+            (dict(end_month=float(12), end_day=1), TypeError),
+            (dict(end_month=object(), end_day=1), TypeError),
+            (dict(end_month=-1, end_day=1), ValueError),
+            (dict(end_month=0, end_day=1), ValueError),
+            (dict(end_month=13, end_day=1), ValueError),
+            (dict(end_month=12, end_day="asdf"), TypeError),
+            (dict(end_month=12, end_day=float(1)), TypeError),
+            (dict(end_month=12, end_day=object()), TypeError),
+            (dict(end_month=12, end_day=0), ValueError),
+            (dict(end_month=12, end_day=-1), ValueError),
+            (dict(end_month=12, end_day=32), ValueError),
+        ],
+    )
+    def test_invalid_input(self, arguments, exception):
+        with pytest.raises(exception):
+            fiscalyear._start_month_day_from_end(**arguments)
+
+    @pytest.mark.parametrize(
+        "arguments",
+        [
+            dict(end_month=1, end_day=1),
+            dict(end_month=1, end_day=31),
+            dict(end_month=12, end_day=1),
+            dict(end_month='1', end_day='1'),
+            dict(end_month='1', end_day='31'),
+            dict(end_month='12', end_day='1'),
+        ],
+    )
+    def test_valid_input(self, arguments):
+        fiscalyear._start_month_day_from_end(**arguments)
+
+
+class TestStartMonthDayFromEndParams(object):
+    @pytest.mark.parametrize(
+        "arguments, exception",
+        [
+            (dict(end_month="asdf", end_day=1), TypeError),
+            (dict(end_month=float(12), end_day=1), TypeError),
+            (dict(end_month=object(), end_day=1), TypeError),
+            (dict(end_month=-1, end_day=1), ValueError),
+            (dict(end_month=0, end_day=1), ValueError),
+            (dict(end_month=13, end_day=1), ValueError),
+            (dict(end_month=12, end_day="asdf"), TypeError),
+            (dict(end_month=12, end_day=float(1)), TypeError),
+            (dict(end_month=12, end_day=object()), TypeError),
+            (dict(end_month=12, end_day=0), ValueError),
+            (dict(end_month=12, end_day=-1), ValueError),
+            (dict(end_month=12, end_day=32), ValueError),
+        ],
+    )
+    def test_invalid_input(self, arguments, exception):
+        with pytest.raises(exception):
+            fiscalyear._start_month_day_from_end(**arguments)
+
+    @pytest.mark.parametrize(
+        "arguments",
+        [
+            dict(end_month=1, end_day=1),
+            dict(end_month=1, end_day=31),
+            dict(end_month=12, end_day=1),
+            dict(end_month=1, end_day=1),
+            dict(end_month=1, end_day=31),
+            dict(end_month=12, end_day=1),
+        ],
+    )
+    def test_valid_input(self, arguments):
+        fiscalyear._start_month_day_from_end(**arguments)
+
+
 class TestSetupFiscalCalendar(object):
     def test_start_year(self):
         assert fiscalyear.START_YEAR == "previous"
@@ -173,6 +291,41 @@ class TestSetupFiscalCalendar(object):
         assert fiscalyear.START_DAY == 6
         fiscalyear.setup_fiscal_calendar(start_day=1)
 
+        assert fiscalyear.START_DAY == 1
+
+    def test_end_month(self):
+        assert fiscalyear.START_MONTH == 10
+
+        fiscalyear.setup_fiscal_calendar(end_month=4)
+        assert fiscalyear.START_MONTH == 5
+        fiscalyear.setup_fiscal_calendar(end_month=12)
+        assert fiscalyear.START_MONTH == 1
+        fiscalyear.setup_fiscal_calendar(end_month=9)
+
+        assert fiscalyear.START_MONTH == 10
+
+    def test_end_day(self):
+        assert fiscalyear.START_DAY == 1
+
+        fiscalyear.setup_fiscal_calendar(end_day=6)
+        assert fiscalyear.START_DAY == 7
+        fiscalyear.setup_fiscal_calendar(end_day=30)
+
+        assert fiscalyear.START_DAY == 1
+
+    def test_end_month_day(self):
+        assert fiscalyear.START_MONTH == 10
+        assert fiscalyear.START_DAY == 1
+
+        fiscalyear.setup_fiscal_calendar(end_month=4, end_day=15)
+        assert fiscalyear.START_MONTH == 4
+        assert fiscalyear.START_DAY == 16
+        fiscalyear.setup_fiscal_calendar(end_month=2, end_day=28)
+        assert fiscalyear.START_MONTH == 3
+        assert fiscalyear.START_DAY == 1
+        fiscalyear.setup_fiscal_calendar(end_month=9, end_day=30)
+
+        assert fiscalyear.START_MONTH == 10
         assert fiscalyear.START_DAY == 1
 
     def test_complex(self):
