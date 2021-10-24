@@ -186,6 +186,27 @@ def _check_day(month, day):
         raise ValueError("day must be in %d..%d" % (1, max_day), day)
 
 
+def _check_fiscal_week(fiscal_year, fiscal_week):
+    """Check if week is a valid week of the fiscal year.
+
+    :param fiscal_year: The fiscal year to test
+    :param fiscal_week: The fiscal week to test
+    :return: The fiscal week
+    :rtype: int
+    :raises TypeError: If year or week is not an int or int-like string
+    :raises ValueError: If year or week is out of range
+    """
+    fiscal_year = _check_year(fiscal_year)
+    fiscal_week = _check_int(fiscal_week)
+
+    # Find the length of the year
+    max_week = 53 if FiscalYear(fiscal_year).isleap else 52
+    if 1 <= fiscal_week <= max_week:
+        return fiscal_week
+    else:
+        raise ValueError("week must be in %d..%d" % (1, max_week), fiscal_week)
+
+
 def _check_fiscal_day(fiscal_year, fiscal_day):
     """Check if day is a valid day of the fiscal year.
 
@@ -288,7 +309,7 @@ class FiscalYear(object):
         """
         if isinstance(item, FiscalYear):
             return self == item
-        elif isinstance(item, (FiscalQuarter, FiscalMonth, FiscalDay)):
+        elif isinstance(item, (FiscalQuarter, FiscalMonth, FiscalWeek, FiscalDay)):
             return self._fiscal_year == item.fiscal_year
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
@@ -517,7 +538,7 @@ class FiscalQuarter(object):
         """
         if isinstance(item, FiscalQuarter):
             return self == item
-        elif isinstance(item, (FiscalMonth, FiscalDay)):
+        elif isinstance(item, (FiscalMonth, FiscalWeek, FiscalDay)):
             return self.start <= item.start and item.end <= self.end
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
@@ -799,7 +820,7 @@ class FiscalMonth(object):
         """
         if isinstance(item, FiscalMonth):
             return self == item
-        elif isinstance(item, FiscalDay):
+        elif isinstance(item, (FiscalWeek, FiscalDay)):
             return self.start <= item.start <= item.end <= self.end
         elif isinstance(item, datetime.datetime):
             return self.start <= item <= self.end
@@ -967,6 +988,255 @@ class FiscalMonth(object):
             return (self._fiscal_year, self._fiscal_month) >= (
                 other._fiscal_year,
                 other._fiscal_month,
+            )
+        else:
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
+
+
+class FiscalWeek(object):
+    """A class representing a single fiscal week."""
+
+    __slots__ = ["_fiscal_year", "_fiscal_week"]
+
+    def __new__(cls, fiscal_year, fiscal_week):
+        """Constructor.
+
+        :param fiscal_year: The fiscal year
+        :type fiscal_year: int or str
+        :param fiscal_week: The fiscal week
+        :type fiscal_week: int or str
+        :returns: A newly constructed FiscalWeek object
+        :rtype: FiscalWeek
+        :raises TypeError: If fiscal_year or fiscal_week is not
+            an int or int-like string
+        :raises ValueError: If fiscal_year or fiscal_week is out of range
+        """
+        fiscal_year = _check_year(fiscal_year)
+        fiscal_week = _check_fiscal_week(fiscal_year, fiscal_week)
+
+        self = super(FiscalWeek, cls).__new__(cls)
+        self._fiscal_year = fiscal_year
+        self._fiscal_week = fiscal_week
+        return self
+
+    @classmethod
+    def current(cls):
+        """Alternative constructor. Returns the current FiscalWeek.
+
+        :returns: A newly constructed FiscalWeek object
+        :rtype: FiscalWeek
+        """
+        today = FiscalDate.today()
+        return cls(today.fiscal_year, today.fiscal_week)
+
+    def __repr__(self):
+        """Convert to formal string, for repr().
+
+        >>> fw = FiscalWeek(2017, 1)
+        >>> repr(fw)
+        'FiscalWeek(2017, 1)'
+        """
+        return "%s(%d, %d)" % (
+            self.__class__.__name__,
+            self._fiscal_year,
+            self._fiscal_week,
+        )
+
+    def __str__(self):
+        """Convert to informal string, for str().
+
+        >>> fw = FiscalWeek(2017, 1)
+        >>> str(fw)
+        'FY2017 FW1'
+        """
+        return "FY%d FW%d" % (self._fiscal_year, self._fiscal_week)
+
+    # TODO: Implement __format__ so that you can print
+    # fiscal year as 17 or 2017 (%y or %Y)
+
+    def __contains__(self, item):
+        """Returns True if item in self, else False.
+
+        :param item: The item to check
+        :type item: FiscalWeek, FiscalDateTime,
+            datetime, FiscalDate, or date
+        :rtype: bool
+        """
+        if isinstance(item, FiscalWeek):
+            return self == item
+        elif isinstance(item, datetime.datetime):
+            return self.start <= item <= self.end
+        elif isinstance(item, datetime.date):
+            return self.start.date() <= item <= self.end.date()
+        else:
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(item).__name__)
+            )
+
+    # Read-only field accessors
+
+    @property
+    def fiscal_year(self):
+        """:returns: The fiscal year
+        :rtype: int
+        """
+        return self._fiscal_year
+
+    @property
+    def fiscal_quarter(self):
+        """:returns: The fiscal quarter
+        :rtype: int
+        """
+        return self.start.fiscal_quarter
+
+    @property
+    def fiscal_month(self):
+        """:returns: The fiscal month
+        :rtype: int
+        """
+        return self.start.fiscal_month
+
+    @property
+    def fiscal_week(self):
+        """:returns: The fiscal week
+        :rtype: int
+        """
+        return self._fiscal_week
+
+    @property
+    def start(self):
+        """:returns: Start of the fiscal week
+        :rtype: FiscalDateTime
+        """
+
+        fiscal_year = FiscalYear(self._fiscal_year)
+        weeks_elapsed = datetime.timedelta(weeks=self._fiscal_week - 1)
+        start = fiscal_year.start + weeks_elapsed
+        return FiscalDateTime(start.year, start.month, start.day, 0, 0, 0)
+
+    @property
+    def end(self):
+        """:returns: End of the fiscal week
+        :rtype: FiscalDateTime
+        """
+        # Find the start of the next fiscal quarter
+        next_start = self.next_fiscal_week.start
+
+        # Substract 1 second
+        end = next_start - datetime.timedelta(seconds=1)
+
+        return FiscalDateTime(
+            end.year,
+            end.month,
+            end.day,
+            end.hour,
+            end.minute,
+            end.second,
+            end.microsecond,
+            end.tzinfo,
+        )
+
+    @property
+    def prev_fiscal_week(self):
+        """:returns: The previous fiscal week
+        :rtype: FiscalWeek
+        """
+        fiscal_year = self._fiscal_year
+        fiscal_week = self._fiscal_week - 1
+        if fiscal_week == 0:
+            fiscal_year -= 1
+            try:
+                fiscal_week = _check_fiscal_week(fiscal_year, 53)
+            except ValueError:
+                fiscal_week = _check_fiscal_week(fiscal_year, 52)
+
+        return FiscalWeek(fiscal_year, fiscal_week)
+
+    @property
+    def next_fiscal_week(self):
+        """:returns: The next fiscal week
+        :rtype: FiscalWeek
+        """
+        fiscal_year = self._fiscal_year
+        try:
+            fiscal_week = _check_fiscal_week(fiscal_year, self._fiscal_week + 1)
+        except ValueError:
+            fiscal_year += 1
+            fiscal_week = 1
+
+        return FiscalWeek(fiscal_year, fiscal_week)
+
+    # Comparisons of FiscalWeek objects with other
+
+    def __lt__(self, other):
+        if isinstance(other, FiscalWeek):
+            return (self._fiscal_year, self._fiscal_week) < (
+                other._fiscal_year,
+                other._fiscal_week,
+            )
+        else:
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
+
+    def __le__(self, other):
+        if isinstance(other, FiscalWeek):
+            return (self._fiscal_year, self._fiscal_week) <= (
+                other._fiscal_year,
+                other._fiscal_week,
+            )
+        else:
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
+
+    def __eq__(self, other):
+        if isinstance(other, FiscalWeek):
+            return (self._fiscal_year, self._fiscal_week) == (
+                other._fiscal_year,
+                other._fiscal_week,
+            )
+        else:
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
+
+    def __ne__(self, other):
+        if isinstance(other, FiscalWeek):
+            return (self._fiscal_year, self._fiscal_week) != (
+                other._fiscal_year,
+                other._fiscal_week,
+            )
+        else:
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
+
+    def __gt__(self, other):
+        if isinstance(other, FiscalWeek):
+            return (self._fiscal_year, self._fiscal_week) > (
+                other._fiscal_year,
+                other._fiscal_week,
+            )
+        else:
+            raise TypeError(
+                "can't compare '%s' to '%s'"
+                % (type(self).__name__, type(other).__name__)
+            )
+
+    def __ge__(self, other):
+        if isinstance(other, FiscalWeek):
+            return (self._fiscal_year, self._fiscal_week) >= (
+                other._fiscal_year,
+                other._fiscal_week,
             )
         else:
             raise TypeError(
@@ -1272,6 +1542,13 @@ class _FiscalBase:
             m = FiscalMonth(self.fiscal_year, month)
             if self in m:
                 return month
+
+    @property
+    def fiscal_week(self):
+        """returns: The fiscal week
+        :rtype: int
+        """
+        return -(-self.fiscal_day // 7)
 
     @property
     def fiscal_day(self):
