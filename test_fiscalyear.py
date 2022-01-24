@@ -479,6 +479,10 @@ class TestFiscalYear:
         with pytest.raises(TypeError):
             a >= 1
 
+    def test_hash(self, a, b, g):
+        assert hash(a) == hash(a)
+        assert hash(a) != hash(b) != hash(g)
+
 
 class TestFiscalQuarter:
     @pytest.fixture(scope="class")
@@ -691,6 +695,10 @@ class TestFiscalQuarter:
         with pytest.raises(TypeError):
             a >= 1
 
+    def test_hash(self, a, b, c):
+        assert hash(a) == hash(a)
+        assert hash(a) != hash(b) != hash(c)
+
 
 class TestFiscalMonth:
     @pytest.fixture(scope="class")
@@ -827,6 +835,10 @@ class TestFiscalMonth:
 
         with pytest.raises(TypeError):
             a >= 1
+
+    def test_hash(self, a, b, e):
+        assert hash(a) == hash(a)
+        assert hash(a) != hash(b) != hash(e)
 
 
 class TestFiscalDay:
@@ -973,6 +985,10 @@ class TestFiscalDay:
 
         with pytest.raises(TypeError):
             a >= 1
+
+    def test_hash(self, a, b, f):
+        assert hash(a) == hash(a)
+        assert hash(a) != hash(b) != hash(f)
 
 
 class TestFiscalDate:
