@@ -234,7 +234,7 @@ class _Hashable(object):
 class FiscalYear(_Hashable):
     """A class representing a single fiscal year."""
 
-    __slots__ = "_fiscal_year",
+    __slots__ = ["_fiscal_year"]
     __hash__ = _Hashable.__hash__
 
     def __new__(cls, fiscal_year):
