@@ -227,7 +227,14 @@ def _check_quarter(quarter):
 
 
 class _Hashable(object):
-    def __hash__(self):
+    """A class to make Fiscal objects hashable"""
+
+    def __hash__(self) -> int:
+        """Unique hash of an object instance based on __slots__
+
+        :returns: a unique hash
+        :rtype: int
+        """
         return hash(tuple(map(lambda x: getattr(self, x), self.__slots__)))
 
 
