@@ -226,10 +226,23 @@ def _check_quarter(quarter):
         )
 
 
-class FiscalYear(object):
+class _Hashable(object):
+    """A class to make Fiscal objects hashable"""
+
+    def __hash__(self):
+        """Unique hash of an object instance based on __slots__
+
+        :returns: a unique hash
+        :rtype: int
+        """
+        return hash(tuple(map(lambda x: getattr(self, x), self.__slots__)))
+
+
+class FiscalYear(_Hashable):
     """A class representing a single fiscal year."""
 
-    __slots__ = "_fiscal_year"
+    __slots__ = ["_fiscal_year"]
+    __hash__ = _Hashable.__hash__
 
     def __new__(cls, fiscal_year):
         """Constructor.
@@ -446,10 +459,11 @@ class FiscalYear(object):
             )
 
 
-class FiscalQuarter(object):
+class FiscalQuarter(_Hashable):
     """A class representing a single fiscal quarter."""
 
     __slots__ = ["_fiscal_year", "_fiscal_quarter"]
+    __hash__ = _Hashable.__hash__
 
     def __new__(cls, fiscal_year, fiscal_quarter):
         """Constructor.
@@ -728,10 +742,11 @@ class FiscalQuarter(object):
             )
 
 
-class FiscalMonth(object):
+class FiscalMonth(_Hashable):
     """A class representing a single fiscal month."""
 
     __slots__ = ["_fiscal_year", "_fiscal_month"]
+    __hash__ = _Hashable.__hash__
 
     def __new__(cls, fiscal_year, fiscal_month):
         """Constructor.
@@ -975,10 +990,11 @@ class FiscalMonth(object):
             )
 
 
-class FiscalDay(object):
+class FiscalDay(_Hashable):
     """A class representing a single fiscal day."""
 
     __slots__ = ["_fiscal_year", "_fiscal_day"]
+    __hash__ = _Hashable.__hash__
 
     def __new__(cls, fiscal_year, fiscal_day):
         """Constructor.
