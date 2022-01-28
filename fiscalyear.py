@@ -229,7 +229,7 @@ def _check_quarter(quarter):
 class _Hashable(object):
     """A class to make Fiscal objects hashable"""
 
-    def __hash__(self) -> int:
+    def __hash__(self):
         """Unique hash of an object instance based on __slots__
 
         :returns: a unique hash
