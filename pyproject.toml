@@ -6,5 +6,5 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.black]
-target-version = ['py27', 'py33', 'py34', 'py35', 'py36', 'py37', 'py38']
+target-version = ['py35', 'py36', 'py37', 'py38', 'py39']
 include = 'docs/conf\.py|fiscalyear\.py|setup\.py|test_fiscal_year\.py'
