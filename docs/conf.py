@@ -49,7 +49,7 @@ master_doc = "index"
 # General information about the project.
 project = fiscalyear.__name__
 author = fiscalyear.__author__
-copyright = u"2017, " + author
+copyright = "2017, " + author
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -128,7 +128,7 @@ latex_documents = [
     (
         master_doc,
         "fiscalyear.tex",
-        u"fiscalyear Documentation",
+        "fiscalyear Documentation",
         fiscalyear.__author__,
         "manual",
     )
@@ -139,7 +139,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "fiscalyear", u"fiscalyear Documentation", [author], 1)]
+man_pages = [(master_doc, "fiscalyear", "fiscalyear Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output -------------------------------------------
@@ -151,7 +151,7 @@ texinfo_documents = [
     (
         master_doc,
         "fiscalyear",
-        u"fiscalyear Documentation",
+        "fiscalyear Documentation",
         author,
         "fiscalyear",
         "fiscalyear is a small, lightweight Python module providing helpful "
