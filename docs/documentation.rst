@@ -15,16 +15,6 @@ To build the documentation, you'll need to have ``sphinx`` and ``sphinx_rtd_them
    $ make html
 
 
-Building the documentation with setuptools
-------------------------------------------
-
-Alternatively, the documentation can be built with the following command:
-
-.. code-block:: console
-
-   $ python setup.py build_sphinx
-
-
 Continuous Integration (CI)
 ---------------------------
 

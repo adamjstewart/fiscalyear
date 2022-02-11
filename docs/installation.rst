@@ -41,30 +41,6 @@ If you work in an HPC environment, the `Spack <https://spack.io/>`_ package mana
 See the `Spack Documentation <https://spack.readthedocs.io/en/latest/>`_ to get started.
 
 
-Source
-------
-
-If you're up for it, you can also install ``fiscalyear`` from source. Simply clone the repository.
-
-.. code-block:: console
-
-   $ git clone https://github.com/adamjstewart/fiscalyear.git
-
-
-Now build the module.
-
-.. code-block:: console
-
-   $ python setup.py build
-
-
-Finally, install the package to somewhere in your ``PYTHONPATH``.
-
-.. code-block:: console
-
-   $ python setup.py install --prefix=/path/to/installation/prefix
-
-
 Drag-n-Drop
 -----------
 
