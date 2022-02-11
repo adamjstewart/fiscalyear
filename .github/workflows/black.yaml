@@ -1,15 +1,11 @@
 name: black
 on:
   push:
-    paths:
-    - '**.py'
-    - 'pyproject.toml'
-    - '.github/workflows/black.yaml'
+    branches:
+    - main
   pull_request:
-    paths:
-    - '**.py'
-    - 'pyproject.toml'
-    - '.github/workflows/black.yaml'
+    branches:
+    - main
 jobs:
   black:
     name: black

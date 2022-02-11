@@ -1,15 +1,11 @@
 name: pytest
 on:
   push:
-    paths:
-    - '**.py'
-    - 'requirements.txt'
-    - '.github/workflows/pytest.yaml'
+    branches:
+    - main
   pull_request:
-    paths:
-    - '**.py'
-    - 'requirements.txt'
-    - '.github/workflows/pytest.yaml'
+    branches:
+    - main
 jobs:
   test:
     name: pytest
