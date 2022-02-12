@@ -1,6 +1,0 @@
-codecov
-pytest
-pytest-cov
-pytest-mock
-sphinx>=1.4
-sphinx_rtd_theme
