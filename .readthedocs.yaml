@@ -9,11 +9,6 @@ build:
   tools:
     python: "3.10"
 
-# Configuration of the Python environment to be used
-python:
-   install:
-   - requirements: requirements.txt
-
 # Configuration for Sphinx documentation
 sphinx:
    configuration: docs/conf.py
