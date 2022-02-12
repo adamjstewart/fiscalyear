@@ -36,8 +36,8 @@ def _validate_fiscal_calendar_params(
     :raises ValueError: If ``start_month`` or ``start_day`` is out of range
     """
     if start_year not in ["previous", "same"]:
-        msg = "'start_year' must be either 'previous' or 'same', not: '{}'"
-        raise ValueError(msg.format(start_year))
+        msg = f"'start_year' must be either 'previous' or 'same', not: '{start_year}'"
+        raise ValueError(msg)
     _check_day(start_month, start_day)
 
 
@@ -110,7 +110,7 @@ def _check_year(year: int) -> int:
     if datetime.MINYEAR <= year <= datetime.MAXYEAR:
         return year
     else:
-        raise ValueError("year {} is out of range".format(year))
+        raise ValueError(f"year {year} is out of range")
 
 
 def _check_month(month: int) -> int:
@@ -123,7 +123,7 @@ def _check_month(month: int) -> int:
     if 1 <= month <= 12:
         return month
     else:
-        raise ValueError("month {} is out of range".format(month))
+        raise ValueError(f"month {month} is out of range")
 
 
 def _check_day(month: int, day: int) -> int:
@@ -143,7 +143,7 @@ def _check_day(month: int, day: int) -> int:
     if 1 <= day <= max_day:
         return day
     else:
-        raise ValueError("day {} is out of range".format(day))
+        raise ValueError(f"day {day} is out of range")
 
 
 def _check_fiscal_day(fiscal_year: int, fiscal_day: int) -> int:
@@ -161,7 +161,7 @@ def _check_fiscal_day(fiscal_year: int, fiscal_day: int) -> int:
     if 1 <= fiscal_day <= max_day:
         return fiscal_day
     else:
-        raise ValueError("fiscal_day {} is out of range".format(fiscal_day))
+        raise ValueError(f"fiscal_day {fiscal_day} is out of range")
 
 
 def _check_quarter(quarter: int) -> int:
@@ -174,7 +174,7 @@ def _check_quarter(quarter: int) -> int:
     if MIN_QUARTER <= quarter <= MAX_QUARTER:
         return quarter
     else:
-        raise ValueError("quarter {} is out of range".format(quarter))
+        raise ValueError(f"quarter {quarter} is out of range")
 
 
 class _Hashable:
@@ -225,7 +225,7 @@ class FiscalYear(_Hashable):
         >>> repr(fy)
         'FiscalYear(2017)'
         """
-        return "{}({})".format(self.__class__.__name__, self._fiscal_year)
+        return f"{self.__class__.__name__}({self._fiscal_year})"
 
     def __str__(self) -> str:
         """Convert to informal string, for str().
@@ -234,7 +234,7 @@ class FiscalYear(_Hashable):
         >>> str(fy)
         'FY2017'
         """
-        return "FY{}".format(self._fiscal_year)
+        return f"FY{self._fiscal_year}"
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
@@ -344,9 +344,7 @@ class FiscalYear(_Hashable):
             return self._fiscal_year == other._fiscal_year
         else:
             raise TypeError(
-                "can't compare '{}' to '{}'".format(
-                    type(self).__name__, type(other).__name__
-                )
+                f"can't compare '{type(self).__name__}' to '{type(other).__name__}'"
             )
 
     def __ne__(self, other: object) -> bool:
@@ -354,9 +352,7 @@ class FiscalYear(_Hashable):
             return self._fiscal_year != other._fiscal_year
         else:
             raise TypeError(
-                "can't compare '{}' to '{}'".format(
-                    type(self).__name__, type(other).__name__
-                )
+                f"can't compare '{type(self).__name__}' to '{type(other).__name__}'"
             )
 
     def __gt__(self, other: "FiscalYear") -> bool:
@@ -407,9 +403,7 @@ class FiscalQuarter(_Hashable):
         >>> repr(q3)
         'FiscalQuarter(2017, 3)'
         """
-        return "{}({}, {})".format(
-            self.__class__.__name__, self._fiscal_year, self._fiscal_quarter
-        )
+        return f"{self.__class__.__name__}({self._fiscal_year}, {self._fiscal_quarter})"
 
     def __str__(self) -> str:
         """Convert to informal string, for str().
@@ -418,7 +412,7 @@ class FiscalQuarter(_Hashable):
         >>> str(q3)
         'FY2017 Q3'
         """
-        return "FY{} Q{}".format(self._fiscal_year, self._fiscal_quarter)
+        return f"FY{self._fiscal_year} Q{self._fiscal_quarter}"
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
@@ -580,9 +574,7 @@ class FiscalQuarter(_Hashable):
             )
         else:
             raise TypeError(
-                "can't compare '{}' to '{}'".format(
-                    type(self).__name__, type(other).__name__
-                )
+                f"can't compare '{type(self).__name__}' to '{type(other).__name__}'"
             )
 
     def __ne__(self, other: object) -> bool:
@@ -593,9 +585,7 @@ class FiscalQuarter(_Hashable):
             )
         else:
             raise TypeError(
-                "can't compare '{}' to '{}'".format(
-                    type(self).__name__, type(other).__name__
-                )
+                f"can't compare '{type(self).__name__}' to '{type(other).__name__}'"
             )
 
     def __gt__(self, other: "FiscalQuarter") -> bool:
@@ -652,9 +642,7 @@ class FiscalMonth(_Hashable):
         >>> repr(fm)
         'FiscalMonth(2017, 1)'
         """
-        return "{}({}, {})".format(
-            self.__class__.__name__, self._fiscal_year, self._fiscal_month
-        )
+        return f"{self.__class__.__name__}({self._fiscal_year}, {self._fiscal_month})"
 
     def __str__(self) -> str:
         """Convert to informal string, for str().
@@ -663,7 +651,7 @@ class FiscalMonth(_Hashable):
         >>> str(fm)
         'FY2017 FM1'
         """
-        return "FY{} FM{}".format(self._fiscal_year, self._fiscal_month)
+        return f"FY{self._fiscal_year} FM{self._fiscal_month}"
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
@@ -783,9 +771,7 @@ class FiscalMonth(_Hashable):
             )
         else:
             raise TypeError(
-                "can't compare '{}' to '{}'".format(
-                    type(self).__name__, type(other).__name__
-                )
+                f"can't compare '{type(self).__name__}' to '{type(other).__name__}'"
             )
 
     def __ne__(self, other: object) -> bool:
@@ -796,9 +782,7 @@ class FiscalMonth(_Hashable):
             )
         else:
             raise TypeError(
-                "can't compare '{}' to '{}'".format(
-                    type(self).__name__, type(other).__name__
-                )
+                f"can't compare '{type(self).__name__}' to '{type(other).__name__}'"
             )
 
     def __gt__(self, other: "FiscalMonth") -> bool:
@@ -855,9 +839,7 @@ class FiscalDay(_Hashable):
         >>> repr(fd)
         'FiscalDay(2017, 1)'
         """
-        return "{}({}, {})".format(
-            self.__class__.__name__, self._fiscal_year, self._fiscal_day
-        )
+        return f"{self.__class__.__name__}({self._fiscal_year}, {self._fiscal_day})"
 
     def __str__(self) -> str:
         """Convert to informal string, for str().
@@ -866,7 +848,7 @@ class FiscalDay(_Hashable):
         >>> str(fd)
         'FY2017 FD1'
         """
-        return "FY{} FD{}".format(self._fiscal_year, self._fiscal_day)
+        return f"FY{self._fiscal_year} FD{self._fiscal_day}"
 
     # TODO: Implement __format__ so that you can print
     # fiscal year as 17 or 2017 (%y or %Y)
@@ -984,9 +966,7 @@ class FiscalDay(_Hashable):
             )
         else:
             raise TypeError(
-                "can't compare '{}' to '{}'".format(
-                    type(self).__name__, type(other).__name__
-                )
+                f"can't compare '{type(self).__name__}' to '{type(other).__name__}'"
             )
 
     def __ne__(self, other: object) -> bool:
@@ -997,9 +977,7 @@ class FiscalDay(_Hashable):
             )
         else:
             raise TypeError(
-                "can't compare '{}' to '{}'".format(
-                    type(self).__name__, type(other).__name__
-                )
+                f"can't compare '{type(self).__name__}' to '{type(other).__name__}'"
             )
 
     def __gt__(self, other: "FiscalDay") -> bool:
@@ -1081,24 +1059,24 @@ class _FiscalMixin:
         return delta.days + 1
 
     @property
-    def prev_fiscal_year(self) -> "FiscalYear":
+    def prev_fiscal_year(self) -> FiscalYear:
         """:returns: The previous fiscal year"""
         return FiscalYear(self.fiscal_year - 1)
 
     @property
-    def next_fiscal_year(self) -> "FiscalYear":
+    def next_fiscal_year(self) -> FiscalYear:
         """:returns: The next fiscal year"""
         return FiscalYear(self.fiscal_year + 1)
 
     @property
-    def prev_fiscal_quarter(self) -> "FiscalQuarter":
+    def prev_fiscal_quarter(self) -> FiscalQuarter:
         """:returns: The previous fiscal quarter"""
         fiscal_quarter = FiscalQuarter(self.fiscal_year, self.fiscal_quarter)
 
         return fiscal_quarter.prev_fiscal_quarter
 
     @property
-    def prev_quarter(self) -> "FiscalQuarter":
+    def prev_quarter(self) -> FiscalQuarter:
         warnings.warn(
             "FiscalDate(Time).prev_quarter is deprecated, "
             "use FiscalDate(Time).prev_fiscal_quarter instead",
@@ -1107,14 +1085,14 @@ class _FiscalMixin:
         return self.prev_fiscal_quarter
 
     @property
-    def next_fiscal_quarter(self) -> "FiscalQuarter":
+    def next_fiscal_quarter(self) -> FiscalQuarter:
         """:returns: The next fiscal quarter"""
         fiscal_quarter = FiscalQuarter(self.fiscal_year, self.fiscal_quarter)
 
         return fiscal_quarter.next_fiscal_quarter
 
     @property
-    def next_quarter(self) -> "FiscalQuarter":
+    def next_quarter(self) -> FiscalQuarter:
         warnings.warn(
             "FiscalDate(Time).next_quarter is deprecated, "
             "use FiscalDate(Time).next_fiscal_quarter instead",
@@ -1123,28 +1101,28 @@ class _FiscalMixin:
         return self.next_fiscal_quarter
 
     @property
-    def prev_fiscal_month(self) -> "FiscalMonth":
+    def prev_fiscal_month(self) -> FiscalMonth:
         """:returns: The previous fiscal month"""
         fiscal_month = FiscalMonth(self.fiscal_year, self.fiscal_month)
 
         return fiscal_month.prev_fiscal_month
 
     @property
-    def next_fiscal_month(self) -> "FiscalMonth":
+    def next_fiscal_month(self) -> FiscalMonth:
         """:returns: The next fiscal month"""
         fiscal_month = FiscalMonth(self.fiscal_year, self.fiscal_month)
 
         return fiscal_month.next_fiscal_month
 
     @property
-    def prev_fiscal_day(self) -> "FiscalDay":
+    def prev_fiscal_day(self) -> FiscalDay:
         """:returns: The previous fiscal day"""
         fiscal_day = FiscalDay(self.fiscal_year, self.fiscal_day)
 
         return fiscal_day.prev_fiscal_day
 
     @property
-    def next_fiscal_day(self) -> "FiscalDay":
+    def next_fiscal_day(self) -> FiscalDay:
         """:returns: The next fiscal day"""
         fiscal_day = FiscalDay(self.fiscal_year, self.fiscal_day)
 
