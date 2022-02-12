@@ -1074,7 +1074,7 @@ class _FiscalMixin:
         year_start = fiscal_year.start
 
         if isinstance(fiscal_self, FiscalDate):
-            delta = fiscal_self - year_start.date()
+            delta = cast(datetime.date, fiscal_self) - year_start.date()
         else:
             delta = fiscal_self - year_start
 

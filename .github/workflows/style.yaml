@@ -17,9 +17,9 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.10'
-    - name: Install black
+    - name: Install dependencies
       run: pip3 install black
-    - name: Run black checks
+    - name: Run style checks
       run: black --check --diff .
   flake8:
     name: flake8
@@ -33,7 +33,7 @@ jobs:
         python-version: '3.10'
     - name: Install dependencies
       run: pip install flake8
-    - name: Run flake8 checks
+    - name: Run style checks
       run: flake8
   isort:
     name: isort
@@ -41,11 +41,11 @@ jobs:
     steps:
     - name: Clone repo
       uses: actions/checkout@v2
-    - name: Set up python
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.10'
-    - name: Install pip dependencies
-      run: pip install isort[colors]
-    - name: Run isort checks
+    - name: Install dependencies
+      run: pip3 install isort[colors]
+    - name: Run style checks
       run: isort . --check --diff
