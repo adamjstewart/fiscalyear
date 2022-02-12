@@ -17,11 +17,11 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 import os
 import sys
+from typing import Dict
 
 sys.path.insert(0, os.path.abspath(".."))
 
 import fiscalyear  # noqa: E402
-
 
 # -- General configuration ------------------------------------------------
 
@@ -106,7 +106,7 @@ htmlhelp_basename = "fiscalyeardoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
-latex_elements = {
+latex_elements: Dict[str, str] = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
