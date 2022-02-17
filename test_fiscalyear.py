@@ -437,12 +437,6 @@ class TestFiscalQuarter:
         with pytest.raises(ValueError):
             FiscalQuarter(0, 2)
 
-    def test_deprecated(self, a: FiscalQuarter) -> None:
-        with pytest.deprecated_call():
-            a.quarter
-            a.prev_quarter
-            a.next_quarter
-
     def test_prev_fiscal_quarter(
         self,
         a: FiscalQuarter,
@@ -909,12 +903,6 @@ class TestFiscalDate:
     def test_next_fiscal_day(self, a: FiscalDate) -> None:
         assert a.next_fiscal_day == FiscalDay(2017, 94)
 
-    def test_deprecated(self, a: FiscalDate) -> None:
-        with pytest.deprecated_call():
-            a.quarter
-            a.prev_quarter
-            a.next_quarter
-
 
 class TestFiscalDateTime:
     @pytest.fixture(scope="class")
@@ -974,9 +962,3 @@ class TestFiscalDateTime:
 
     def test_next_fiscal_day(self, a: FiscalDateTime) -> None:
         assert a.next_fiscal_day == FiscalDay(2017, 94)
-
-    def test_deprecated(self, a: FiscalDateTime) -> None:
-        with pytest.deprecated_call():
-            a.quarter
-            a.prev_quarter
-            a.next_quarter

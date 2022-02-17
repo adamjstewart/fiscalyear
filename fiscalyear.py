@@ -453,15 +453,6 @@ class FiscalQuarter(_Hashable):
         return self._fiscal_quarter
 
     @property
-    def quarter(self) -> int:
-        warnings.warn(
-            "FiscalQuarter.quarter is deprecated, "
-            "use FiscalQuarter.fiscal_quarter instead",
-            DeprecationWarning,
-        )
-        return self.fiscal_quarter
-
-    @property
     def prev_fiscal_quarter(self) -> "FiscalQuarter":
         """:returns: The previous fiscal quarter"""
         fiscal_year = self._fiscal_year
@@ -473,15 +464,6 @@ class FiscalQuarter(_Hashable):
         return FiscalQuarter(fiscal_year, fiscal_quarter)
 
     @property
-    def prev_quarter(self) -> "FiscalQuarter":
-        warnings.warn(
-            "FiscalQuarter.prev_quarter is deprecated, "
-            "use FiscalQuarter.prev_fiscal_quarter instead",
-            DeprecationWarning,
-        )
-        return self.prev_fiscal_quarter
-
-    @property
     def next_fiscal_quarter(self) -> "FiscalQuarter":
         """:returns: The next fiscal quarter"""
         fiscal_year = self._fiscal_year
@@ -491,15 +473,6 @@ class FiscalQuarter(_Hashable):
             fiscal_quarter = 1
 
         return FiscalQuarter(fiscal_year, fiscal_quarter)
-
-    @property
-    def next_quarter(self) -> "FiscalQuarter":
-        warnings.warn(
-            "FiscalQuarter.next_quarter is deprecated, "
-            "use FiscalQuarter.next_fiscal_quarter instead",
-            DeprecationWarning,
-        )
-        return self.next_fiscal_quarter
 
     @property
     def start(self) -> "FiscalDateTime":
@@ -1024,15 +997,6 @@ class _FiscalMixin:
         return quarter
 
     @property
-    def quarter(self) -> int:
-        warnings.warn(
-            "FiscalDate(Time).quarter is deprecated, "
-            "use FiscalDate(Time).fiscal_quarter instead",
-            DeprecationWarning,
-        )
-        return self.fiscal_quarter
-
-    @property
     def fiscal_month(self) -> int:
         """:returns: The fiscal month"""
         fiscal_self = cast(Union["FiscalDate", "FiscalDateTime"], self)
@@ -1076,29 +1040,11 @@ class _FiscalMixin:
         return fiscal_quarter.prev_fiscal_quarter
 
     @property
-    def prev_quarter(self) -> FiscalQuarter:
-        warnings.warn(
-            "FiscalDate(Time).prev_quarter is deprecated, "
-            "use FiscalDate(Time).prev_fiscal_quarter instead",
-            DeprecationWarning,
-        )
-        return self.prev_fiscal_quarter
-
-    @property
     def next_fiscal_quarter(self) -> FiscalQuarter:
         """:returns: The next fiscal quarter"""
         fiscal_quarter = FiscalQuarter(self.fiscal_year, self.fiscal_quarter)
 
         return fiscal_quarter.next_fiscal_quarter
-
-    @property
-    def next_quarter(self) -> FiscalQuarter:
-        warnings.warn(
-            "FiscalDate(Time).next_quarter is deprecated, "
-            "use FiscalDate(Time).next_fiscal_quarter instead",
-            DeprecationWarning,
-        )
-        return self.next_fiscal_quarter
 
     @property
     def prev_fiscal_month(self) -> FiscalMonth:
