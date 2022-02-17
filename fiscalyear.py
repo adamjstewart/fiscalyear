@@ -3,7 +3,6 @@
 import calendar
 import contextlib
 import datetime
-import warnings
 from typing import Iterator, Optional, Union, cast
 
 __author__ = "Adam J. Stewart"
