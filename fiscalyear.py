@@ -7,7 +7,7 @@ import warnings
 from typing import Iterator, Optional, Union, cast
 
 __author__ = "Adam J. Stewart"
-__version__ = "0.3.2"
+__version__ = "0.4.0"
 
 # Number of months in each quarter
 MONTHS_PER_QUARTER = 12 // 4
