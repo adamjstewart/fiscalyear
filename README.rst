@@ -16,8 +16,8 @@
 .. image:: https://anaconda.org/conda-forge/fiscalyear/badges/version.svg
    :target: https://anaconda.org/conda-forge/fiscalyear
 
-.. image:: https://img.shields.io/spack/v/py-torchgeo
-   :target: https://spack.readthedocs.io/en/latest/package_list.html#py-torchgeo
+.. image:: https://img.shields.io/spack/v/py-fiscalyear
+   :target: https://packages.spack.io/package.html?name=py-fiscalyear
 
 Overview
 ========
