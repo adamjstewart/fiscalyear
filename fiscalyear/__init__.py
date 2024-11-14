@@ -3,7 +3,7 @@
 import calendar
 import contextlib
 import datetime
-from typing import Iterator, Optional, Union, cast
+from typing import Iterator, List, Optional, Union, cast
 
 __author__ = "Adam J. Stewart"
 __version__ = "0.4.0"
@@ -178,6 +178,8 @@ def _check_quarter(quarter: int) -> int:
 
 class _Hashable:
     """A class to make Fiscal objects hashable"""
+
+    __slots__: List[str]
 
     def __hash__(self) -> int:
         """Unique hash of an object instance based on __slots__
