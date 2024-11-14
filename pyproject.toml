@@ -6,7 +6,6 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.black]
-target-version = ['py35', 'py36', 'py37', 'py38', 'py39']
 color = true
 skip_magic_trailing_comma = true
 
