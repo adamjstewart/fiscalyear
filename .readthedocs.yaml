@@ -4,6 +4,12 @@
 # Required
 version: 2
 
+# Set the version of Python
+build:
+  os: ubuntu-lts-latest
+  tools:
+    python: '3.13'
+
 # Configuration for Sphinx documentation
 sphinx:
    configuration: docs/conf.py
