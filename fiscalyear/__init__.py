@@ -679,7 +679,9 @@ class FiscalMonth(_Hashable):
             else:
                 calendar_year = self._fiscal_year + 1
 
-        return FiscalDateTime(calendar_year, calendar_month, START_DAY)
+        max_day = calendar.monthrange(calendar_year, calendar_month)[1]
+        day = min(START_DAY, max_day)
+        return FiscalDateTime(calendar_year, calendar_month, day)
 
     @property
     def end(self) -> "FiscalDateTime":

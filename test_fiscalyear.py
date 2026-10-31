@@ -676,6 +676,26 @@ class TestFiscalMonth:
             assert a.start == datetime.datetime(2016, 4, 6, 0, 0, 0)
             assert FiscalMonth(2016, 12).start == datetime.datetime(2017, 3, 6, 0, 0, 0)
 
+    @pytest.mark.parametrize(
+        "start_day, fiscal_year, fiscal_month, expected",
+        [
+            (31, 2019, 10, datetime.datetime(2019, 2, 28)),
+            (31, 2020, 10, datetime.datetime(2020, 2, 29)),
+            (31, 2021, 2, datetime.datetime(2020, 6, 30)),
+            (28, 2020, 10, datetime.datetime(2020, 2, 28)),
+            (1, 2020, 10, datetime.datetime(2020, 2, 1)),
+        ],
+    )
+    def test_start_clips_to_calendar_month(
+        self,
+        start_day: int,
+        fiscal_year: int,
+        fiscal_month: int,
+        expected: datetime.datetime,
+    ) -> None:
+        with fiscalyear.fiscal_calendar("previous", 5, start_day):
+            assert FiscalMonth(fiscal_year, fiscal_month).start == expected
+
     def test_end(self, c: FiscalMonth) -> None:
         assert c.end == FiscalYear(c.fiscal_year).end
 
@@ -694,6 +714,43 @@ class TestFiscalMonth:
         assert datetime.datetime(2015, 10, 1, 0, 0, 0) in a
         assert FiscalDate(2015, 10, 1) in a
         assert datetime.date(2015, 10, 1) in a
+
+    def test_clipped_february_membership_and_continuity(self) -> None:
+        with fiscalyear.fiscal_calendar("previous", 5, 31):
+            february = FiscalMonth(2020, 10)
+            january = february.prev_fiscal_month
+            march = february.next_fiscal_month
+            assert february.start == datetime.datetime(2020, 2, 29)
+            assert january.end + datetime.timedelta(seconds=1) == february.start
+            assert february.end + datetime.timedelta(seconds=1) == march.start
+            assert february.end == datetime.datetime(2020, 3, 30, 23, 59, 59)
+            assert FiscalDate(2020, 2, 28).fiscal_month == 9
+            assert FiscalDate(2020, 2, 29).fiscal_month == 10
+            assert FiscalDate(2020, 3, 1).fiscal_month == 10
+            assert FiscalDate(2020, 3, 30).fiscal_month == 10
+            assert FiscalDate(2020, 3, 31).fiscal_month == 11
+            assert datetime.date(2020, 2, 28) not in february
+            assert datetime.date(2020, 2, 29) in february
+            assert datetime.date(2020, 3, 30) in february
+            assert datetime.date(2020, 3, 31) not in february
+            nonleap_february = FiscalMonth(2019, 10)
+            assert nonleap_february.start == datetime.datetime(2019, 2, 28)
+            assert nonleap_february.end + datetime.timedelta(seconds=1) == (
+                nonleap_february.next_fiscal_month.start
+            )
+            assert FiscalDate(2019, 2, 27).fiscal_month == 9
+            assert FiscalDate(2019, 2, 28).fiscal_month == 10
+            assert datetime.date(2019, 2, 27) not in nonleap_february
+            assert datetime.date(2019, 2, 28) in nonleap_february
+            assert FiscalDate(2019, 5, 30).fiscal_year == 2019
+            assert FiscalDate(2019, 5, 31).fiscal_year == 2020
+            assert FiscalDate(2020, 5, 30).fiscal_year == 2020
+            assert FiscalDate(2020, 5, 31).fiscal_year == 2021
+            assert FiscalDate(2020, 6, 1).fiscal_year == 2021
+            assert datetime.date(2020, 5, 30) in FiscalYear(2020)
+            assert datetime.date(2020, 5, 31) not in FiscalYear(2020)
+            year = FiscalYear(2020)
+            assert year.end + datetime.timedelta(seconds=1) == FiscalYear(2021).start
 
     def test_less_than(self, a: FiscalMonth, b: FiscalMonth) -> None:
         assert a < b
